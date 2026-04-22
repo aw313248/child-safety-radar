@@ -1,9 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import RadarScanner from '@/components/RadarScanner'
 import ResultCard from '@/components/ResultCard'
+import UnlockModal from '@/components/UnlockModal'
 import { AnalysisResult } from '@/types/analysis'
+
+const STORAGE_KEY = 'child_radar_unlocked'
+const FREE_SCANS = 1 // 免費試用次數
+const SCAN_COUNT_KEY = 'child_radar_scan_count'
 
 export default function Home() {
   const [url, setUrl] = useState('')
@@ -12,9 +17,25 @@ export default function Home() {
   const [progressText, setProgressText] = useState('')
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [error, setError] = useState('')
+  const [unlocked, setUnlocked] = useState(false)
+  const [scanCount, setScanCount] = useState(0)
+  const [showUnlock, setShowUnlock] = useState(false)
+
+  useEffect(() => {
+    const isUnlocked = localStorage.getItem(STORAGE_KEY) === 'true'
+    const count = parseInt(localStorage.getItem(SCAN_COUNT_KEY) || '0', 10)
+    setUnlocked(isUnlocked)
+    setScanCount(count)
+  }, [])
 
   const handleAnalyze = async () => {
     if (!url.trim()) return
+
+    // Check if needs unlock
+    if (!unlocked && scanCount >= FREE_SCANS) {
+      setShowUnlock(true)
+      return
+    }
 
     setLoading(true)
     setResult(null)
@@ -53,6 +74,10 @@ export default function Home() {
       if (!res.ok) {
         setError(data.error || '分析失敗，請稍後再試')
       } else {
+        // Increment scan count
+        const newCount = scanCount + 1
+        setScanCount(newCount)
+        localStorage.setItem(SCAN_COUNT_KEY, String(newCount))
         setResult(data)
       }
     } catch {
@@ -63,12 +88,20 @@ export default function Home() {
     }
   }
 
+  const handleUnlocked = () => {
+    setUnlocked(true)
+    localStorage.setItem(STORAGE_KEY, 'true')
+    setShowUnlock(false)
+  }
+
   const handleReset = () => {
     setResult(null)
     setUrl('')
     setError('')
     setProgress(0)
   }
+
+  const remainingFree = Math.max(0, FREE_SCANS - scanCount)
 
   return (
     <main className="min-h-screen radar-bg">
@@ -83,8 +116,24 @@ export default function Home() {
           </div>
           <p className="text-white/60 text-base leading-relaxed">
             輸入 YouTube 頻道或影片網址<br />
-            AI 自動掃描是否包裝成兒童內容的危險訊號
+            AI 掃描是否含有偽裝成兒童內容的危險訊號
           </p>
+
+          {/* Usage badge */}
+          {!unlocked && (
+            <div className="mt-4 inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5">
+              {remainingFree > 0 ? (
+                <span className="text-xs text-white/50">免費試用剩 <span className="text-white font-bold">{remainingFree}</span> 次</span>
+              ) : (
+                <span className="text-xs text-yellow-400/80">免費次數已用完</span>
+              )}
+            </div>
+          )}
+          {unlocked && (
+            <div className="mt-4 inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-1.5">
+              <span className="text-xs text-green-400">✓ 已解鎖，無限次掃描</span>
+            </div>
+          )}
         </div>
 
         {/* Input Area */}
@@ -100,7 +149,7 @@ export default function Home() {
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !loading && handleAnalyze()}
                 placeholder="https://www.youtube.com/@channel 或 https://youtu.be/xxxxx"
-                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm placeholder:text-white/25 focus:outline-none focus:border-red-500/50 focus:bg-white/8 transition-all"
+                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm placeholder:text-white/25 focus:outline-none focus:border-red-500/50 transition-all"
                 disabled={loading}
               />
               <button
@@ -110,24 +159,6 @@ export default function Home() {
               >
                 {loading ? '分析中' : '開始掃描'}
               </button>
-            </div>
-
-            {/* Example Links */}
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="text-white/30 text-xs">範例：</span>
-              {[
-                { label: '頻道連結', url: 'https://www.youtube.com/@cocomelon' },
-                { label: '影片連結', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
-              ].map((ex) => (
-                <button
-                  key={ex.label}
-                  onClick={() => setUrl(ex.url)}
-                  className="text-xs text-red-400/70 hover:text-red-400 transition-colors"
-                  disabled={loading}
-                >
-                  {ex.label} ↗
-                </button>
-              ))}
             </div>
           </div>
         )}
@@ -143,8 +174,6 @@ export default function Home() {
             </div>
             <p className="text-white/80 font-medium mb-1">{progressText}</p>
             <p className="text-white/30 text-sm mb-6">大約需要 20–40 秒，請稍候</p>
-
-            {/* Progress Bar */}
             <div className="bg-white/5 rounded-full h-2 overflow-hidden">
               <div
                 className="h-full progress-bar-shimmer rounded-full transition-all duration-1000"
@@ -155,14 +184,11 @@ export default function Home() {
           </div>
         )}
 
-        {/* Error State */}
+        {/* Error */}
         {error && !loading && (
           <div className="glass border border-red-500/30 rounded-2xl p-6 mb-6 animate-fade-in-up">
             <p className="text-red-400 font-medium">⚠️ {error}</p>
-            <button
-              onClick={() => setError('')}
-              className="mt-3 text-sm text-white/40 hover:text-white/60 transition-colors"
-            >
+            <button onClick={() => setError('')} className="mt-3 text-sm text-white/40 hover:text-white/60 transition-colors">
               重試
             </button>
           </div>
@@ -194,11 +220,15 @@ export default function Home() {
           </div>
         )}
 
-        {/* Footer */}
         <p className="text-center text-white/20 text-xs mt-10">
           童安雷達 · AI 輔助分析，結果僅供參考，建議家長陪同觀看
         </p>
       </div>
+
+      {/* Unlock Modal */}
+      {showUnlock && (
+        <UnlockModal onUnlocked={handleUnlocked} onClose={() => setShowUnlock(false)} />
+      )}
     </main>
   )
 }
