@@ -9,16 +9,26 @@
    避開高飽和藍（400-450nm 對發育中眼球最傷）
    ══════════════════════════════════════════════════ */
 :root {
-  /* ─── 3-color palette（護眼版） ─── */
-  --ink:         10, 10, 10;        /* 主色：黑（rgb 值，配 alpha 用） */
-  --paper:       243, 238, 221;     /* 紙面：奶油米（暖色偏黃，降藍光） */
-  --stone:       210, 221, 194;     /* accent：豆沙綠（護眼 520-560nm） */
+  /* ═══════════════════════════════════════════════════
+     Busy Bee Honey 風格：蜂蜜黃 + 深可可 + 暖奶油米
+     熊🐻 = 守護者（爸媽）
+     蜜蜂🐝 = 小孩（要守護的對象）
+     ═══════════════════════════════════════════════════ */
 
-  /* ─── 固定 hex（按鈕 / emoji 之類硬色值） ─── */
-  --ink-hex:     #0A0A0A;
-  --paper-hex:   #F3EEDD;           /* 奶油米（取代原 #FAF8F4） */
-  --stone-hex:   #D2DDC2;           /* 豆沙綠（取代原 #DCD2C4） */
-  --card-hex:    #FBF7EA;           /* 卡片暖奶油底（取代所有 #FFFFFF） */
+  /* ─── 核心三色 ─── */
+  --ink:         58, 40, 32;        /* 主色：深可可咖啡（取代純黑） */
+  --paper:       243, 238, 221;     /* 紙面：奶油米（暖色偏黃，降藍光） */
+  --honey:       245, 193, 61;      /* accent：蜂蜜黃（Busy Bee 主色） */
+  --stone:       210, 221, 194;     /* 舊相容：豆沙綠 */
+
+  /* ─── 固定 hex ─── */
+  --ink-hex:     #3A2820;           /* 深可可咖啡（pill 按鈕、標題色） */
+  --paper-hex:   #F3EEDD;           /* 奶油米背景 */
+  --honey-hex:   #F5C13D;           /* 蜂蜜黃 — hero / 強調區塊 */
+  --honey-deep:  #E8A923;           /* 深蜂蜜 — hover 色 */
+  --stone-hex:   #D2DDC2;
+  --card-hex:    #FBF7EA;           /* 卡片暖奶油底 */
+  --sky-hex:     #B8D8E8;           /* 復古藍徽章（Made in USA 那顆） */
 
   /* ─── 系統風險色（只在結果卡內用，整體風格不計入三色） ─── */
   --risk-red:    #C2413B;
@@ -43,6 +53,12 @@
   --stone-40: rgba(var(--stone), 0.40);
   --stone-60: rgba(var(--stone), 0.60);
   --stone-80: rgba(var(--stone), 0.80);
+
+  /* ─── Honey 階梯 ─── */
+  --honey-20: rgba(var(--honey), 0.20);
+  --honey-40: rgba(var(--honey), 0.40);
+  --honey-60: rgba(var(--honey), 0.60);
+  --honey-80: rgba(var(--honey), 0.80);
 
   /* ─── Borders ─── */
   --border-hair:    rgba(var(--ink), 0.06);
@@ -89,12 +105,126 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 
-  /* 護眼底：奶油米 + 豆沙綠微光（避開純白 #FFFFFF glare） */
+  /* 護眼底：奶油米 + 蜂蜜黃微光（Busy Bee 調性） */
   background-color: var(--paper-hex);
   background-image:
-    radial-gradient(ellipse 60% 45% at 15% 5%,   rgba(var(--stone), 0.35), transparent 60%),
-    radial-gradient(ellipse 55% 40% at 88% 95%,  rgba(var(--stone), 0.28), transparent 60%);
+    radial-gradient(ellipse 60% 45% at 15% 5%,   rgba(var(--honey), 0.22), transparent 60%),
+    radial-gradient(ellipse 55% 40% at 88% 95%,  rgba(var(--stone), 0.25), transparent 60%);
   background-attachment: fixed;
+}
+
+/* ══════════════════════════════════════════════════
+   Display Typography — Fraunces 復古 serif
+   用於 hero 標題、section 大字、徽章
+   ══════════════════════════════════════════════════ */
+.font-display {
+  font-family: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+.font-display-italic {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* ══════════════════════════════════════════════════
+   Pill 按鈕 — Busy Bee 風格深咖啡 + 箭頭
+   ══════════════════════════════════════════════════ */
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 28px;
+  background: var(--ink-hex);
+  color: #FBF7EA;
+  border: none;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(58, 40, 32, 0.22);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s, background 0.2s;
+}
+.btn-pill:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #2A1D17;
+  box-shadow: 0 8px 22px rgba(58, 40, 32, 0.32);
+}
+.btn-pill:active:not(:disabled) { transform: translateY(0) scale(0.97); }
+.btn-pill:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-pill-honey {
+  background: var(--honey-hex);
+  color: var(--ink-hex);
+  box-shadow: 0 4px 16px rgba(245, 193, 61, 0.45);
+}
+.btn-pill-honey:hover:not(:disabled) {
+  background: var(--honey-deep);
+  box-shadow: 0 8px 22px rgba(232, 169, 35, 0.55);
+}
+
+.btn-pill .arrow {
+  display: inline-block;
+  transition: transform 0.2s var(--ease-spring);
+}
+.btn-pill:hover .arrow { transform: translateX(4px); }
+
+/* ══════════════════════════════════════════════════
+   復古徽章（Made in USA 那顆圓形貼紙）
+   ══════════════════════════════════════════════════ */
+.retro-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--sky-hex);
+  color: var(--ink-hex);
+  box-shadow: 0 3px 10px rgba(58, 40, 32, 0.18);
+  animation: badge-wobble 6s ease-in-out infinite;
+}
+@keyframes badge-wobble {
+  0%, 100% { transform: rotate(-8deg); }
+  50%      { transform: rotate(8deg); }
+}
+
+/* ══════════════════════════════════════════════════
+   Hero Split Screen — 左黃塊 / 右圖
+   ══════════════════════════════════════════════════ */
+.hero-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 520px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(58, 40, 32, 0.12);
+}
+.hero-split__left {
+  background: var(--honey-hex);
+  padding: 48px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+.hero-split__right {
+  background:
+    radial-gradient(circle at 30% 40%, rgba(245, 193, 61, 0.35), transparent 60%),
+    linear-gradient(135deg, #F3EEDD 0%, #FBF7EA 100%);
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 720px) {
+  .hero-split { grid-template-columns: 1fr; min-height: auto; }
+  .hero-split__right { min-height: 280px; }
 }
 
 /* ── Animations ──────────────────────────────────── */

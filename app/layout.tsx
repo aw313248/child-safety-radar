@@ -1,12 +1,22 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
+import { Fraunces } from 'next/font/google'
 import './globals.css'
+
+// 復古 serif display — Busy Bee Honey 風格靈魂字體
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['500', '700', '900'],
+  style: ['normal', 'italic'],
+  variable: '--font-fraunces',
+  display: 'swap',
+})
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#FAF8F4',
+  themeColor: '#F3EEDD',
   viewportFit: 'cover',
 }
 
@@ -27,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-TW">
+    <html lang="zh-TW" className={fraunces.variable}>
       <body className="antialiased">
         {children}
         <Analytics />
