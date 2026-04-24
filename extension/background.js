@@ -64,4 +64,9 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     sendResponse({ ok: true })
     return false
   }
+  if (msg.type === 'OPEN_OPTIONS') {
+    chrome.runtime.openOptionsPage()
+    sendResponse({ ok: true })
+    return false
+  }
 })

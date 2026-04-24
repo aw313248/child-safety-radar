@@ -5,6 +5,7 @@
 ;(function () {
   const BADGE_ID = '__peekkids_badge__'
   const PANEL_ID = '__peekkids_panel__'
+  const SETUP_ID = '__peekkids_setup__'
 
   // ── 判斷當前頁是不是「頻道頁」──────────────────────
   function getChannelUrl() {
@@ -57,6 +58,34 @@
       badge.className = 'peekkids-badge peekkids-badge--error'
       badge.innerHTML = `<span class="peekkids-owl">⚠️</span><span class="peekkids-label">${data || '失敗'}</span>`
     }
+  }
+
+  // ── Setup Alert Card（尚未設定 API Key 時）───────────
+  function renderSetupCard() {
+    // 移除普通 badge，避免打架
+    const oldBadge = document.getElementById(BADGE_ID)
+    if (oldBadge) oldBadge.remove()
+
+    let card = document.getElementById(SETUP_ID)
+    if (card) card.remove()
+
+    card = document.createElement('div')
+    card.id = SETUP_ID
+    card.className = 'peekkids-setup'
+    card.innerHTML = `
+      <button class="peekkids-setup-dismiss" aria-label="關閉">×</button>
+      <div class="peekkids-setup-head">
+        <div class="peekkids-setup-icon">🔑</div>
+        <div class="peekkids-setup-title">PeekKids 尚未設定<br>API Key</div>
+      </div>
+      <p class="peekkids-setup-desc">設定後才能掃描 YouTube 頻道，2 分鐘就搞定，沒有 key 的話可以到官網領取</p>
+      <button class="peekkids-setup-cta">前往設定 →</button>
+    `
+    card.querySelector('.peekkids-setup-dismiss').addEventListener('click', () => card.remove())
+    card.querySelector('.peekkids-setup-cta').addEventListener('click', () => {
+      chrome.runtime.sendMessage({ type: 'OPEN_OPTIONS' })
+    })
+    document.body.appendChild(card)
   }
 
   // ── 結果詳情面板 ─────────────────────────────────────
@@ -128,6 +157,8 @@
         renderBadge('done', res.data)
         // 高風險自動展開面板
         if (res.data.riskLevel === 'high') renderPanel(res.data)
+      } else if (res?.needsSetup) {
+        renderSetupCard()
       } else {
         renderBadge('error', res?.error?.slice(0, 12) || '失敗')
       }
@@ -142,9 +173,19 @@
     lastResult = null
     const existingPanel = document.getElementById(PANEL_ID)
     if (existingPanel) existingPanel.remove()
+    const existingSetup = document.getElementById(SETUP_ID)
+    if (existingSetup) existingSetup.remove()
 
     if (url) {
-      renderBadge('idle')
+      // 先檢查有沒有設 API Key，沒設就直接彈出顯眼的 Setup Card
+      chrome.storage.local.get(['apiKey'], (res) => {
+        const key = (res.apiKey || '').trim()
+        if (!key) {
+          renderSetupCard()
+        } else {
+          renderBadge('idle')
+        }
+      })
     } else {
       const badge = document.getElementById(BADGE_ID)
       if (badge) badge.remove()

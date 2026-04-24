@@ -1,5 +1,8 @@
-/* PeekKids Badge & Panel — 注入到 YouTube 頁面 */
+/* PeekKids Badge & Panel — HeroUI-inspired, 注入 YouTube 頁面 */
 
+/* ─────────────────────────────────────────────
+   基礎浮動按鈕（idle / loading / done / error）
+   ───────────────────────────────────────────── */
 .peekkids-badge {
   position: fixed;
   bottom: 88px;
@@ -7,24 +10,31 @@
   z-index: 2147483646;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
+  gap: 10px;
+  padding: 14px 20px;
   border-radius: 9999px;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC', 'Noto Sans TC', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: -0.01em;
   cursor: pointer;
   user-select: none;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
   color: #fff;
   border: none;
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.18),
+    0 2px 6px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, filter 0.2s;
 }
 
 .peekkids-badge:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  box-shadow:
+    0 16px 40px rgba(15, 23, 42, 0.22),
+    0 4px 10px rgba(15, 23, 42, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  filter: brightness(1.05);
 }
 
 .peekkids-badge:active {
@@ -32,50 +42,62 @@
 }
 
 .peekkids-badge--idle {
-  background: #1A3828;
+  background: linear-gradient(135deg, #1A3828 0%, #2C5A42 100%);
 }
 
 .peekkids-badge--loading {
-  background: #475569;
+  background: linear-gradient(135deg, #475569 0%, #64748B 100%);
   pointer-events: none;
 }
 
 .peekkids-badge--high {
-  background: #DC2626;
+  background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+  box-shadow:
+    0 10px 30px rgba(220, 38, 38, 0.35),
+    0 2px 6px rgba(220, 38, 38, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.20);
 }
 
 .peekkids-badge--medium {
-  background: #EA580C;
+  background: linear-gradient(135deg, #EA580C 0%, #F97316 100%);
+  box-shadow:
+    0 10px 30px rgba(234, 88, 12, 0.30),
+    0 2px 6px rgba(234, 88, 12, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.20);
 }
 
 .peekkids-badge--low {
-  background: #16A34A;
+  background: linear-gradient(135deg, #16A34A 0%, #22C55E 100%);
+  box-shadow:
+    0 10px 30px rgba(22, 163, 74, 0.30),
+    0 2px 6px rgba(22, 163, 74, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.20);
 }
 
 .peekkids-badge--error {
-  background: #64748B;
+  background: linear-gradient(135deg, #B91C1C 0%, #DC2626 100%);
 }
 
 .peekkids-owl {
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
 }
 
 .peekkids-score {
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
 }
 
 .peekkids-label {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .peekkids-spinner {
-  width: 12px;
-  height: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 14px;
+  height: 14px;
+  border: 2.5px solid rgba(255, 255, 255, 0.28);
   border-top-color: #fff;
   border-radius: 50%;
   animation: peekkids-spin 0.8s linear infinite;
@@ -85,20 +107,161 @@
   to { transform: rotate(360deg); }
 }
 
-/* 面板（點 badge 展開） */
+/* ─────────────────────────────────────────────
+   Setup Alert Card — 尚未設定 API Key（大、明顯、有 CTA）
+   ───────────────────────────────────────────── */
+.peekkids-setup {
+  position: fixed;
+  bottom: 88px;
+  right: 24px;
+  z-index: 2147483646;
+  width: 340px;
+  max-width: calc(100vw - 48px);
+  padding: 20px 20px 18px;
+  border-radius: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC', 'Noto Sans TC', sans-serif;
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border: 2px solid #F59E0B;
+  box-shadow:
+    0 24px 60px rgba(245, 158, 11, 0.32),
+    0 6px 16px rgba(245, 158, 11, 0.18),
+    0 0 0 6px rgba(245, 158, 11, 0.10);
+  color: #451A03;
+  animation: peekkids-pop-in 0.35s cubic-bezier(0.22, 1.2, 0.36, 1),
+             peekkids-pulse-amber 2.2s ease-in-out 0.5s infinite;
+}
+
+@keyframes peekkids-pop-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.92); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes peekkids-pulse-amber {
+  0%, 100% {
+    box-shadow:
+      0 24px 60px rgba(245, 158, 11, 0.32),
+      0 6px 16px rgba(245, 158, 11, 0.18),
+      0 0 0 6px rgba(245, 158, 11, 0.10);
+  }
+  50% {
+    box-shadow:
+      0 24px 60px rgba(245, 158, 11, 0.42),
+      0 6px 16px rgba(245, 158, 11, 0.24),
+      0 0 0 10px rgba(245, 158, 11, 0.16);
+  }
+}
+
+.peekkids-setup-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.peekkids-setup-icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+}
+
+.peekkids-setup-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #78350F;
+  line-height: 1.3;
+}
+
+.peekkids-setup-desc {
+  font-size: 13px;
+  color: #92400E;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+}
+
+.peekkids-setup-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    0 6px 16px rgba(180, 83, 9, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  transition: transform 0.15s, filter 0.15s, box-shadow 0.2s;
+}
+
+.peekkids-setup-cta:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 24px rgba(180, 83, 9, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.peekkids-setup-cta:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.peekkids-setup-dismiss {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(180, 83, 9, 0.10);
+  border: none;
+  color: #92400E;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.peekkids-setup-dismiss:hover {
+  background: rgba(180, 83, 9, 0.20);
+}
+
+/* ─────────────────────────────────────────────
+   Result Panel（點 badge 展開的詳情卡）
+   ───────────────────────────────────────────── */
 .peekkids-panel {
   position: fixed;
-  bottom: 150px;
+  bottom: 158px;
   right: 24px;
-  width: 320px;
+  width: 340px;
   max-width: calc(100vw - 48px);
   z-index: 2147483647;
   background: #fff;
-  border-radius: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.10);
-  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.16), 0 2px 8px rgba(15, 23, 42, 0.06);
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.18),
+    0 4px 12px rgba(15, 23, 42, 0.06);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC', 'Noto Sans TC', sans-serif;
   color: #0F172A;
+  overflow: hidden;
   animation: peekkids-slide-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -111,20 +274,21 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 16px 18px 12px;
+  padding: 18px 20px 14px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  background: linear-gradient(180deg, rgba(250, 251, 252, 1) 0%, rgba(255, 255, 255, 1) 100%);
 }
 
 .peekkids-panel-score {
-  font-size: 36px;
-  font-weight: 800;
-  letter-spacing: -0.035em;
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
   line-height: 1;
 }
 .peekkids-panel-score span {
-  font-size: 14px;
+  font-size: 15px;
   color: #94A3B8;
-  font-weight: 500;
+  font-weight: 600;
   margin-left: 4px;
   letter-spacing: -0.01em;
 }
@@ -136,71 +300,71 @@
 .peekkids-panel-level {
   font-size: 12px;
   color: #475569;
-  margin-top: 4px;
+  margin-top: 6px;
   letter-spacing: -0.01em;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .peekkids-close {
-  background: transparent;
+  background: rgba(15, 23, 42, 0.04);
   border: none;
-  font-size: 20px;
-  color: #94A3B8;
+  font-size: 18px;
+  color: #64748B;
   cursor: pointer;
   padding: 0;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 .peekkids-close:hover {
-  background: rgba(15, 23, 42, 0.06);
+  background: rgba(15, 23, 42, 0.10);
   color: #0F172A;
 }
 
 .peekkids-panel-body {
-  padding: 14px 18px;
+  padding: 16px 20px;
 }
 
 .peekkids-channel {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   letter-spacing: -0.02em;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   color: #0F172A;
 }
 
 .peekkids-summary {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
-  line-height: 1.6;
+  line-height: 1.65;
   letter-spacing: -0.01em;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
 }
 
 .peekkids-recommendation {
-  font-size: 12px;
+  font-size: 13px;
   color: #0F172A;
-  line-height: 1.5;
+  line-height: 1.55;
   letter-spacing: -0.01em;
-  padding: 10px 12px;
-  background: rgba(15, 23, 42, 0.03);
-  border-radius: 8px;
+  padding: 12px 14px;
+  background: rgba(15, 23, 42, 0.04);
+  border-radius: 10px;
   margin: 0;
 }
 
 .peekkids-panel-actions {
-  padding: 10px 18px 16px;
+  padding: 12px 20px 18px;
   border-top: 1px solid rgba(15, 23, 42, 0.06);
   text-align: right;
 }
 
 .peekkids-panel-actions a {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: #2C5A42;
   text-decoration: none;
   letter-spacing: -0.01em;
