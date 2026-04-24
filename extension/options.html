@@ -82,6 +82,79 @@
   }
   .help a { color: var(--pk-blue); font-weight: 600; text-decoration: none; }
   .help a:hover { text-decoration: underline; }
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-label { font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+  .toggle-sub   { font-size: 12px; color: var(--text-secondary); margin-top: 2px; letter-spacing: -0.01em; }
+  .switch {
+    position: relative; width: 44px; height: 26px;
+    background: rgba(60,60,67,0.18); border-radius: 9999px;
+    cursor: pointer; transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .switch::before {
+    content: ''; position: absolute;
+    top: 2px; left: 2px;
+    width: 22px; height: 22px;
+    background: #fff; border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  .switch.on { background: var(--pk-green); }
+  .switch.on::before { transform: translateX(18px); }
+  .radio-row { display: flex; gap: 8px; margin-top: 10px; }
+  .radio-btn {
+    flex: 1; padding: 8px 12px; text-align: center;
+    border-radius: 10px; border: 1.5px solid var(--border);
+    background: var(--bg); font-size: 12px; font-weight: 600;
+    color: var(--text-secondary); cursor: pointer;
+    font-family: inherit; letter-spacing: -0.01em;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .radio-btn.active {
+    border-color: var(--pk-blue); color: var(--pk-blue);
+    background: rgba(0,122,255,0.06);
+  }
+  .block-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .block-item:last-child { border: none; }
+  .block-name {
+    flex: 1; min-width: 0;
+    font-size: 13px; font-weight: 600; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
+  .block-score {
+    flex-shrink: 0;
+    font-size: 11px; font-weight: 700;
+    color: #D70015;
+    padding: 2px 8px;
+    background: rgba(255,59,48,0.08);
+    border-radius: 9999px;
+  }
+  .block-remove {
+    flex-shrink: 0;
+    background: transparent; border: none;
+    color: var(--text-secondary);
+    font-size: 11px; font-weight: 600;
+    cursor: pointer; padding: 4px 8px;
+    letterSpacing: -0.01em;
+    font-family: inherit;
+  }
+  .block-empty {
+    text-align: center; padding: 20px 0;
+    color: var(--text-secondary); font-size: 13px;
+    letter-spacing: -0.01em;
+  }
   .btn {
     background: var(--pk-blue);
     color: #fff;
@@ -148,12 +221,37 @@
   </div>
 
   <div class="card">
+    <h3>守護設定</h3>
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">高風險自動封鎖</div>
+        <div class="toggle-sub">掃出紅燈就直接加入黑名單，不用手動按</div>
+      </div>
+      <div class="switch on" id="autoBlockToggle"></div>
+    </div>
+    <div style="padding-top:10px">
+      <div class="toggle-label">封鎖時怎麼顯示</div>
+      <div class="toggle-sub">黑名單頻道的影片出現在首頁/搜尋/推薦時</div>
+      <div class="radio-row" id="hideModeRow">
+        <button class="radio-btn" data-mode="blur">蓋警告遮罩</button>
+        <button class="radio-btn" data-mode="hide">完全隱藏</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>已封鎖頻道 <span id="blockCount" style="color:var(--text-secondary);font-weight:500;font-size:12px"></span></h3>
+    <div id="blocklist"></div>
+  </div>
+
+  <div class="card">
     <h3>怎麼用</h3>
     <ol class="steps">
       <li>打開任何 YouTube 頻道頁（例：<code>youtube.com/@xxx</code>）</li>
       <li>畫面右下角會出現 🦉 <b>PeekKids 檢查</b> 浮動按鈕</li>
       <li>按一下 → 掃描 20 秒 → 直接在頁面上看到紅 / 橘 / 綠燈</li>
-      <li>高風險頻道會自動展開詳情，低風險默默放行</li>
+      <li>高風險頻道會自動加入黑名單，在首頁/搜尋/推薦被擋下</li>
+      <li>點進高風險頻道的影片，會跳出全畫面警告遮罩</li>
     </ol>
   </div>
 </div>

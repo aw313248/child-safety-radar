@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "PeekKids — YouTube 兒童安全雷達",
   "short_name": "PeekKids",
-  "version": "0.1.0",
-  "description": "在 YouTube 頻道頁自動檢查是否藏有「艾莎門」（暴力、恐怖、成人梗偽裝兒童內容），給家有皮小孩的爸媽用",
+  "version": "0.2.0",
+  "description": "在 YouTube 頻道頁自動檢查是否藏有「艾莎門」（暴力、恐怖、成人梗偽裝兒童內容），高風險自動封鎖，給家有皮小孩的爸媽用",
   "permissions": ["storage", "activeTab"],
   "host_permissions": [
     "https://www.youtube.com/*",

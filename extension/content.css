@@ -311,3 +311,194 @@
   letter-spacing: -0.01em;
 }
 .peekkids-panel-actions a:hover { text-decoration: underline; }
+
+/* ─────────────────────────────────────────────
+   黑名單：卡片遮罩（首頁 / 搜尋 / 推薦） & 封鎖按鈕
+   ───────────────────────────────────────────── */
+.peekkids-card-blurred {
+  position: relative;
+}
+.peekkids-card-blurred > *:not(.peekkids-card-block-overlay) {
+  filter: blur(12px) saturate(0.6);
+  opacity: 0.4;
+  pointer-events: none;
+}
+.peekkids-card-block-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px;
+  background: rgba(10, 10, 10, 0.88);
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC', 'Noto Sans TC', sans-serif;
+  border-radius: 14px;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+.peekkids-card-block-icon { font-size: 26px; line-height: 1; }
+.peekkids-card-block-title { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+.peekkids-card-block-desc { font-size: 11px; color: rgba(255,255,255,0.75); letter-spacing: -0.01em; max-width: 220px; line-height: 1.45; }
+.peekkids-card-block-unblock {
+  margin-top: 4px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.peekkids-card-block-unblock:hover { background: rgba(255,255,255,0.20); }
+
+.peekkids-block-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,59,48,0.22);
+  background: rgba(255,59,48,0.08);
+  color: var(--pk-red);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.peekkids-block-btn:hover { background: rgba(255,59,48,0.14); }
+.peekkids-block-btn--active {
+  background: rgba(52,199,89,0.10);
+  border-color: rgba(52,199,89,0.22);
+  color: var(--pk-green);
+}
+.peekkids-block-btn--active:hover { background: rgba(52,199,89,0.18); }
+
+/* ─────────────────────────────────────────────
+   Watch 頁全畫面警告遮罩
+   ───────────────────────────────────────────── */
+.peekkids-watch-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483645;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC', 'Noto Sans TC', sans-serif;
+  animation: peekkids-pop-in 0.35s cubic-bezier(0.22, 1.2, 0.36, 1);
+}
+.peekkids-watch-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px 28px 24px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.30);
+}
+.peekkids-watch-owl {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.peekkids-watch-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0A0A0A;
+  margin-bottom: 10px;
+}
+.peekkids-watch-channel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0A0A0A;
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+.peekkids-watch-score {
+  font-size: 13px;
+  color: rgba(10,10,10,0.55);
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.peekkids-watch-score b {
+  color: var(--pk-red);
+  font-weight: 700;
+}
+.peekkids-watch-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.peekkids-watch-back,
+.peekkids-watch-continue,
+.peekkids-watch-settings {
+  font-family: inherit;
+  border: none;
+  padding: 13px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.peekkids-watch-back {
+  background: #0A0A0A;
+  color: #FFFFFF;
+}
+.peekkids-watch-back:hover { background: #2A2A2A; }
+.peekkids-watch-continue {
+  background: rgba(10,10,10,0.05);
+  color: #0A0A0A;
+  border: 1px solid rgba(10,10,10,0.10);
+}
+.peekkids-watch-continue:hover { background: rgba(10,10,10,0.10); }
+.peekkids-watch-settings {
+  background: transparent;
+  color: rgba(10,10,10,0.45);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.peekkids-watch-settings:hover { color: #0A0A0A; }
+
+/* ─────────────────────────────────────────────
+   Toast
+   ───────────────────────────────────────────── */
+.peekkids-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 2147483647;
+  padding: 12px 20px;
+  background: rgba(10, 10, 10, 0.92);
+  color: #FFFFFF;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC', 'Noto Sans TC', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border-radius: 9999px;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: calc(100vw - 48px);
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+.peekkids-toast--show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
