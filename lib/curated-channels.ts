@@ -1,9 +1,18 @@
 // 精選安心頻道清單
-// 原則：寧缺勿濫。只收錄「百分百確定是官方原版」的頻道
-// 所有 UC ID 都是全球 TOP 等級幼兒頻道的官方認證 ID
-// 其餘中文 / 本地頻道讓爸媽自己掃描驗證後加入
 //
-// ⚠️ 教訓：不要憑記憶填 UC ID，Little Baby Bum 的 UC 曾被填成遊戲實況頻道已移除
+// ═══════════════════════════════════════════════════════════════════
+// ⛔ 硬規定：入庫前必須用 curl 驗證 UC ID ⛔
+// ═══════════════════════════════════════════════════════════════════
+// 曾犯的錯：
+//   1. Little Baby Bum 填成遊戲實況頻道 UC（出現血腥內容）
+//   2. ChuChu TV 填錯 UC（整個頻道沒影片）
+// 驗證流程（缺一不可）：
+//   curl -sL "https://www.youtube.com/@HANDLE" -A "Mozilla/5.0" \
+//     | grep -oE '"browseId":"UC[a-zA-Z0-9_-]{22}"' | head -1
+//   curl -sL "https://www.youtube.com/@HANDLE" -A "Mozilla/5.0" \
+//     | grep -oE '<meta property="og:title" content="[^"]+"'
+//   → UC ID 回傳的頻道名必須完全對得上才能入庫
+// ═══════════════════════════════════════════════════════════════════
 
 export type AgeGroup = '0-3' | '3-6'
 export type Category = 'song' | 'story' | 'learn' | 'cartoon'
@@ -61,7 +70,7 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     emoji: '🎤',
   },
   {
-    channelId: 'UCuM8Rv0KiPPcN7WQVW1SC3g',
+    channelId: 'UCBnZ16ahKA2DZ_T5W0FPUXg',
     name: 'ChuChu TV',
     handle: '@chuchutv',
     description: '國際版兒歌頻道，畫面明亮、節奏緩和',

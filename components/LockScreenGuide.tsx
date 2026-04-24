@@ -40,10 +40,8 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
         try { document.execCommand('copy'); setCopied(true) } catch {}
         document.body.removeChild(ta)
       }
-      // 嘗試深連結（iOS 11+ Safari 多半會被擋，但 PWA 或舊版可能吃）
-      setTimeout(() => {
-        window.location.href = 'App-prefs:ACCESSIBILITY'
-      }, 300)
+      // ⚠️ 不再嘗試 App-prefs: 深連結
+      // 理由：iOS Safari 必定彈「網址無效」錯誤對話框，使用者體驗更糟
     }
   }
 

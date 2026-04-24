@@ -98,6 +98,28 @@ export default function KidsModePage() {
     setUserChannels(getUserChannels())
   }, [])
 
+  // ═══ 影片播完自動跳回選單（不給 YouTube 推薦下手） ═══
+  const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  useEffect(() => {
+    if (!playingVideoId) return
+    const onMessage = (e: MessageEvent) => {
+      if (typeof e.data !== 'string') return
+      try {
+        const data = JSON.parse(e.data)
+        // YouTube iframe 發出 onStateChange，state 0 = ended
+        if (data.event === 'onStateChange' && data.info === 0) {
+          setPlayingVideoId(null)
+        }
+        // 有些版本是 infoDelivery
+        if (data.event === 'infoDelivery' && data.info?.playerState === 0) {
+          setPlayingVideoId(null)
+        }
+      } catch {}
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [playingVideoId])
+
   // ═══ 瀏覽器層鎖定（除了算對數學否則跳不出去） ═══
   useEffect(() => {
     if (!mounted || showGuide) return
@@ -239,7 +261,15 @@ export default function KidsModePage() {
         {/* 影片嵌入 — rel=0 關閉相關影片、modestbranding 隱藏 logo */}
         <div style={{ flex: 1, position: 'relative', background: '#000' }}>
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${playingVideoId}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&fs=1&playsinline=1`}
+            ref={iframeRef}
+            onLoad={() => {
+              // 告訴 iframe 開始送 state 事件給父視窗
+              iframeRef.current?.contentWindow?.postMessage(
+                JSON.stringify({ event: 'listening' }),
+                '*'
+              )
+            }}
+            src={`https://www.youtube-nocookie.com/embed/${playingVideoId}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&fs=1&playsinline=1&enablejsapi=1&controls=1`}
             allow="autoplay; encrypted-media; fullscreen"
             allowFullScreen
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}

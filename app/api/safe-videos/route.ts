@@ -3,12 +3,23 @@ import { shouldBlockVideoTitle } from '@/lib/curated-channels'
 
 const YT_API = 'https://www.googleapis.com/youtube/v3'
 
-// 回傳：單一頻道經過「第三層過濾」後的影片清單
+// 回傳：單一頻道經過過濾後的影片清單
 // 過濾規則：
 //   1. 標題關鍵字黑名單（shouldBlockVideoTitle）
 //   2. 僅公開影片
-//   3. 優先 madeForKids = true 的
-//   4. 最多 30 部
+//   3. ⭐ 排除 Shorts（duration ≤ 60 秒）— 防止小孩滑短影音的第一道防線
+//   4. 優先 madeForKids = true 的
+//   5. 最多 30 部
+
+// 把 ISO 8601 duration (PT1M30S) 轉秒數
+function parseDurationSeconds(iso: string): number {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
+  if (!m) return 0
+  const h = parseInt(m[1] || '0', 10)
+  const min = parseInt(m[2] || '0', 10)
+  const s = parseInt(m[3] || '0', 10)
+  return h * 3600 + min * 60 + s
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -64,8 +75,10 @@ export async function GET(req: NextRequest) {
     const videos = (vData.items || [])
       // 1. 僅公開
       .filter((v: VideoItem) => v.status.privacyStatus === 'public')
-      // 2. 標題黑名單（第三層防護）
+      // 2. 標題黑名單
       .filter((v: VideoItem) => !shouldBlockVideoTitle(v.snippet.title))
+      // 3. ⭐ 排除 Shorts：duration ≤ 60 秒砍掉（短影音是注意力殺手）
+      .filter((v: VideoItem) => parseDurationSeconds(v.contentDetails.duration) > 60)
       .map((v: VideoItem) => ({
         id: v.id,
         title: v.snippet.title,
