@@ -111,7 +111,9 @@ export default function Home() {
                 <div className="scan-ring scan-ring-3" style={{ width: 80, height: 80, position: 'absolute', borderRadius: '50%' }} />
               </>
             )}
-            <OwlMascot state={owlState} size={72} />
+            <div className={owlState === 'idle' ? 'animate-breathe' : ''}>
+              <OwlMascot state={owlState} size={72} />
+            </div>
           </div>
 
           <h1 style={{

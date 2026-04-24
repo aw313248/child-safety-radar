@@ -52,17 +52,9 @@ const CASES: CaseItem[] = [
   },
 ]
 
-const STATUS_STYLES: Record<CaseStatus, { bg: string; color: string; border: string }> = {
-  terminated: {
-    bg: 'rgba(255,59,48,0.08)',
-    color: '#C8362D',
-    border: 'rgba(255,59,48,0.22)',
-  },
-  warning: {
-    bg: 'rgba(255,149,0,0.10)',
-    color: '#B36700',
-    border: 'rgba(255,149,0,0.26)',
-  },
+const STATUS_CLASS: Record<CaseStatus, string> = {
+  terminated: 'chip chip-danger',
+  warning:    'chip chip-warning',
 }
 
 export default function CaseLibrary() {
@@ -103,15 +95,16 @@ export default function CaseLibrary() {
       {/* Cards */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {CASES.map((c) => {
-          const s = STATUS_STYLES[c.status]
           return (
             <article
               key={c.name}
               style={{
                 background: 'var(--surface)',
                 borderRadius: 'var(--radius-lg)',
+                border: '1px solid var(--border-default)',
                 padding: '14px 16px',
                 boxShadow: 'var(--shadow-card)',
+                transition: 'border-color 0.15s, transform 0.12s var(--ease-spring)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, gap: 8 }}>
@@ -123,17 +116,7 @@ export default function CaseLibrary() {
                 }}>
                   {c.name}
                 </h3>
-                <span style={{
-                  fontSize: 10,
-                  fontWeight: 600,
-                  padding: '3px 8px',
-                  borderRadius: 99,
-                  background: s.bg,
-                  color: s.color,
-                  border: `1px solid ${s.border}`,
-                  whiteSpace: 'nowrap',
-                  letterSpacing: '0.02em',
-                }}>
+                <span className={STATUS_CLASS[c.status]} style={{ whiteSpace: 'nowrap' }}>
                   {c.statusLabel} · {c.year}
                 </span>
               </div>
