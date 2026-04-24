@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import ResultCard from '@/components/ResultCard'
 import UnlockModal from '@/components/UnlockModal'
-import OwlMascot from '@/components/OwlMascot'
+import BeeBearMascot from '@/components/BeeBearMascot'
 import CaseLibrary from '@/components/CaseLibrary'
 import ScanningStages from '@/components/ScanningStages'
 import RecentHighRisk from '@/components/RecentHighRisk'
@@ -43,7 +43,7 @@ export default function Home() {
     } catch {}
   }, [])
 
-  const owlState = loading ? 'scanning'
+  const mascotState: 'idle' | 'scanning' | 'safe' | 'danger' = loading ? 'scanning'
     : result ? (result.riskLevel === 'high' ? 'danger' : result.riskLevel === 'medium' ? 'scanning' : 'safe')
     : 'idle'
 
@@ -193,40 +193,69 @@ export default function Home() {
           </a>
         </nav>
 
-        {/* ═══ Hero — 大貓頭鷹 + 主標題 ═══ */}
+        {/* ═══ Hero — Busy Bee 風格：蜂蜜黃塊 + 復古 serif 標題 + 熊+蜜蜂 ═══ */}
         <section style={{
-          textAlign: 'center',
-          marginBottom: 36,
+          position: 'relative',
+          marginBottom: 28,
+          padding: '34px 22px 28px',
+          background: 'var(--honey-hex)',
+          borderRadius: 28,
+          overflow: 'hidden',
+          boxShadow: '0 16px 44px rgba(58, 40, 32, 0.18)',
         }}>
-          <div className="mascot-halo" style={{
-            width: 108, height: 108,
-            margin: '0 auto 18px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-          }}>
-            <OwlMascot state={owlState} size={108} />
+          {/* 右上復古徽章 */}
+          <div
+            className="retro-badge stagger-1"
+            style={{
+              position: 'absolute',
+              top: 18,
+              right: 18,
+              width: 64,
+              height: 64,
+              fontSize: 9,
+              fontWeight: 900,
+              letterSpacing: '0.08em',
+              textAlign: 'center',
+              lineHeight: 1.1,
+              color: 'var(--ink-hex)',
+            }}
+          >
+            真人<br />驗證<br />過
           </div>
-          <h1 style={{
-            fontSize: 42,
-            fontWeight: 900,
-            letterSpacing: '-0.055em',
-            color: 'var(--text-primary)',
-            lineHeight: 1,
+
+          {/* 熊 + 蜜蜂 吉祥物 */}
+          <div className="stagger-2" style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginBottom: 18,
+          }}>
+            <BeeBearMascot state={mascotState} size={130} />
+          </div>
+
+          {/* 復古 serif 主標 */}
+          <h1 className="font-display stagger-3" style={{
+            fontSize: 'clamp(30px, 9vw, 40px)',
+            color: 'var(--ink-hex)',
+            textAlign: 'center',
             marginBottom: 10,
           }}>
-            PeekKids
+            20 秒，<br />
+            <span className="font-display-italic">看穿卡通底下</span><br />
+            藏什麼
           </h1>
-          <p style={{
-            fontSize: 15,
-            color: 'var(--text-secondary)',
-            letterSpacing: '-0.01em',
-            fontWeight: 500,
-            lineHeight: 1.5,
+
+          {/* 副標 — 全大寫 sans */}
+          <p className="stagger-4" style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.22em',
+            color: 'var(--ink-hex)',
+            textAlign: 'center',
+            textTransform: 'uppercase',
+            opacity: 0.78,
+            marginTop: 4,
           }}>
-            YouTube 頻道兒童安全雷達，<br />
-            20 秒幫你看穿「艾莎門」
+            Bear-guarded · bee-safe · elsagate-free
           </p>
         </section>
 
@@ -237,31 +266,34 @@ export default function Home() {
             display: 'flex', alignItems: 'center', gap: 14,
             padding: '16px 18px',
             marginBottom: 18,
-            background: 'linear-gradient(135deg, #0A0A0A 0%, #2a2a2a 100%)',
-            color: '#fff',
-            borderRadius: 20,
+            background: 'var(--ink-hex)',
+            color: '#FBF7EA',
+            borderRadius: 22,
             textDecoration: 'none',
-            boxShadow: '0 12px 28px rgba(10,10,10,0.22)',
-            transition: 'transform 0.15s var(--ease-spring), box-shadow 0.15s',
+            boxShadow: '0 12px 28px rgba(58, 40, 32, 0.28)',
+            transition: 'transform 0.2s var(--ease-spring), box-shadow 0.2s',
+            border: '2px solid var(--honey-hex)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 32px rgba(10,10,10,0.3)' }}
-          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 12px 28px rgba(10,10,10,0.22)' }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 18px 36px rgba(58, 40, 32, 0.36)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 12px 28px rgba(58, 40, 32, 0.28)' }}
         >
           <div style={{
-            width: 48, height: 48, borderRadius: 14,
-            background: 'rgba(255,255,255,0.14)',
+            width: 48, height: 48, borderRadius: '50%',
+            background: 'var(--honey-hex)',
+            color: 'var(--ink-hex)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 26, flexShrink: 0,
-          }}>🛡️</div>
+            boxShadow: '0 3px 8px rgba(58,40,32,0.25)',
+          }}>🐻</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', opacity: 0.7, textTransform: 'uppercase', marginBottom: 2 }}>
-              新功能
+            <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', color: 'var(--honey-hex)', textTransform: 'uppercase', marginBottom: 3 }}>
+              Bear Mode
             </p>
-            <p style={{ fontSize: 16, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.15 }}>
-              一鍵打開兒童安心模式
+            <p className="font-display" style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.02em' }}>
+              打開熊熊守護模式
             </p>
-            <p style={{ fontSize: 12, opacity: 0.75, letterSpacing: '-0.01em', marginTop: 2 }}>
-              內建 15 個人工驗證頻道，平板丟給小孩也安心
+            <p style={{ fontSize: 12, opacity: 0.72, letterSpacing: '-0.01em', marginTop: 3 }}>
+              內建真人驗證頻道，平板丟給小孩也安心
             </p>
           </div>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.7 }}>
