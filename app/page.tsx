@@ -6,7 +6,7 @@ import UnlockModal from '@/components/UnlockModal'
 import OwlMascot from '@/components/OwlMascot'
 import { AnalysisResult } from '@/types/analysis'
 
-const FREE_SCANS = 3
+const FREE_SCANS = 2
 const STORAGE_KEY = 'child_radar_unlocked'
 const SCAN_COUNT_KEY = 'child_radar_scan_count'
 const HISTORY_KEY = 'child_radar_history'
@@ -44,11 +44,11 @@ export default function Home() {
     setProgress(0)
 
     const steps = [
-      { pct: 20, text: '解析網址' },
-      { pct: 40, text: '抓取影片' },
-      { pct: 60, text: '讀取留言' },
-      { pct: 80, text: 'AI 分析中' },
-      { pct: 95, text: '產生報告' },
+      { pct: 20, text: '先打開看看' },
+      { pct: 40, text: '翻一翻影片' },
+      { pct: 60, text: '讀一下留言' },
+      { pct: 80, text: 'AI 正在想' },
+      { pct: 95, text: '快好了' },
     ]
     let i = 0
     const timer = setInterval(() => {
@@ -105,12 +105,12 @@ export default function Home() {
           <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
             {loading && (
               <>
-                <div className="scan-ring" style={{ width: 96, height: 96, position: 'absolute', borderRadius: '50%' }} />
-                <div className="scan-ring scan-ring-2" style={{ width: 96, height: 96, position: 'absolute', borderRadius: '50%' }} />
-                <div className="scan-ring scan-ring-3" style={{ width: 96, height: 96, position: 'absolute', borderRadius: '50%' }} />
+                <div className="scan-ring" style={{ width: 80, height: 80, position: 'absolute', borderRadius: '50%' }} />
+                <div className="scan-ring scan-ring-2" style={{ width: 80, height: 80, position: 'absolute', borderRadius: '50%' }} />
+                <div className="scan-ring scan-ring-3" style={{ width: 80, height: 80, position: 'absolute', borderRadius: '50%' }} />
               </>
             )}
-            <OwlMascot state={owlState} size={88} />
+            <OwlMascot state={owlState} size={72} />
           </div>
 
           <h1 style={{
@@ -153,7 +153,7 @@ export default function Home() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !loading && handleAnalyze()}
-              placeholder="貼上 YouTube 頻道或影片網址"
+              placeholder="貼網址，例：youtube.com/@channelname"
               className={`input-field${error ? ' input-field--error' : ''}`}
               disabled={loading}
             />
@@ -163,7 +163,7 @@ export default function Home() {
               disabled={loading || !url.trim()}
               className="btn-primary"
             >
-              {loading ? progressText || '分析中' : '開始掃描'}
+              {loading ? progressText || '分析中' : '幫我 Peek'}
             </button>
 
             {/* Progress */}
@@ -189,17 +189,24 @@ export default function Home() {
                 borderRadius: 'var(--radius-lg)',
                 padding: '12px 16px',
               }}>
-                <p style={{ color: 'var(--risk-red)', fontSize: '13px', textAlign: 'center', letterSpacing: '-0.01em' }}>
+                <p style={{ color: 'var(--risk-red)', fontSize: '13px', textAlign: 'center', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
                   {error}
+                </p>
+                <p style={{ color: 'var(--text-tertiary)', fontSize: '11px', textAlign: 'center', marginTop: '4px', letterSpacing: '-0.01em' }}>
+                  確認網址格式，或直接貼瀏覽器上的網址
                 </p>
               </div>
             )}
 
-            {/* Scan counter */}
+            {/* Scan counter — 文案反向：從「快用完」變成「送你 X 次」 */}
             <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em', paddingTop: '2px' }}>
               {unlocked
                 ? '已解鎖 · 無限掃描'
-                : `免費剩餘 ${Math.max(0, FREE_SCANS - scanCount)} / ${FREE_SCANS} 次`}
+                : scanCount === 0
+                  ? `前 ${FREE_SCANS} 次免費，用掉再付 NT$99`
+                  : scanCount < FREE_SCANS
+                    ? `還剩 ${FREE_SCANS - scanCount} 次免費`
+                    : '免費次數用完，解鎖 NT$99 無限用'}
             </p>
           </div>
         )}
