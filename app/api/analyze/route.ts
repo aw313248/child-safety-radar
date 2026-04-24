@@ -48,25 +48,32 @@ async function analyzeWithGemini(
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
-  const prompt = `你是一個專門保護兒童的內容安全分析師。請分析以下 YouTube 頻道資訊，評估是否存在「Elsagate」類型風險（將危險、不適合兒童的內容偽裝成兒童影片）。
+  const prompt = `你是一個專門保護兒童的內容安全分析師，專注於偵測「Elsagate」現象。
+
+Elsagate 的定義：影片**表面上針對兒童**（使用卡通角色、兒童歌曲、玩具等），但實際內容含有暴力、性暗示、恐怖元素，對兒童造成心理傷害。
+
+【重要判斷準則】
+- 如果頻道明顯是成人內容（科技教學、成人娛樂、新聞、遊戲攻略等），且沒有偽裝成兒童內容的跡象，風險分數應為 0-20（目前安全）。
+- 只有當頻道**同時符合**以下條件才給高分：1) 使用兒童相關關鍵字吸引兒童；2) 實際內容含有不適合兒童的元素。
+- 留言中出現成人字眼不等於高風險，需判斷頻道本身是否以兒童為目標受眾。
 
 【頻道名稱】${channelName}
 
 【最近影片標題（最多20部）】
 ${videoTitles.slice(0, 20).map((t, i) => `${i + 1}. ${t}`).join('\n')}
 
-【留言區狀態】${commentsDisabled ? '已關閉（高風險訊號）' : '開啟中'}
+【留言區狀態】${commentsDisabled ? '已關閉（高風險訊號，需結合其他指標判斷）' : '開啟中'}
 
-【家長警示留言（若有）】
-${warningComments.length > 0 ? warningComments.map(c => `- "${c.text}"`).join('\n') : '無明顯警示留言'}
+【值得注意的留言（若有）】
+${warningComments.length > 0 ? warningComments.map(c => `- "${c.text}"`).join('\n') : '無特殊留言'}
 
-【疑似危險標籤/關鍵字】
+【疑似兒童相關標籤/關鍵字】
 ${suspiciousTags.length > 0 ? suspiciousTags.join('、') : '無'}
 
 請用繁體中文回答，格式如下（只輸出 JSON，不要其他文字）：
 {
-  "riskScore": <0-100 整數，0最安全，100最危險>,
-  "summary": "<2-3句話的分析摘要，說明判斷依據>",
+  "riskScore": <0-100 整數，0最安全100最危險，成人非兒童向頻道應給0-20>,
+  "summary": "<2-3句話說明：1)頻道性質 2)是否以兒童為目標 3)實際風險判斷>",
   "recommendation": "<給家長的具體建議，1-2句>"
 }`
 
