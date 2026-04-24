@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { AnalysisResult, ScoreBreakdownItem } from '@/types/analysis'
 import DiscussionReporter from './DiscussionReporter'
+import ShareQRModal from './ShareQRModal'
 
 const CATEGORY_LABEL: Record<ScoreBreakdownItem['category'], string> = {
   ai: 'AI 分析',
@@ -45,6 +46,7 @@ const RISK_CONFIG = {
 export default function ResultCard({ result, onReset }: Props) {
   const cfg = RISK_CONFIG[result.riskLevel]
   const [showBreakdown, setShowBreakdown] = useState(false)
+  const [showQR, setShowQR] = useState(false)
 
   const handleShare = async () => {
     const shareText = `【PeekKids 掃描結果】\n${result.channelName}\n風險等級：${cfg.label}\n\n${result.aiSummary.slice(0, 80)}...\n\nPeekKids — 越「皮」的孩子，越要先 Peek 過`
@@ -333,13 +335,29 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: '8px', paddingTop: '2px' }}>
+        <button
+          onClick={() => setShowQR(true)}
+          className="btn-secondary"
+          style={{ flex: 1, fontSize: '13px', padding: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+          title="用 QR code 傳給另一台裝置"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="14" x2="14" y2="14.01"/>
+            <line x1="20" y1="14" x2="20" y2="14.01"/><line x1="14" y1="20" x2="14" y2="20.01"/>
+            <line x1="20" y1="20" x2="20" y2="20.01"/><line x1="17" y1="17" x2="17" y2="17.01"/>
+          </svg>
+          傳給裝置
+        </button>
         <button onClick={handleShare} className="btn-secondary" style={{ flex: 1, fontSize: '13px', padding: '12px' }}>
           分享
         </button>
         <button onClick={onReset} className="btn-primary" style={{ flex: 2, fontSize: '13px', padding: '12px' }}>
-          分析另一個頻道
+          再掃一個
         </button>
       </div>
+
+      {showQR && <ShareQRModal result={result} onClose={() => setShowQR(false)} />}
 
       <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
         {new Date(result.checkedAt).toLocaleString('zh-TW')} · AI 輔助分析，僅供參考
