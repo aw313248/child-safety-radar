@@ -88,7 +88,7 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
         </div>
 
         <a
-          href="https://peekkids.lemonsqueezy.com/checkout/buy/5468a3b1-03e2-467e-830a-bfabf0b1f20b"
+          href="https://peekkids.lemonsqueezy.com/checkout/buy/5468a3b1-03e2-467e-830a-bfabf0b1f20b?locale=zh-TW"
           target="_blank"
           rel="noopener noreferrer"
           style={{

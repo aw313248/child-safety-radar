@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import ResultCard from '@/components/ResultCard'
 import UnlockModal from '@/components/UnlockModal'
 import OwlMascot from '@/components/OwlMascot'
+import CaseLibrary from '@/components/CaseLibrary'
 import { AnalysisResult } from '@/types/analysis'
 
 const FREE_SCANS = 2
@@ -221,9 +222,12 @@ export default function Home() {
             </p>
           </div>
         )}
+
+        {/* 真實案例庫 — 只在還沒分析時顯示 */}
+        {!result && !loading && <CaseLibrary />}
       </div>
 
-      <div style={{ position: 'fixed', bottom: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+      <div style={{ marginTop: 48, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
         <a
           href="/history"
           style={{
