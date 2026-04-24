@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og'
 // OG 分享圖 — 貼在 Threads / Line / FB 會顯示的預覽卡
 // 尺寸 1200x630 是各大社群的標準
 export const runtime = 'edge'
-export const alt = 'PeekKids — 給家有「皮」小孩的爸媽用'
+export const alt = 'CareCub Kids — 給家有「皮」小孩的爸媽用'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 

@@ -50,10 +50,10 @@ export default function ResultCard({ result, onReset }: Props) {
   const [showQR, setShowQR] = useState(false)
 
   const handleShare = async () => {
-    const shareText = `【PeekKids 掃描結果】\n${result.channelName}\n風險等級：${cfg.label}\n\n${result.aiSummary.slice(0, 80)}...\n\nPeekKids — 越「皮」的孩子，越要先 Peek 過`
+    const shareText = `【CareCub Kids 掃描結果】\n${result.channelName}\n風險等級：${cfg.label}\n\n${result.aiSummary.slice(0, 80)}...\n\nCareCub Kids — 越「皮」的孩子，越要先 Peek 過`
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'PeekKids', text: shareText })
+        await navigator.share({ title: 'CareCub Kids', text: shareText })
       } else {
         await navigator.clipboard.writeText(shareText)
         alert('已複製，可貼到 Line 或 FB 分享給其他家長')

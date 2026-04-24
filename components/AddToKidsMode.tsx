@@ -184,7 +184,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
               borderRadius: 10, padding: '10px 12px', marginBottom: 14,
             }}>
               <p style={{ fontSize: 11, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
-                ⚠️ 你加入的頻道由你自己負責，PeekKids 只會持續用標題黑名單再篩一次
+                ⚠️ 你加入的頻道由你自己負責，CareCub Kids 只會持續用標題黑名單再篩一次
               </p>
             </div>
 

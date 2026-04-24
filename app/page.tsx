@@ -166,7 +166,7 @@ export default function Home() {
             letterSpacing: '-0.01em',
             color: 'var(--text-secondary)',
           }}>
-            PeekKids
+            CareCub Kids
           </span>
           <a
             href="/history"
@@ -214,7 +214,7 @@ export default function Home() {
             marginBottom: 14,
             opacity: 0.85,
           }}>
-            PeekKids · Bear Mode
+            CareCub Kids · 呵護小熊般守護孩子
           </p>
 
           {/* 右上復古徽章 */}

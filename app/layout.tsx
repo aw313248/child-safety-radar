@@ -20,11 +20,11 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'PeekKids — 20 秒看穿 YouTube 頻道藏沒藏「艾莎門」',
-  description: '偽裝成兒童卡通的「艾莎門」影片越來越多，PeekKids 用 AI 20 秒掃描 YouTube 頻道，看穿是否藏有暴力、恐怖、成人梗等危險內容，給家有「皮」小孩的爸媽用',
-  keywords: 'PeekKids, Elsagate, 艾莎門, 兒童安全, YouTube, 家長, 育兒, AI分析',
+  title: 'CareCub Kids — 20 秒看穿 YouTube 頻道藏沒藏「艾莎門」',
+  description: '偽裝成兒童卡通的「艾莎門」影片越來越多，CareCub Kids 用 AI 20 秒掃描 YouTube 頻道，看穿是否藏有暴力、恐怖、成人梗等危險內容，給家有「皮」小孩的爸媽用',
+  keywords: 'CareCub Kids, Elsagate, 艾莎門, 兒童安全, YouTube, 家長, 育兒, AI分析',
   openGraph: {
-    title: 'PeekKids — 可愛卡通下可能藏著「艾莎門」',
+    title: 'CareCub Kids — 可愛卡通下可能藏著「艾莎門」',
     description: '暴力、恐怖、成人梗偽裝成兒童影片，20 秒 AI 看穿 YouTube 頻道安不安全',
     type: 'website',
   },

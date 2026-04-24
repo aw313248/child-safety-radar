@@ -109,7 +109,7 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
               {[
                 { n: 1, title: '打開設定 App', body: '回到桌面，點灰色齒輪圖示' },
                 { n: 2, title: '貼上搜尋「輔助使用」', body: '設定最上方搜尋欄 → 長按貼上 → 點第一個結果「輔助使用」' },
-                { n: 3, title: '找到「引導使用模式」', body: '進去後滑到最下面 → 點「引導使用模式」→ 打開開關，回 PeekKids 連按三下側邊鍵鎖畫面' },
+                { n: 3, title: '找到「引導使用模式」', body: '進去後滑到最下面 → 點「引導使用模式」→ 打開開關，回 CareCub Kids 連按三下側邊鍵鎖畫面' },
               ].map(s => (
                 <div key={s.n} style={{
                   display: 'flex', gap: 12, alignItems: 'flex-start',
@@ -156,7 +156,7 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
               ⚙️ 幫我打開輔助使用設定
             </button>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.55, textAlign: 'center', marginBottom: 14 }}>
-              打開「螢幕釘選」→ 回 PeekKids 從最近應用長按圖示選「釘選」
+              打開「螢幕釘選」→ 回 CareCub Kids 從最近應用長按圖示選「釘選」
             </p>
           </>
         )}
@@ -168,7 +168,7 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
             borderRadius: 12, padding: 14, marginBottom: 14,
           }}>
             <p style={{ fontSize: 13, color: 'var(--text-primary)', letterSpacing: '-0.01em', lineHeight: 1.6 }}>
-              請在平板上開啟 PeekKids，依系統指示開啟引導使用模式 / 螢幕釘選
+              請在平板上開啟 CareCub Kids，依系統指示開啟引導使用模式 / 螢幕釘選
             </p>
           </div>
         )}

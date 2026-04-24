@@ -53,7 +53,7 @@ function SharedView() {
             連結看起來壞掉了
           </h1>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 20 }}>
-            可能太舊、被截斷，<br />或不是 PeekKids 分享的連結
+            可能太舊、被截斷，<br />或不是 CareCub Kids 分享的連結
           </p>
           <a
             href="/"

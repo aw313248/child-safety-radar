@@ -429,7 +429,7 @@ export default function KidsModePage() {
             }}>🐻</div>
             <div>
               <p style={{ fontSize: 10, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '0.18em', textTransform: 'uppercase', opacity: 0.7 }}>
-                PeekKids · Bear Mode
+                CareCub Kids · Bear Mode
               </p>
               <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1 }}>
                 熊熊守護模式
@@ -708,7 +708,7 @@ export default function KidsModePage() {
               目前沒有已驗證的頻道
             </p>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.6 }}>
-              回 PeekKids 首頁掃描你想給小孩看的頻道，<br />
+              回 CareCub Kids 首頁掃描你想給小孩看的頻道，<br />
               非高風險就能點「加入熊熊守護模式」
             </p>
             <a href="/" style={{
@@ -726,7 +726,7 @@ export default function KidsModePage() {
           textAlign: 'center', marginTop: 28,
           fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em', lineHeight: 1.5,
         }}>
-          想加入其他頻道？回到 PeekKids 首頁掃描驗證後加入<br />
+          想加入其他頻道？回到 CareCub Kids 首頁掃描驗證後加入<br />
           所有頻道持續追蹤中，發現問題會立即下架
         </p>
       </div>
