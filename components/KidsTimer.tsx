@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Mascot, { MascotPose } from './Mascot'
 
 // localStorage keys
 const TIMER_MIN_KEY = 'peekkids_timer_minutes'  // 預設分鐘數
@@ -170,8 +171,8 @@ export default function KidsTimer({ onTimeUp, onExit }: Props) {
           onClick={() => setNeedSetup(true)}
         />
       )}
-      {warn === '5min' && <BearWarn msg="再 5 分鐘就要休息囉～" />}
-      {warn === '1min' && <BearWarn msg="最後 1 分鐘！再看一下下" urgent />}
+      {warn === '5min' && <BearWarn msg="再 5 分鐘就要休息囉～" pose="think" />}
+      {warn === '1min' && <BearWarn msg="最後 1 分鐘！再看一下下" pose="thumbs-up" urgent />}
     </>
   )
 }
@@ -208,7 +209,9 @@ function SetupScreen({
         margin: 'auto',
       }}>
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <div style={{ fontSize: 52, marginBottom: 8 }}>🐻</div>
+          <div style={{ marginBottom: 4, display: 'flex', justifyContent: 'center' }}>
+            <Mascot pose="think" size={96} />
+          </div>
           <h2 className="font-display" style={{ fontSize: 26, color: 'var(--ink-hex)', marginBottom: 8 }}>
             小朋友今天要看多久？
           </h2>
@@ -363,61 +366,59 @@ function TimerBubble({ remainSec, onClick }: { remainSec: number; onClick: () =>
 // ═══════════════════════════════════════
 // 小析警示 — 從右下彈出揮手
 // ═══════════════════════════════════════
-function BearWarn({ msg, urgent = false }: { msg: string; urgent?: boolean }) {
+function BearWarn({ msg, pose, urgent = false }: { msg: string; pose: MascotPose; urgent?: boolean }) {
   return (
     <div style={{
       position: 'fixed',
       bottom: 'max(20px, env(safe-area-inset-bottom))',
       right: 16,
       zIndex: 9100,
-      display: 'flex', alignItems: 'flex-end', gap: 10,
+      display: 'flex', alignItems: 'flex-end', gap: 6,
       animation: 'bear-slidein 0.5s var(--ease-spring)',
       pointerEvents: 'none',
     }}>
       {/* 對話框 */}
       <div style={{
-        background: urgent ? 'var(--terra-hex)' : 'var(--honey-hex)',
-        color: urgent ? '#fff' : 'var(--ink-hex)',
-        border: '2.5px solid var(--ink-hex)',
-        borderRadius: 20,
+        background: urgent
+          ? 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)'
+          : 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)',
+        color: urgent ? '#fff' : '#2B1810',
+        border: '1.5px solid rgba(255,255,255,0.55)',
+        borderRadius: 18,
         padding: '12px 16px',
-        boxShadow: '4px 4px 0 rgba(43,24,16,0.92)',
+        boxShadow: '0 14px 34px -10px rgba(15, 36, 68, 0.55)',
         maxWidth: 220,
         position: 'relative',
-        marginBottom: 14,
+        marginBottom: 16,
       }}>
-        <p style={{ fontSize: 14, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.35 }}>
+        <p style={{ fontSize: 14, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.4 }}>
           {msg}
         </p>
         {/* 對話框尾巴 */}
         <div style={{
           position: 'absolute',
-          right: -10, bottom: 14,
+          right: -8, bottom: 14,
           width: 0, height: 0,
-          borderLeft: '12px solid var(--ink-hex)',
+          borderLeft: `10px solid ${urgent ? '#8E2A24' : '#D99422'}`,
           borderTop: '8px solid transparent',
           borderBottom: '8px solid transparent',
         }} />
       </div>
-      {/* 小析 */}
+      {/* 小析本人 */}
       <div style={{
-        width: 76, height: 76,
-        borderRadius: '50%',
-        background: 'var(--honey-hex)',
-        border: '3px solid var(--ink-hex)',
-        boxShadow: '3px 3px 0 rgba(43,24,16,0.92)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 44,
-        animation: 'bear-wave 1.2s ease-in-out infinite',
-      }}>🐻</div>
+        animation: 'bear-wave 1.4s ease-in-out infinite',
+        transformOrigin: '50% 90%',
+      }}>
+        <Mascot pose={pose} size={96} />
+      </div>
       <style>{`
         @keyframes bear-slidein {
           from { transform: translateY(40px) scale(0.8); opacity: 0; }
           to   { transform: translateY(0) scale(1); opacity: 1; }
         }
         @keyframes bear-wave {
-          0%,100% { transform: rotate(-6deg); }
-          50%     { transform: rotate(6deg); }
+          0%,100% { transform: rotate(-4deg); }
+          50%     { transform: rotate(4deg); }
         }
       `}</style>
     </div>
@@ -450,31 +451,38 @@ function TimeUpScreen({
         textAlign: 'center',
         margin: 'auto',
       }}>
-        {/* 小析 */}
+        {/* 小析本人 — 睡覺大圖 */}
         <div style={{
-          fontSize: 100, marginBottom: 18,
-          animation: 'bear-wave 1.8s ease-in-out infinite',
-          display: 'inline-block',
-        }}>🐻</div>
+          marginBottom: 8, display: 'flex', justifyContent: 'center',
+          animation: 'sleep-breathe 3.2s ease-in-out infinite',
+        }}>
+          <Mascot pose="sleep" size={220} />
+        </div>
 
         <h1 className="font-display" style={{
           fontSize: 'clamp(32px, 9vw, 48px)',
-          color: 'var(--ink-hex)',
+          color: '#fff',
           marginBottom: 14,
           lineHeight: 1,
+          textShadow: '0 6px 30px rgba(0,0,0,0.45)',
         }}>
           小朋友時間到囉
         </h1>
         <p style={{
-          fontSize: 17, color: 'var(--ink-hex)',
-          fontWeight: 600, letterSpacing: '-0.01em',
-          lineHeight: 1.55,
+          fontSize: 17, color: 'rgba(255,255,255,0.92)',
+          fontWeight: 500, letterSpacing: '-0.01em',
+          lineHeight: 1.6,
           marginBottom: 28,
-          opacity: 0.78,
         }}>
           下次再一起探索新世界吧！<br />
-          現在先讓眼睛休息一下 👀
+          現在先讓眼睛休息一下
         </p>
+        <style>{`
+          @keyframes sleep-breathe {
+            0%,100% { transform: scale(1); }
+            50%     { transform: scale(1.035); }
+          }
+        `}</style>
 
         {/* 爸媽延長區 */}
         <div className="bee-card" style={{

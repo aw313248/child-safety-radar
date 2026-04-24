@@ -5,6 +5,7 @@ import { CuratedChannel, AgeGroup, filterChannelsByAge } from '@/lib/curated-cha
 import { getUserChannels, removeUserChannel, UserChannel } from '@/lib/user-channels'
 import LockScreenGuide from '@/components/LockScreenGuide'
 import KidsTimer from '@/components/KidsTimer'
+import Mascot from '@/components/Mascot'
 
 // 統一顯示用
 type DisplayChannel = {
@@ -352,11 +353,17 @@ export default function KidsModePage() {
           </div>
 
           {loadingVideos ? (
-            <div style={{ textAlign: 'center', padding: 48, color: 'var(--text-tertiary)', fontSize: 14 }}>
-              正在挑選安心影片…
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-secondary)', fontSize: 14, fontWeight: 600 }}>
+              <div style={{ marginBottom: 12 }}>
+                <Mascot pose="search" size={140} />
+              </div>
+              小析正在挑選安心影片⋯
             </div>
           ) : videos.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 48, color: 'var(--text-tertiary)', fontSize: 14 }}>
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-secondary)', fontSize: 14, fontWeight: 600 }}>
+              <div style={{ marginBottom: 12 }}>
+                <Mascot pose="think" size={140} />
+              </div>
               這個頻道暫時沒有通過篩選的影片
             </div>
           ) : (
@@ -444,14 +451,9 @@ export default function KidsModePage() {
           marginBottom: 20,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div className="candy-bear" style={{
-              width: 52, height: 52, borderRadius: '50%',
-              background: 'var(--honey-hex)',
-              border: '2.5px solid var(--ink-hex)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 26,
-              boxShadow: '0 3px 10px rgba(43,24,16,0.22)',
-            }}>🐻</div>
+            <div style={{ width: 60, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Mascot pose="hi" size={60} priority />
+            </div>
             <div>
               <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', opacity: 0.85, marginBottom: 3 }}>
                 <span className="candy-logo">CareCub Kids · Bear Mode</span>
@@ -720,14 +722,14 @@ export default function KidsModePage() {
         )}
 
         {curated.length === 0 && mine.length === 0 && (
-          <div style={{
-            padding: 32, textAlign: 'center',
-            background: 'var(--card-hex, #FBF7EA)',
-            border: '1px dashed var(--border-soft)',
-            borderRadius: 20,
+          <div className="bee-card" style={{
+            padding: '28px 24px',
+            textAlign: 'center',
           }}>
-            <div style={{ fontSize: 42, marginBottom: 10 }}>🛡️</div>
-            <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 6 }}>
+            <div style={{ marginBottom: 12 }}>
+              <Mascot pose="guard" size={160} />
+            </div>
+            <p style={{ fontSize: 16, fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 6 }}>
               目前沒有已驗證的頻道
             </p>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.6 }}>
