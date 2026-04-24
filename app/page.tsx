@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react'
 import ResultCard from '@/components/ResultCard'
 import UnlockModal from '@/components/UnlockModal'
+import OwlMascot from '@/components/OwlMascot'
 import { AnalysisResult } from '@/types/analysis'
 
-const FREE_SCANS = 1
+const FREE_SCANS = 3
 const STORAGE_KEY = 'child_radar_unlocked'
 const SCAN_COUNT_KEY = 'child_radar_scan_count'
+const HISTORY_KEY = 'child_radar_history'
+const MAX_HISTORY = 30
 
 export default function Home() {
   const [url, setUrl] = useState('')
@@ -25,6 +28,12 @@ export default function Home() {
     setScanCount(parseInt(localStorage.getItem(SCAN_COUNT_KEY) || '0', 10))
   }, [])
 
+  const owlState = loading
+    ? 'scanning'
+    : result
+      ? result.riskLevel === 'high' ? 'danger' : result.riskLevel === 'medium' ? 'scanning' : 'safe'
+      : 'idle'
+
   const handleAnalyze = async () => {
     if (!url.trim()) return
     if (!unlocked && scanCount >= FREE_SCANS) { setShowUnlock(true); return }
@@ -35,11 +44,11 @@ export default function Home() {
     setProgress(0)
 
     const steps = [
-      { pct: 20, text: '🔍 解析網址中' },
-      { pct: 40, text: '📺 抓取頻道影片' },
-      { pct: 60, text: '💬 讀取留言內容' },
-      { pct: 80, text: '🤖 AI 分析中' },
-      { pct: 95, text: '📋 產生報告' },
+      { pct: 20, text: '解析網址' },
+      { pct: 40, text: '抓取影片' },
+      { pct: 60, text: '讀取留言' },
+      { pct: 80, text: 'AI 分析中' },
+      { pct: 95, text: '產生報告' },
     ]
     let i = 0
     const timer = setInterval(() => {
@@ -61,6 +70,14 @@ export default function Home() {
         setScanCount(newCount)
         localStorage.setItem(SCAN_COUNT_KEY, String(newCount))
         setResult(data)
+        // 存入歷史紀錄
+        try {
+          const raw = localStorage.getItem(HISTORY_KEY)
+          const existing: AnalysisResult[] = raw ? JSON.parse(raw) : []
+          const deduped = existing.filter(h => h.channelUrl !== data.channelUrl)
+          const updated = [data, ...deduped].slice(0, MAX_HISTORY)
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(updated))
+        } catch {}
       }
     } catch {
       clearInterval(timer)
@@ -77,104 +94,126 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center px-4 pt-16 pb-20 relative overflow-hidden">
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '52px 20px 80px' }}>
 
-      {/* Background blobs */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="animate-blob absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-pink-500/5 blur-3xl" />
-        <div className="animate-blob absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-purple-500/5 blur-3xl" style={{ animationDelay: '4s' }} />
-        <div className="animate-blob absolute top-[40%] left-[30%] w-[400px] h-[400px] rounded-full bg-orange-500/5 blur-3xl" style={{ animationDelay: '2s' }} />
-      </div>
-
-      <div className="w-full max-w-md relative z-10">
+      <div style={{ width: '100%', maxWidth: '390px' }}>
 
         {/* Header */}
-        <div className="text-center mb-10 animate-fade-in-up">
-          {/* Shield mascot */}
-          <div className="animate-float inline-block mb-5">
-            <div className="relative inline-flex items-center justify-center">
-              <div className="animate-ping-slow absolute w-20 h-20 rounded-full bg-pink-500/10" />
-              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-pink-500/20 flex items-center justify-center">
-                <span className="text-4xl">🛡️</span>
-              </div>
-            </div>
+        <div className="animate-fade-scale-in" style={{ textAlign: 'center', marginBottom: '32px' }}>
+
+          {/* Owl with scan pulse */}
+          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
+            {loading && (
+              <>
+                <div className="scan-ring" style={{ width: 96, height: 96, position: 'absolute', borderRadius: '50%' }} />
+                <div className="scan-ring scan-ring-2" style={{ width: 96, height: 96, position: 'absolute', borderRadius: '50%' }} />
+                <div className="scan-ring scan-ring-3" style={{ width: 96, height: 96, position: 'absolute', borderRadius: '50%' }} />
+              </>
+            )}
+            <OwlMascot state={owlState} size={88} />
           </div>
 
-          <h1 className="text-4xl font-black mb-2 tracking-tight">
-            童安<span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-orange-400">雷達</span>
+          <h1 style={{
+            fontSize: '30px',
+            fontWeight: 700,
+            letterSpacing: '-0.035em',
+            color: 'var(--text-primary)',
+            marginBottom: '8px',
+            lineHeight: 1.1,
+          }}>
+            Peek<span style={{ color: 'var(--forest-mid)' }}>Kids</span>
           </h1>
-          <p className="text-white/35 text-sm leading-relaxed">
-            保護 6 歲以下孩子的 YouTube 安全守門員
+          <p style={{
+            color: 'var(--text-primary)',
+            fontSize: '15px',
+            fontWeight: 500,
+            letterSpacing: '-0.02em',
+            marginBottom: '4px',
+          }}>
+            越「皮」的孩子，越要先 Peek 過
+          </p>
+          <p style={{ color: 'var(--text-tertiary)', fontSize: '12px', letterSpacing: '-0.01em' }}>
+            給家有「皮」小孩的爸媽用
           </p>
         </div>
 
         {/* Result */}
         {result && !loading && (
-          <div className="animate-fade-in-up">
+          <div className="animate-slide-up">
             <ResultCard result={result} onReset={() => { setResult(null); setUrl('') }} />
           </div>
         )}
 
-        {/* Input card */}
+        {/* Input + actions */}
         {!result && (
-          <div className="animate-fade-in-up space-y-3">
-            <div className="glass rounded-3xl p-5">
-              <p className="text-xs text-white/30 mb-3 font-medium">貼上 YouTube 頻道或影片網址</p>
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !loading && handleAnalyze()}
-                placeholder="https://www.youtube.com/@..."
-                className="w-full bg-white/5 rounded-2xl px-4 py-3 text-sm placeholder:text-white/15 focus:outline-none focus:bg-white/8 transition-all text-white/80 border border-white/5 focus:border-pink-500/30"
-                disabled={loading}
-              />
-            </div>
+          <div className="animate-fade-scale-in" style={{ display: 'flex', flexDirection: 'column', gap: '10px', animationDelay: '0.1s', opacity: 0, animationFillMode: 'forwards' }}>
+
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !loading && handleAnalyze()}
+              placeholder="貼上 YouTube 頻道或影片網址"
+              className={`input-field${error ? ' input-field--error' : ''}`}
+              disabled={loading}
+            />
 
             <button
               onClick={handleAnalyze}
               disabled={loading || !url.trim()}
-              className="w-full bg-gradient-to-r from-pink-500 to-orange-400 hover:from-pink-400 hover:to-orange-300 disabled:opacity-25 text-white font-bold py-4 rounded-3xl transition-all text-sm shadow-lg shadow-pink-500/20"
+              className="btn-primary"
             >
-              {loading ? progressText || '分析中' : '🔍 開始掃描'}
+              {loading ? progressText || '分析中' : '開始掃描'}
             </button>
 
             {/* Progress */}
             {loading && (
-              <div className="px-1">
-                <div className="bg-white/5 rounded-full h-1.5 overflow-hidden">
+              <div style={{ padding: '0 2px' }}>
+                <div style={{ background: 'rgba(60,60,67,0.12)', borderRadius: 99, height: 4, overflow: 'hidden' }}>
                   <div
-                    className="h-full progress-bar-shimmer rounded-full transition-all duration-1000"
-                    style={{ width: `${progress}%` }}
+                    className="progress-shimmer"
+                    style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }}
                   />
                 </div>
-                <p className="text-center text-xs text-white/25 mt-2">大約需要 20–40 秒</p>
+                <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '7px', letterSpacing: '-0.01em' }}>
+                  約需 20–40 秒
+                </p>
               </div>
             )}
 
             {/* Error */}
-            {error && (
-              <div className="glass rounded-2xl p-4 border border-red-500/20">
-                <p className="text-red-400/80 text-sm text-center">⚠️ {error}</p>
+            {error && !loading && (
+              <div className="stagger-1" style={{
+                background: 'rgba(255,59,48,0.06)',
+                border: '1px solid rgba(255,59,48,0.18)',
+                borderRadius: 'var(--radius-lg)',
+                padding: '12px 16px',
+              }}>
+                <p style={{ color: 'var(--risk-red)', fontSize: '13px', textAlign: 'center', letterSpacing: '-0.01em' }}>
+                  {error}
+                </p>
               </div>
             )}
 
-            {/* Unlock badge */}
-            <div className="text-center pt-2">
-              {!unlocked && (
-                <span className="text-white/20 text-xs">
-                  免費試用剩 {Math.max(0, FREE_SCANS - scanCount)} 次
-                </span>
-              )}
-              {unlocked && (
-                <span className="text-emerald-400/40 text-xs">✓ 已解鎖，無限掃描</span>
-              )}
-            </div>
+            {/* Scan counter */}
+            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em', paddingTop: '2px' }}>
+              {unlocked
+                ? '已解鎖 · 無限掃描'
+                : `免費剩餘 ${Math.max(0, FREE_SCANS - scanCount)} / ${FREE_SCANS} 次`}
+            </p>
 
-            {/* Feature pills */}
-            <div className="flex flex-wrap gap-2 justify-center pt-4">
-              {['💬 分析留言警示', '🏷️ 偵測異常標籤', '🔒 留言區狀態', '🤖 AI 風險評估'].map(f => (
-                <span key={f} className="text-xs text-white/25 bg-white/3 border border-white/5 rounded-full px-3 py-1.5">
+            {/* Feature tags */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', paddingTop: '4px' }}>
+              {['留言警示', '標籤偵測', '留言區狀態', 'AI 評估'].map(f => (
+                <span key={f} style={{
+                  fontSize: '11px',
+                  fontWeight: 500,
+                  color: 'var(--text-secondary)',
+                  background: 'rgba(60,60,67,0.06)',
+                  borderRadius: 'var(--radius-pill)',
+                  padding: '3px 10px',
+                  letterSpacing: '-0.01em',
+                }}>
                   {f}
                 </span>
               ))}
@@ -183,9 +222,23 @@ export default function Home() {
         )}
       </div>
 
-      <p className="fixed bottom-5 text-white/10 text-xs">
-        AI 輔助分析，結果僅供參考 · 童安雷達
-      </p>
+      <div style={{ position: 'fixed', bottom: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+        <a
+          href="/history"
+          style={{
+            fontSize: '12px',
+            color: 'var(--text-secondary)',
+            textDecoration: 'none',
+            letterSpacing: '-0.01em',
+            fontWeight: 500,
+          }}
+        >
+          查看掃描歷史 →
+        </a>
+        <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
+          AI 輔助分析，結果僅供參考
+        </p>
+      </div>
 
       {showUnlock && (
         <UnlockModal onUnlocked={handleUnlocked} onClose={() => setShowUnlock(false)} />

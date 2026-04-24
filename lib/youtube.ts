@@ -3,14 +3,18 @@ const YT_API = 'https://www.googleapis.com/youtube/v3'
 export interface VideoInfo {
   id: string
   title: string
+  description: string
   tags: string[]
+  viewCount: string
   commentsDisabled: boolean
 }
 
 export interface ChannelInfo {
   id: string
   name: string
+  description: string
   thumbnail: string
+  subscriberCount: string
   videos: VideoInfo[]
 }
 
@@ -22,15 +26,10 @@ export interface CommentThread {
 
 function extractChannelId(url: string): { type: 'channel' | 'video' | 'handle'; value: string } | null {
   const patterns = [
-    // Handle: @username
     { re: /youtube\.com\/@([\w.-]+)/, type: 'handle' as const, group: 1 },
-    // Channel ID
     { re: /youtube\.com\/channel\/(UC[\w-]+)/, type: 'channel' as const, group: 1 },
-    // Custom URL
     { re: /youtube\.com\/c\/([\w-]+)/, type: 'handle' as const, group: 1 },
-    // User
     { re: /youtube\.com\/user\/([\w-]+)/, type: 'handle' as const, group: 1 },
-    // Video
     { re: /(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/, type: 'video' as const, group: 1 },
   ]
   for (const p of patterns) {
@@ -56,14 +55,24 @@ export async function getChannelInfo(url: string, apiKey: string): Promise<Chann
   let channelId: string
 
   if (parsed.type === 'video') {
-    // Get channel from video
     const data = await fetchJson(
       `${YT_API}/videos?part=snippet&id=${parsed.value}&key=${apiKey}`
     )
     if (!data.items?.length) throw new Error('找不到這部影片')
     channelId = data.items[0].snippet.channelId
   } else if (parsed.type === 'handle') {
-    // Search for channel by handle/custom name
+    // Try channels endpoint with forHandle first (more accurate than search)
+    try {
+      const data = await fetchJson(
+        `${YT_API}/channels?part=snippet,contentDetails,statistics&forHandle=${encodeURIComponent(parsed.value)}&key=${apiKey}`
+      )
+      if (data.items?.length) {
+        const channel = data.items[0]
+        channelId = channel.id
+        return buildChannelInfo(channelId, channel, apiKey)
+      }
+    } catch {}
+    // Fallback: search
     const data = await fetchJson(
       `${YT_API}/search?part=snippet&type=channel&q=${encodeURIComponent(parsed.value)}&maxResults=1&key=${apiKey}`
     )
@@ -73,32 +82,51 @@ export async function getChannelInfo(url: string, apiKey: string): Promise<Chann
     channelId = parsed.value
   }
 
-  // Get channel details
   const channelData = await fetchJson(
-    `${YT_API}/channels?part=snippet,contentDetails&id=${channelId}&key=${apiKey}`
+    `${YT_API}/channels?part=snippet,contentDetails,statistics&id=${channelId}&key=${apiKey}`
   )
   if (!channelData.items?.length) throw new Error('無法取得頻道資料')
+  return buildChannelInfo(channelId, channelData.items[0], apiKey)
+}
 
-  const channel = channelData.items[0]
+async function buildChannelInfo(
+  channelId: string,
+  channel: {
+    snippet: { title: string; description: string; thumbnails?: { default?: { url: string } } }
+    contentDetails?: { relatedPlaylists?: { uploads?: string } }
+    statistics?: { subscriberCount?: string }
+  },
+  apiKey: string
+): Promise<ChannelInfo> {
   const playlistId = channel.contentDetails?.relatedPlaylists?.uploads
-
-  // Get latest 20 videos
   let videos: VideoInfo[] = []
+
   if (playlistId) {
     const playlistData = await fetchJson(
       `${YT_API}/playlistItems?part=contentDetails&playlistId=${playlistId}&maxResults=20&key=${apiKey}`
     )
-    const videoIds = playlistData.items?.map((i: { contentDetails: { videoId: string } }) => i.contentDetails.videoId).join(',') || ''
+    const videoIds = playlistData.items
+      ?.map((i: { contentDetails: { videoId: string } }) => i.contentDetails.videoId)
+      .join(',') || ''
 
     if (videoIds) {
       const videosData = await fetchJson(
-        `${YT_API}/videos?part=snippet,status&id=${videoIds}&key=${apiKey}`
+        `${YT_API}/videos?part=snippet,status,statistics&id=${videoIds}&key=${apiKey}`
       )
-      videos = videosData.items?.map((v: { id: string; snippet: { title: string; tags?: string[] }; status: { madeForKids?: boolean } }) => ({
+      videos = videosData.items?.map((v: {
+        id: string
+        snippet: { title: string; description?: string; tags?: string[] }
+        status: { madeForKids?: boolean; privacyStatus?: string }
+        statistics?: { commentCount?: string; viewCount?: string }
+      }) => ({
         id: v.id,
         title: v.snippet.title || '',
+        description: (v.snippet.description || '').slice(0, 300),
         tags: v.snippet.tags || [],
-        commentsDisabled: v.status?.madeForKids === true || false,
+        viewCount: v.statistics?.viewCount || '0',
+        commentsDisabled:
+          v.status?.madeForKids === true ||
+          (v.statistics?.commentCount === '0' && v.status?.privacyStatus === 'public'),
       })) || []
     }
   }
@@ -106,7 +134,9 @@ export async function getChannelInfo(url: string, apiKey: string): Promise<Chann
   return {
     id: channelId,
     name: channel.snippet.title,
+    description: channel.snippet.description || '',
     thumbnail: channel.snippet.thumbnails?.default?.url || '',
+    subscriberCount: channel.statistics?.subscriberCount || '0',
     videos,
   }
 }
@@ -120,13 +150,14 @@ export async function getVideoComments(
     const data = await fetchJson(
       `${YT_API}/commentThreads?part=snippet&videoId=${videoId}&maxResults=${maxResults}&order=relevance&key=${apiKey}`
     )
-    return (data.items || []).map((item: { snippet: { topLevelComment: { snippet: { textDisplay: string; authorDisplayName: string; likeCount: number } } } }) => ({
+    return (data.items || []).map((item: {
+      snippet: { topLevelComment: { snippet: { textDisplay: string; authorDisplayName: string; likeCount: number } } }
+    }) => ({
       text: item.snippet.topLevelComment.snippet.textDisplay || '',
       author: item.snippet.topLevelComment.snippet.authorDisplayName || '',
       likeCount: item.snippet.topLevelComment.snippet.likeCount || 0,
     }))
   } catch {
-    // Comments disabled or unavailable
     return []
   }
 }

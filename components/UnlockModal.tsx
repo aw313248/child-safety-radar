@@ -37,70 +37,112 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0' }}>
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div
+        onClick={onClose}
+        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+      />
 
-      {/* Modal */}
-      <div className="relative glass rounded-2xl p-8 max-w-sm w-full animate-fade-in-up">
+      {/* Sheet — slides up from bottom like iOS */}
+      <div
+        className="animate-slide-up"
+        style={{
+          position: 'relative',
+          background: 'rgba(255,255,255,0.96)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: '20px 20px 0 0',
+          padding: '8px 24px 48px',
+          width: '100%',
+          maxWidth: '480px',
+        }}
+      >
+        {/* Drag handle */}
+        <div style={{ width: 36, height: 4, background: 'var(--separator)', borderRadius: 99, margin: '12px auto 24px' }} />
+
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-white/30 hover:text-white/60 transition-colors text-xl"
+          style={{
+            position: 'absolute', top: '20px', right: '20px',
+            background: 'rgba(60,60,67,0.08)', border: 'none', cursor: 'pointer',
+            color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600,
+            width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
         >
           ×
         </button>
 
-        <div className="text-center mb-6">
-          <div className="text-4xl mb-3">🔓</div>
-          <h2 className="text-xl font-black mb-2">解鎖無限掃描</h2>
-          <p className="text-white/50 text-sm leading-relaxed">
-            免費試用已結束<br />
-            購買存取碼後可無限次使用
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🥤</div>
+          <h2 style={{
+            fontSize: '20px', fontWeight: 700, letterSpacing: '-0.03em',
+            color: 'var(--text-primary)', marginBottom: '8px',
+          }}>
+            一杯手搖的錢<br />換小孩 YouTube 的安全
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.65, letterSpacing: '-0.01em' }}>
+            NT$99 無限掃描，付一次就好，不是訂閱制<br />
+            每次小孩說「我要看這個」，20 秒就知道 OK 不 OK
           </p>
         </div>
 
-        {/* Ko-fi CTA */}
         <a
           href="https://ko-fi.com/minehoooo"
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full bg-[#FF5E5B] hover:bg-[#ff4845] text-white font-bold py-3 rounded-xl text-center text-sm transition-all mb-4"
+          style={{
+            display: 'block',
+            background: '#FF5E5B',
+            color: 'white',
+            fontWeight: 600,
+            fontSize: '15px',
+            letterSpacing: '-0.01em',
+            padding: '14px',
+            borderRadius: 'var(--radius-lg)',
+            textAlign: 'center',
+            textDecoration: 'none',
+            marginBottom: '20px',
+            boxShadow: '0 2px 12px rgba(255,94,91,0.3)',
+            transition: 'transform 0.12s var(--ease-spring)',
+          }}
         >
-          💛 NT$99 買存取碼（Ko-fi）
+          NT$99 · 解鎖無限掃描（Ko-fi）
         </a>
 
-        <div className="relative mb-4">
-          <div className="absolute inset-y-0 left-0 right-0 flex items-center">
-            <div className="w-full border-t border-white/10" />
-          </div>
-          <div className="relative flex justify-center">
-            <span className="bg-transparent px-3 text-xs text-white/30">已有存取碼？</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+          <div style={{ flex: 1, height: 1, background: 'var(--separator)' }} />
+          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>已有存取碼</span>
+          <div style={{ flex: 1, height: 1, background: 'var(--separator)' }} />
         </div>
 
-        {/* Code Input */}
         <input
           type="text"
           value={code}
           onChange={(e) => { setCode(e.target.value.toUpperCase()); setError('') }}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-          placeholder="輸入存取碼（例如 RADAR-XXXX）"
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm placeholder:text-white/25 focus:outline-none focus:border-red-500/50 transition-all text-center tracking-widest font-mono mb-3"
+          placeholder="RADAR-XXXX"
+          className={`input-field${error ? ' input-field--error' : ''}`}
+          style={{ textAlign: 'center', letterSpacing: '0.12em', fontFamily: 'monospace', marginBottom: '10px', fontSize: '16px' }}
           disabled={loading}
         />
 
-        {error && <p className="text-red-400 text-xs text-center mb-3">{error}</p>}
+        {error && (
+          <p style={{ color: 'var(--risk-red)', fontSize: '12px', textAlign: 'center', marginBottom: '10px', letterSpacing: '-0.01em' }}>
+            {error}
+          </p>
+        )}
 
         <button
           onClick={handleSubmit}
           disabled={loading || !code.trim()}
-          className="w-full bg-white/10 hover:bg-white/15 disabled:opacity-40 text-white font-medium py-3 rounded-xl text-sm transition-all"
+          className="btn-primary"
         >
-          {loading ? '驗證中...' : '輸入存取碼解鎖'}
+          {loading ? '驗證中' : '解鎖'}
         </button>
 
-        <p className="text-center text-white/25 text-xs mt-4">
-          付款後在 Ko-fi 留言或私訊 @minehoooo 取得存取碼
+        <p style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '11px', marginTop: '14px', letterSpacing: '-0.01em' }}>
+          付款後在 Ko-fi 留言取得存取碼 · @minehoooo
         </p>
       </div>
     </div>

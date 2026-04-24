@@ -6,6 +6,12 @@ export interface WarningComment {
   likeCount?: number
 }
 
+export interface ScoreBreakdownItem {
+  label: string
+  points: number // 正數為加分，負數為減分
+  category: 'ai' | 'comment' | 'combo' | 'blacklist' | 'adjustment'
+}
+
 export interface AnalysisResult {
   riskLevel: RiskLevel
   riskScore: number // 0-100
@@ -19,4 +25,5 @@ export interface AnalysisResult {
   recommendation: string
   checkedAt: string
   channelUrl: string
+  scoreBreakdown: ScoreBreakdownItem[]
 }

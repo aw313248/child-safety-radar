@@ -2,12 +2,12 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: '童安雷達 — AI 兒童內容安全掃描',
-  description: '輸入 YouTube 頻道或影片網址，AI 自動分析是否含有偽裝成兒童內容的危險訊號，保護你的孩子',
-  keywords: 'Elsagate, 兒童安全, YouTube, 家長, 育兒, AI分析',
+  title: 'PeekKids — 越「皮」的孩子，越要先 Peek 過',
+  description: '給家有「皮」小孩的爸媽用的 YouTube 把關工具，貼上頻道網址，20 秒內告訴你這個頻道給小孩看 OK 嗎',
+  keywords: 'PeekKids, Elsagate, 兒童安全, YouTube, 家長, 育兒, AI分析',
   openGraph: {
-    title: '童安雷達 — 保護孩子的 AI 掃描工具',
-    description: '輸入 YouTube 網址，30秒內知道這個頻道對孩子安不安全',
+    title: 'PeekKids — 越「皮」的孩子，越要先 Peek 過',
+    description: '給家有「皮」小孩的爸媽，20 秒看穿 YouTube 頻道對小孩安不安全',
     type: 'website',
   },
 }
