@@ -23,6 +23,7 @@ export default function Home() {
   const [unlocked, setUnlocked] = useState(false)
   const [scanCount, setScanCount] = useState(0)
   const [showUnlock, setShowUnlock] = useState(false)
+  const [tab, setTab] = useState<'scan' | 'cases'>('scan')
 
   useEffect(() => {
     setUnlocked(localStorage.getItem(STORAGE_KEY) === 'true')
@@ -71,7 +72,6 @@ export default function Home() {
         setScanCount(newCount)
         localStorage.setItem(SCAN_COUNT_KEY, String(newCount))
         setResult(data)
-        // 存入歷史紀錄
         try {
           const raw = localStorage.getItem(HISTORY_KEY)
           const existing: AnalysisResult[] = raw ? JSON.parse(raw) : []
@@ -94,157 +94,249 @@ export default function Home() {
     setShowUnlock(false)
   }
 
+  const remainingFree = Math.max(FREE_SCANS - scanCount, 0)
+  const statusLabel = unlocked ? '已解鎖' : remainingFree > 0 ? `剩 ${remainingFree} 次免費` : '免費已用完'
+  const statusColor = unlocked ? 'var(--risk-green)' : remainingFree > 0 ? 'var(--risk-green)' : 'var(--risk-orange)'
+
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '52px 20px 80px' }}>
+    <main style={{ minHeight: '100vh', padding: '24px 20px 100px' }}>
 
-      <div style={{ width: '100%', maxWidth: '390px' }}>
+      <div style={{ width: '100%', maxWidth: '440px', margin: '0 auto' }}>
 
-        {/* Header */}
-        <div className="animate-fade-scale-in" style={{ textAlign: 'center', marginBottom: '32px' }}>
-
-          {/* Owl with scan pulse */}
-          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '14px' }}>
-            {loading && (
-              <>
-                <div className="scan-ring" style={{ width: 80, height: 80, position: 'absolute', borderRadius: '50%' }} />
-                <div className="scan-ring scan-ring-2" style={{ width: 80, height: 80, position: 'absolute', borderRadius: '50%' }} />
-                <div className="scan-ring scan-ring-3" style={{ width: 80, height: 80, position: 'absolute', borderRadius: '50%' }} />
-              </>
-            )}
-            <div className={owlState === 'idle' ? 'animate-breathe' : ''}>
-              <OwlMascot state={owlState} size={72} />
-            </div>
-          </div>
-
-          <h1 style={{
-            fontSize: '30px',
-            fontWeight: 700,
-            letterSpacing: '-0.035em',
-            color: 'var(--text-primary)',
-            marginBottom: '8px',
-            lineHeight: 1.1,
-          }}>
-            Peek<span style={{ color: 'var(--forest-mid)' }}>Kids</span>
-          </h1>
-          <p style={{
-            color: 'var(--text-primary)',
-            fontSize: '17px',
-            fontWeight: 600,
-            letterSpacing: '-0.025em',
-            marginBottom: '6px',
-            lineHeight: 1.3,
-          }}>
-            可愛卡通下可能藏著「艾莎門」
-          </p>
-          <p style={{
-            color: 'var(--text-secondary)',
-            fontSize: '13px',
-            fontWeight: 500,
-            letterSpacing: '-0.01em',
-            marginBottom: '6px',
-            lineHeight: 1.45,
-          }}>
-            貼上 YouTube 頻道網址，20 秒 AI 看穿是否藏有暴力、恐怖、成人梗
-          </p>
-          <p style={{ color: 'var(--text-tertiary)', fontSize: '12px', letterSpacing: '-0.01em' }}>
-            給家有「皮」小孩的爸媽用
-          </p>
-        </div>
-
-        {/* Result */}
-        {result && !loading && (
-          <div className="animate-slide-up">
-            <ResultCard result={result} onReset={() => { setResult(null); setUrl('') }} />
-          </div>
-        )}
-
-        {/* Input + actions */}
-        {!result && (
-          <div className="animate-fade-scale-in" style={{ display: 'flex', flexDirection: 'column', gap: '10px', animationDelay: '0.1s', opacity: 0, animationFillMode: 'forwards' }}>
-
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !loading && handleAnalyze()}
-              placeholder="貼網址，例：youtube.com/@channelname"
-              className={`input-field${error ? ' input-field--error' : ''}`}
-              disabled={loading}
-            />
-
-            <button
-              onClick={handleAnalyze}
-              disabled={loading || !url.trim()}
-              className="btn-primary"
-            >
-              {loading ? progressText || '分析中' : '幫我 Peek'}
-            </button>
-
-            {/* Progress */}
-            {loading && (
-              <div style={{ padding: '0 2px' }}>
-                <div style={{ background: 'rgba(60,60,67,0.12)', borderRadius: 99, height: 4, overflow: 'hidden' }}>
-                  <div
-                    className="progress-shimmer"
-                    style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }}
-                  />
-                </div>
-                <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)', marginTop: '7px', letterSpacing: '-0.01em' }}>
-                  約需 20–40 秒
-                </p>
-              </div>
-            )}
-
-            {/* Error */}
-            {error && !loading && (
-              <div className="stagger-1" style={{
-                background: 'rgba(255,59,48,0.06)',
-                border: '1px solid rgba(255,59,48,0.18)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '12px 16px',
-              }}>
-                <p style={{ color: 'var(--risk-red)', fontSize: '13px', textAlign: 'center', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
-                  {error}
-                </p>
-                <p style={{ color: 'var(--text-tertiary)', fontSize: '11px', textAlign: 'center', marginTop: '4px', letterSpacing: '-0.01em' }}>
-                  確認網址格式，或直接貼瀏覽器上的網址
-                </p>
-              </div>
-            )}
-
-            {/* Scan counter — 文案反向：從「快用完」變成「送你 X 次」 */}
-            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em', paddingTop: '2px' }}>
-              {unlocked
-                ? '已解鎖 · 無限掃描'
-                : scanCount === 0
-                  ? `前 ${FREE_SCANS} 次免費，用掉再付 NT$99／月`
-                  : scanCount < FREE_SCANS
-                    ? `還剩 ${FREE_SCANS - scanCount} 次免費`
-                    : '免費次數用完，NT$99／月解鎖無限掃描'}
+        {/* ── Header：大標題 left + icon pill right ───── */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '22px' }}>
+          <div>
+            <h1 style={{
+              fontSize: '34px',
+              fontWeight: 800,
+              letterSpacing: '-0.04em',
+              color: 'var(--text-primary)',
+              lineHeight: 1,
+              marginBottom: '6px',
+            }}>
+              PeekKids
+            </h1>
+            <p style={{ fontSize: '13px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em', fontWeight: 500 }}>
+              YouTube 頻道兒童安全雷達
             </p>
           </div>
+          <a
+            href="/history"
+            aria-label="掃描歷史"
+            style={{
+              flex: '0 0 auto',
+              width: 44, height: 44,
+              borderRadius: '50%',
+              background: 'var(--surface)',
+              border: '1px solid var(--border-default)',
+              boxShadow: 'var(--shadow-card)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-primary)',
+              textDecoration: 'none',
+              fontSize: '18px',
+            }}
+          >
+            <div className="animate-breathe">
+              <OwlMascot state={owlState} size={26} />
+            </div>
+          </a>
+        </div>
+
+        {/* ── Segmented control ───────────────────────── */}
+        <div style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border-default)',
+          borderRadius: 9999,
+          padding: 4,
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 4,
+          marginBottom: 20,
+          boxShadow: 'var(--shadow-card)',
+        }}>
+          {(['scan', 'cases'] as const).map(t => {
+            const active = tab === t
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: 9999,
+                  border: 'none',
+                  background: active ? 'var(--forest)' : 'transparent',
+                  color: active ? '#fff' : 'var(--text-secondary)',
+                  fontFamily: 'inherit',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  letterSpacing: '-0.01em',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s, color 0.2s',
+                }}
+              >
+                {t === 'scan' ? '頻道掃描' : '真實案例'}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* ══════════════════════════════════════════════
+            Tab 1: 頻道掃描
+            ══════════════════════════════════════════════ */}
+        {tab === 'scan' && (
+          <>
+            {/* Result */}
+            {result && !loading && (
+              <div className="animate-slide-up" style={{ marginBottom: 16 }}>
+                <ResultCard result={result} onReset={() => { setResult(null); setUrl('') }} />
+              </div>
+            )}
+
+            {/* Scan card — 浮動白卡 */}
+            {!result && (
+              <div className="animate-fade-scale-in" style={{
+                background: 'var(--surface)',
+                borderRadius: 20,
+                padding: 20,
+                border: '1px solid var(--border-default)',
+                boxShadow: '0 10px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)',
+                marginBottom: 24,
+              }}>
+                {/* Status dot row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: statusColor, letterSpacing: '-0.01em' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor, display: 'inline-block' }} />
+                    {loading ? '掃描中' : statusLabel}
+                  </div>
+                  <span style={{ fontSize: 12, color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
+                    {loading ? progressText || '分析中' : '約 20–40 秒'}
+                  </span>
+                </div>
+
+                <h2 style={{ fontSize: 19, fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 14, color: 'var(--text-primary)' }}>
+                  貼上 YouTube 頻道網址
+                </h2>
+
+                {/* Progress bar */}
+                {loading && (
+                  <div style={{ background: 'rgba(60,60,67,0.12)', borderRadius: 99, height: 4, overflow: 'hidden', marginBottom: 14 }}>
+                    <div
+                      className="progress-shimmer"
+                      style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }}
+                    />
+                  </div>
+                )}
+
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && !loading && handleAnalyze()}
+                  placeholder="例：youtube.com/@channelname"
+                  className={`input-field${error ? ' input-field--error' : ''}`}
+                  disabled={loading}
+                  style={{ marginBottom: 10 }}
+                />
+
+                <button
+                  onClick={handleAnalyze}
+                  disabled={loading || !url.trim()}
+                  className="btn-primary"
+                >
+                  {loading ? progressText || '分析中' : '幫我 Peek'}
+                </button>
+
+                {error && !loading && (
+                  <div className="stagger-1" style={{
+                    marginTop: 10,
+                    background: 'rgba(255,59,48,0.08)',
+                    border: '1px solid rgba(255,59,48,0.22)',
+                    borderRadius: 12,
+                    padding: '10px 14px',
+                  }}>
+                    <p style={{ color: 'var(--risk-red)', fontSize: 13, letterSpacing: '-0.01em', lineHeight: 1.5, fontWeight: 600 }}>
+                      {error}
+                    </p>
+                    <p style={{ color: 'var(--text-tertiary)', fontSize: 11, marginTop: 2, letterSpacing: '-0.01em' }}>
+                      確認網址格式，或直接貼瀏覽器網址列
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Tip list — 類似「近期行程」 */}
+            {!result && !loading && (
+              <>
+                <h3 style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.025em', marginBottom: 12, color: 'var(--text-primary)', paddingLeft: 2 }}>
+                  怎麼用
+                </h3>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border-default)', borderRadius: 16, boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
+                  {[
+                    { i: '1', t: '打開 YouTube 找到頻道', s: '複製 youtube.com/@xxx 或任一支影片網址' },
+                    { i: '2', t: '貼到上面輸入框', s: 'AI 會讀標題、看影片、翻留言' },
+                    { i: '3', t: '20-40 秒看結果', s: '紅橘綠三燈，附 AI 摘要與建議' },
+                  ].map((item, idx, arr) => (
+                    <div key={item.i} style={{
+                      padding: '14px 18px',
+                      borderBottom: idx < arr.length - 1 ? '1px solid var(--separator)' : 'none',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 12,
+                    }}>
+                      <div style={{
+                        flex: '0 0 auto',
+                        width: 28, height: 28,
+                        borderRadius: '50%',
+                        background: 'rgba(0,122,255,0.10)',
+                        color: 'var(--forest)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 13,
+                        fontWeight: 800,
+                      }}>{item.i}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.01em', marginBottom: 2 }}>{item.t}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>{item.s}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
 
-        {/* 真實案例庫 — 只在還沒分析時顯示 */}
-        {!result && !loading && <CaseLibrary />}
-      </div>
+        {/* ══════════════════════════════════════════════
+            Tab 2: 真實案例
+            ══════════════════════════════════════════════ */}
+        {tab === 'cases' && (
+          <div className="animate-fade-scale-in">
+            <CaseLibrary />
+          </div>
+        )}
 
-      <div style={{ marginTop: 48, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-        <a
-          href="/history"
-          style={{
-            fontSize: '12px',
-            color: 'var(--text-secondary)',
-            textDecoration: 'none',
-            letterSpacing: '-0.01em',
-            fontWeight: 500,
-          }}
-        >
-          查看掃描歷史 →
-        </a>
-        <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
-          AI 輔助分析，結果僅供參考
-        </p>
+        {/* Footer links — 類似「查看全部」樣式 */}
+        <div style={{ marginTop: 32, textAlign: 'center' }}>
+          <a
+            href="/history"
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: 'var(--forest)',
+              textDecoration: 'none',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            查看掃描歷史 →
+          </a>
+          <p style={{ marginTop: 10, fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
+            AI 輔助分析，結果僅供參考
+          </p>
+        </div>
       </div>
 
       {showUnlock && (
