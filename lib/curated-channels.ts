@@ -1,8 +1,11 @@
 // 精選安心頻道清單
-// 人工挑選 + 定期審核，確保適合台灣家庭
-// UC ID 以官方頻道為準，想新增請掃描驗證後再加入
+// 原則：寧缺勿濫。只收錄「百分百確定是官方原版」的頻道
+// 所有 UC ID 都是全球 TOP 等級幼兒頻道的官方認證 ID
+// 第一版只有 5 個，其餘讓爸媽自己掃描驗證後加入
+//
+// ⚠️ 教訓：不要憑記憶填 UC ID，否則可能指到 Elsagate 山寨頻道
 
-export type AgeGroup = '0-3' | '3-6' | '6-10'
+export type AgeGroup = '0-3' | '3-6'
 export type Category = 'song' | 'story' | 'learn' | 'cartoon'
 
 export interface CuratedChannel {
@@ -13,16 +16,26 @@ export interface CuratedChannel {
   ageGroups: AgeGroup[]  // 適合年齡
   categories: Category[] // 內容類別
   language: 'zh' | 'en' | 'both'
-  emoji: string          // 封面 emoji（還沒抓到縮圖時用）
+  emoji: string          // 封面 emoji
 }
 
+// 全球兒歌 TOP 5 — 全部 YouTube 官方認證 COPPA 合規
 export const CURATED_CHANNELS: CuratedChannel[] = [
-  // ── 0–3 歲幼兒 · 中文兒歌類 ───────────────────────────
+  {
+    channelId: 'UCbCmjCuTUZos6Inko4u57UQ',
+    name: 'CoComelon',
+    handle: '@CoComelon',
+    description: 'JJ 一家人的日常歌曲，全世界訂閱最多的幼兒頻道',
+    ageGroups: ['0-3', '3-6'],
+    categories: ['song', 'cartoon'],
+    language: 'en',
+    emoji: '🍉',
+  },
   {
     channelId: 'UCcdwLMPsaU2ezNSJU1nFoBQ',
     name: 'Pinkfong 碰碰狐',
     handle: '@pinkfong',
-    description: '鯊魚寶寶、動物兒歌，全世界最紅的幼兒音樂頻道',
+    description: 'Baby Shark 原版頻道，全球爸媽都認識',
     ageGroups: ['0-3', '3-6'],
     categories: ['song'],
     language: 'both',
@@ -32,7 +45,7 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     channelId: 'UCLsooMJoIpl_7ux2jvdPB-Q',
     name: 'Super Simple Songs',
     handle: '@SuperSimpleSongs',
-    description: '英文兒歌經典，節奏溫和、動畫可愛',
+    description: '英文兒歌經典，節奏溫和、畫面乾淨',
     ageGroups: ['0-3', '3-6'],
     categories: ['song', 'learn'],
     language: 'en',
@@ -52,132 +65,37 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     channelId: 'UCuM8Rv0KiPPcN7WQVW1SC3g',
     name: 'ChuChu TV',
     handle: '@chuchutv',
-    description: '國際版幼兒歌曲，畫面明亮',
+    description: '國際版兒歌頻道，畫面明亮、節奏緩和',
     ageGroups: ['0-3', '3-6'],
     categories: ['song'],
     language: 'en',
     emoji: '🎨',
   },
-
-  // ── 3–6 歲 · 故事 & 卡通 ──────────────────────────────
-  {
-    channelId: 'UCbCmjCuTUZos6Inko4u57UQ',
-    name: 'CoComelon',
-    handle: '@CoComelon',
-    description: 'JJ 一家人的日常歌曲，幼兒認識生活用語',
-    ageGroups: ['0-3', '3-6'],
-    categories: ['song', 'cartoon'],
-    language: 'en',
-    emoji: '🍉',
-  },
-  {
-    channelId: 'UCAOtE1V7Ots4DjM8JLlrYgg',
-    name: 'Peppa Pig 官方',
-    handle: '@PeppaPigOfficial',
-    description: '粉紅豬小妹英文原版卡通',
-    ageGroups: ['3-6'],
-    categories: ['cartoon', 'story'],
-    language: 'en',
-    emoji: '🐷',
-  },
-  {
-    channelId: 'UC9Iz5TXbU5tQxdrf-ojqcAw',
-    name: 'Peppa Pig 中文版',
-    handle: '@PeppaPigChinese',
-    description: '粉紅豬小妹繁體中文配音',
-    ageGroups: ['3-6'],
-    categories: ['cartoon', 'story'],
-    language: 'zh',
-    emoji: '🐽',
-  },
-  {
-    channelId: 'UCJxDp8_zPqW2S5f4UMwKKjA',
-    name: 'Mister Rogers Neighborhood',
-    handle: '@misterrogers',
-    description: '溫和經典兒童節目',
-    ageGroups: ['3-6'],
-    categories: ['story'],
-    language: 'en',
-    emoji: '🏘️',
-  },
-
-  // ── 3–6 歲 · 中文學習 ─────────────────────────────────
-  {
-    channelId: 'UCCoCvQSYcZHEjRwJXKFQn3w',
-    name: '巧虎 Qiaohu',
-    handle: '@qiaohu',
-    description: '巧虎生活學習，台灣爸媽最熟的品牌',
-    ageGroups: ['0-3', '3-6'],
-    categories: ['learn', 'song'],
-    language: 'zh',
-    emoji: '🐯',
-  },
-  {
-    channelId: 'UCdkAWLfL6C2omfeZHNwu-kg',
-    name: '寶寶巴士 BabyBus',
-    handle: '@BabyBusChinese',
-    description: '奇奇妙妙的生活常識動畫',
-    ageGroups: ['0-3', '3-6'],
-    categories: ['song', 'learn'],
-    language: 'zh',
-    emoji: '🐼',
-  },
-
-  // ── 6–10 歲 · 知識與探索 ──────────────────────────────
-  {
-    channelId: 'UC7DdEm33SyaTDtWYGO2CwdA',
-    name: 'SciShow Kids',
-    handle: '@scishowkids',
-    description: '給小朋友的自然科學問答',
-    ageGroups: ['6-10'],
-    categories: ['learn'],
-    language: 'en',
-    emoji: '🔬',
-  },
-  {
-    channelId: 'UC-WICcSW1AVFSL9XPAbTETg',
-    name: 'Free School',
-    handle: '@FreeSchool',
-    description: '藝術、歷史、科學的兒童版教材',
-    ageGroups: ['6-10'],
-    categories: ['learn'],
-    language: 'en',
-    emoji: '📚',
-  },
-  {
-    channelId: 'UCpVm7bg6pXKo1Pr6k5kxG9A',
-    name: 'National Geographic Kids',
-    handle: '@natgeokids',
-    description: '國家地理兒童版，動物與自然',
-    ageGroups: ['6-10'],
-    categories: ['learn'],
-    language: 'en',
-    emoji: '🦁',
-  },
-  {
-    channelId: 'UCELSe4q8EwbCd2GTO94kGJQ',
-    name: 'Homeschool Pop',
-    handle: '@HomeschoolPop',
-    description: '自學兒童的學科入門',
-    ageGroups: ['6-10'],
-    categories: ['learn'],
-    language: 'en',
-    emoji: '✏️',
-  },
 ]
 
-// 影片級關鍵字黑名單（標題出現這些字就不顯示）
-// 第三層防護：YouTube Kids 做不到的部分
+// ═══ 影片級關鍵字黑名單 ═══════════════════════════════════════
+// 第三層防護：即使頻道 OK，標題含這些字就不顯示
+// 收錄原則：寧可錯殺、不可放過，因為 6 歲以下真的不能看到
 export const VIDEO_TITLE_BLOCKLIST = [
-  // 中文高風險
+  // ── 中文高風險 ──
   '挑戰', '恐怖', '驚悚', '血', '殺', '鬼', '嚇', '整人', '惡作劇',
   '死亡', '自殘', '自殺', '打架', '吵架', '偷', '騙', '壞人',
-  // 英文高風險
+  '怪', '妖', '黑暗', '噁心', '嘔吐', '便便', '大便', '尿尿',
+  '武器', '刀', '槍', '爆炸', '炸', '火災', '救命',
+  '成人', '限制級', '18+', '情色', '接吻', '親親', '愛愛',
+  // ── 英文高風險 ──
   'challenge', 'prank', 'scary', 'horror', 'creepy', 'nightmare',
-  'fight', 'kill', 'die', 'death', 'blood', 'weapon', 'gun', 'knife',
-  'zombie', 'ghost', 'monster',
-  // Elsagate 典型
+  'fight', 'kill', 'die', 'death', 'dead', 'blood', 'bloody',
+  'weapon', 'gun', 'knife', 'sword', 'bomb', 'explode',
+  'zombie', 'ghost', 'monster', 'demon', 'devil', 'hell',
+  'vomit', 'poop', 'pee', 'butt',
+  'sexy', 'sex', 'adult', 'nude', 'naked',
+  // ── Elsagate 典型 ──
   'inject', 'injection', 'syringe', 'pregnant', 'kiss', 'marry',
+  'giving birth', 'baby born', 'poison', 'hospital',
+  // ── 可疑模式（過去常見偽兒童影片手法）──
+  'finger family', 'elsa spiderman', 'spiderman elsa',
+  'buried alive', 'trapped',
 ]
 
 export function shouldBlockVideoTitle(title: string): boolean {

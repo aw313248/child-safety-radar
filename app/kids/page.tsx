@@ -287,7 +287,6 @@ export default function KidsModePage() {
           {([
             ['0-3', '0–3 歲'],
             ['3-6', '3–6 歲'],
-            ['6-10', '6–10 歲'],
             ['all', '全部'],
           ] as const).map(([k, label]) => (
             <button
@@ -319,7 +318,7 @@ export default function KidsModePage() {
         }}>
           <span style={{ fontSize: 16 }}>🛡️</span>
           <p style={{ flex: 1, fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
-            這些頻道都人工驗證過，<strong style={{ color: 'var(--text-primary)' }}>影片標題含挑戰／恐怖等字眼會自動過濾</strong>
+            三層防護：官方頻道 × <strong style={{ color: 'var(--text-primary)' }}>YouTube 兒童認證</strong> × 標題黑名單，6 歲內專用
           </p>
         </div>
 

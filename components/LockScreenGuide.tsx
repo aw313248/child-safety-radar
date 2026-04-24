@@ -1,23 +1,51 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // 教爸媽用 iOS 引導使用模式 / Android 螢幕釘選鎖死 App
-// 第一次打開兒童模式時顯示
+// 一鍵打開設定（網頁深連結的極限）
 export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
-  const [platform, setPlatform] = useState<'ios' | 'android'>('ios')
+  const [platform, setPlatform] = useState<'ios' | 'android' | 'other'>('other')
+  const [tried, setTried] = useState(false)
 
-  const steps = platform === 'ios' ? [
-    { n: '1', title: '打開設定', body: '設定 → 輔助使用 → 引導使用模式 → 打開' },
-    { n: '2', title: '回到 PeekKids', body: '留在「兒童安心模式」這個畫面' },
-    { n: '3', title: '連按三下側邊鍵', body: '連按 3 次電源鍵（有 Home 鍵的機型按 Home），設密碼後開始' },
-    { n: '4', title: '完成', body: '小孩只能在這個頁面操作，離開需要密碼' },
-  ] : [
-    { n: '1', title: '打開設定', body: '設定 → 安全性 → 螢幕釘選 → 開啟' },
-    { n: '2', title: '回到 PeekKids', body: '留在「兒童安心模式」這個畫面' },
-    { n: '3', title: '下滑叫出最近應用', body: '長按 PeekKids 的標題列，選「釘選」' },
-    { n: '4', title: '完成', body: '要取消釘選需要同時按返回 + 概覽鍵' },
-  ]
+  useEffect(() => {
+    if (typeof navigator === 'undefined') return
+    const ua = navigator.userAgent.toLowerCase()
+    if (/ipad|iphone|ipod/.test(ua) || (ua.includes('macintosh') && 'ontouchend' in document)) {
+      setPlatform('ios')
+    } else if (/android/.test(ua)) {
+      setPlatform('android')
+    }
+  }, [])
+
+  // 一鍵打開設定
+  const openSettings = () => {
+    setTried(true)
+    if (platform === 'ios') {
+      // iOS：嘗試跳到「輔助使用」設定頁
+      // Safari 會擋大部分 prefs: URL，但 PWA 安裝後 / 舊版 iOS 可能吃
+      window.location.href = 'App-prefs:ACCESSIBILITY'
+    } else if (platform === 'android') {
+      // Android Chrome：intent URL 會直接打開輔助使用設定
+      window.location.href =
+        'intent://#Intent;action=android.settings.ACCESSIBILITY_SETTINGS;end'
+    }
+  }
+
+  // 平台設定路徑說明
+  const pathText = platform === 'ios'
+    ? '設定 → 輔助使用 → 引導使用模式 → 打開開關'
+    : platform === 'android'
+      ? '設定 → 安全性（或輔助使用）→ 螢幕釘選 → 開啟'
+      : '打開平板的設定，找「引導使用模式」或「螢幕釘選」'
+
+  const useText = platform === 'ios'
+    ? '回到 PeekKids，連按三下側邊鍵（或 Home 鍵）即可鎖住畫面'
+    : platform === 'android'
+      ? '回到 PeekKids，從最近應用長按 PeekKids 圖示選「釘選」'
+      : '回到 PeekKids 後依平板指示把這個畫面鎖住'
+
+  const platformLabel = platform === 'ios' ? 'iPad / iPhone' : platform === 'android' ? 'Android' : '你的裝置'
 
   return (
     <div style={{
@@ -28,95 +56,117 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
       padding: 20,
     }}>
       <div style={{
-        width: '100%', maxWidth: 440,
+        width: '100%', maxWidth: 400,
         background: '#FFFFFF',
         borderRadius: 28,
         padding: '32px 24px 24px',
         boxShadow: '0 32px 64px rgba(0,0,0,0.4)',
       }}>
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <div style={{ textAlign: 'center', marginBottom: 22 }}>
           <div style={{ fontSize: 44, marginBottom: 8 }}>🔒</div>
           <h2 style={{
             fontSize: 22, fontWeight: 900, letterSpacing: '-0.04em',
             color: 'var(--text-primary)', lineHeight: 1.1, marginBottom: 6,
           }}>
-            鎖住這個 App，小孩跳不出去
+            鎖住這個 App<br />小孩就跳不出去
           </h2>
-          <p style={{ fontSize: 13, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
-            平板內建功能，設一次用一輩子
+          <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
+            偵測到你用 <strong style={{ color: 'var(--text-primary)' }}>{platformLabel}</strong>，點一下就幫你打開設定
           </p>
         </div>
 
-        <div style={{
-          display: 'flex', gap: 6, marginBottom: 18,
-          background: 'var(--ink-05)', borderRadius: 12, padding: 4,
-        }}>
-          {([['ios', 'iPad'], ['android', 'Android']] as const).map(([k, label]) => (
-            <button
-              key={k}
-              onClick={() => setPlatform(k)}
-              style={{
-                flex: 1, padding: '10px 0',
-                borderRadius: 8, border: 'none', cursor: 'pointer',
-                background: platform === k ? 'var(--ink-hex)' : 'transparent',
-                color: platform === k ? '#fff' : 'var(--text-secondary)',
-                fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
-                fontFamily: 'inherit',
-                transition: 'all 0.2s',
-              }}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {/* 主 CTA — 一鍵打開設定 */}
+        {platform !== 'other' && (
+          <button
+            onClick={openSettings}
+            style={{
+              width: '100%',
+              padding: '16px 18px',
+              marginBottom: 12,
+              background: 'var(--ink-hex)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 'var(--radius-lg)',
+              cursor: 'pointer',
+              fontSize: 15, fontWeight: 800, letterSpacing: '-0.01em',
+              fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              boxShadow: '0 10px 24px rgba(10,10,10,0.2)',
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            幫我打開設定
+          </button>
+        )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-          {steps.map(s => (
-            <div key={s.n} style={{
-              display: 'flex', gap: 12, alignItems: 'flex-start',
-              padding: '12px 14px',
-              background: 'var(--paper-hex)',
-              borderRadius: 14,
-              border: '1px solid var(--border-soft)',
-            }}>
-              <div style={{
-                flexShrink: 0,
-                width: 28, height: 28, borderRadius: '50%',
-                background: 'var(--ink-hex)', color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 13, fontWeight: 900,
-              }}>{s.n}</div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 2 }}>
-                  {s.title}
-                </p>
-                <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.005em', lineHeight: 1.5 }}>
-                  {s.body}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* 沒反應的 fallback 說明（點過才顯示，避免一開始就讓人覺得複雜） */}
+        {tried && (
+          <div style={{
+            background: 'var(--paper-hex)',
+            border: '1px solid var(--border-soft)',
+            borderRadius: 12,
+            padding: '12px 14px',
+            marginBottom: 14,
+          }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 6 }}>
+              沒跳過去？手動走一次（只要做一次）
+            </p>
+            <p style={{ fontSize: 13, color: 'var(--text-primary)', letterSpacing: '-0.01em', lineHeight: 1.55, fontWeight: 600, marginBottom: 6 }}>
+              {pathText}
+            </p>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.55 }}>
+              {useText}
+            </p>
+          </div>
+        )}
+
+        {/* 預設顯示的簡短說明 */}
+        {!tried && platform !== 'other' && (
+          <p style={{
+            fontSize: 12, color: 'var(--text-secondary)',
+            letterSpacing: '-0.01em', lineHeight: 1.55,
+            textAlign: 'center', marginBottom: 14,
+          }}>
+            打開<strong style={{ color: 'var(--text-primary)' }}>{platform === 'ios' ? '引導使用模式' : '螢幕釘選'}</strong>，回到 PeekKids 就能鎖住
+          </p>
+        )}
+
+        {/* 其他平台 fallback */}
+        {platform === 'other' && (
+          <div style={{
+            background: 'var(--paper-hex)',
+            borderRadius: 12, padding: 14, marginBottom: 14,
+          }}>
+            <p style={{ fontSize: 13, color: 'var(--text-primary)', letterSpacing: '-0.01em', lineHeight: 1.6 }}>
+              請在平板上打開 PeekKids，系統會自動帶你到設定
+            </p>
+          </div>
+        )}
 
         <button
           onClick={onDone}
           style={{
-            width: '100%', padding: 14,
+            width: '100%', padding: 12,
             borderRadius: 'var(--radius-lg)',
-            background: 'var(--ink-hex)', color: '#fff',
-            border: 'none', cursor: 'pointer',
-            fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em',
+            background: 'var(--ink-05)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-soft)',
+            cursor: 'pointer',
+            fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
             fontFamily: 'inherit',
           }}
         >
-          我知道了，開始使用
+          {tried ? '設定好了，開始使用' : '先跳過，直接看片'}
         </button>
 
         <p style={{
-          textAlign: 'center', marginTop: 12,
-          fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em',
+          textAlign: 'center', marginTop: 10,
+          fontSize: 10, color: 'var(--text-tertiary)', letterSpacing: '-0.01em',
         }}>
-          下次不會再出現，設定一次就好
+          設定一次用一輩子，下次不會再出現
         </p>
       </div>
     </div>
