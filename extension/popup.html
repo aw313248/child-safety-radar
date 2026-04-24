@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>PeekKids</title>
+<style>
+  :root {
+    --forest: #1A3828;
+    --forest-mid: #2C5A42;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-tertiary: #94A3B8;
+    --risk-red: #DC2626;
+    --risk-orange: #EA580C;
+    --risk-green: #16A34A;
+    --bg: #FAFBFC;
+    --surface: #FFFFFF;
+    --border: rgba(15, 23, 42, 0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 320px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC', 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+  .header {
+    padding: 16px 18px 12px;
+    text-align: center;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .header h1 span { color: var(--forest-mid); }
+  .header p {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+    letter-spacing: -0.01em;
+  }
+  .body { padding: 14px 16px; }
+  .channel-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .channel-url {
+    font-size: 12px;
+    color: var(--text-secondary);
+    word-break: break-all;
+    padding: 8px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    letter-spacing: -0.01em;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--forest);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn:hover:not(:disabled) { background: var(--forest-mid); }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:disabled {
+    background: rgba(15, 23, 42, 0.1);
+    color: rgba(15, 23, 42, 0.4);
+    cursor: not-allowed;
+  }
+  .error {
+    font-size: 12px;
+    color: var(--risk-red);
+    background: rgba(220, 38, 38, 0.06);
+    border: 1px solid rgba(220, 38, 38, 0.18);
+    padding: 8px 10px;
+    border-radius: 8px;
+    letter-spacing: -0.01em;
+    line-height: 1.45;
+  }
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 8px;
+  }
+  .score {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+  .score span { font-size: 12px; color: var(--text-tertiary); font-weight: 500; margin-left: 4px; }
+  .level {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    letter-spacing: -0.005em;
+  }
+  .level--high   { background: rgba(220,38,38,0.08);  color: #B91C1C; }
+  .level--medium { background: rgba(234,88,12,0.08);  color: #C2410C; }
+  .level--low    { background: rgba(22,163,74,0.08);  color: #15803D; }
+  .score--high   { color: var(--risk-red); }
+  .score--medium { color: var(--risk-orange); }
+  .score--low    { color: var(--risk-green); }
+  .channel-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .summary {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+  .recommendation {
+    font-size: 11px;
+    color: var(--text-primary);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    padding: 8px 10px;
+    background: rgba(15, 23, 42, 0.03);
+    border-radius: 6px;
+  }
+  .footer {
+    padding: 10px 16px 14px;
+    text-align: center;
+  }
+  .footer a {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .footer a:hover { color: var(--forest-mid); }
+  .hint {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: -0.01em;
+    line-height: 1.5;
+    text-align: center;
+    padding: 8px 0;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>Peek<span>Kids</span></h1>
+    <p>YouTube 頻道兒童安全雷達</p>
+  </div>
+
+  <div class="body" id="body">
+    <div id="content"></div>
+  </div>
+
+  <div class="footer">
+    <a href="#" id="openOptions">⚙ 設定</a>
+    &nbsp;·&nbsp;
+    <a href="#" id="openSite" target="_blank">官網</a>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
