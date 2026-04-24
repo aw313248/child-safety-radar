@@ -22,6 +22,9 @@ export interface CommentThread {
   text: string
   author: string
   likeCount: number
+  videoId: string
+  videoTitle?: string
+  commentId: string
 }
 
 function extractChannelId(url: string): { type: 'channel' | 'video' | 'handle'; value: string } | null {
@@ -144,18 +147,23 @@ async function buildChannelInfo(
 export async function getVideoComments(
   videoId: string,
   apiKey: string,
-  maxResults = 50
+  maxResults = 50,
+  videoTitle?: string
 ): Promise<CommentThread[]> {
   try {
     const data = await fetchJson(
       `${YT_API}/commentThreads?part=snippet&videoId=${videoId}&maxResults=${maxResults}&order=relevance&key=${apiKey}`
     )
     return (data.items || []).map((item: {
-      snippet: { topLevelComment: { snippet: { textDisplay: string; authorDisplayName: string; likeCount: number } } }
+      id: string
+      snippet: { topLevelComment: { id: string; snippet: { textDisplay: string; authorDisplayName: string; likeCount: number } } }
     }) => ({
       text: item.snippet.topLevelComment.snippet.textDisplay || '',
       author: item.snippet.topLevelComment.snippet.authorDisplayName || '',
       likeCount: item.snippet.topLevelComment.snippet.likeCount || 0,
+      videoId,
+      videoTitle,
+      commentId: item.snippet.topLevelComment.id || item.id,
     }))
   } catch {
     return []

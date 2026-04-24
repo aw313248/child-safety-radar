@@ -226,8 +226,9 @@ export async function POST(req: NextRequest) {
     const channelInfo = await getChannelInfo(url, ytApiKey)
 
     // 2. Comments from up to 10 videos (not just 5)
+    // 注意：傳入 video.title 讓留言能被追溯到來源影片
     const commentPromises = channelInfo.videos.slice(0, 10).map(v =>
-      getVideoComments(v.id, ytApiKey, 50)
+      getVideoComments(v.id, ytApiKey, 50, v.title)
     )
     const allCommentArrays = await Promise.allSettled(commentPromises)
     const allComments: CommentThread[] = allCommentArrays
@@ -362,11 +363,19 @@ export async function POST(req: NextRequest) {
         return warningComments.map((c, i) => {
           const cleanText = c.text.replace(/<[^>]+>/g, '')
           const translated = translations[i]?.trim()
+          // YouTube 留言深度連結（點開會跳到該影片並捲到留言位置）
+          const sourceUrl = c.videoId
+            ? `https://www.youtube.com/watch?v=${c.videoId}${c.commentId ? `&lc=${c.commentId}` : ''}`
+            : undefined
           return {
             text: cleanText,
             textZh: translated && translated !== cleanText.trim() ? translated : undefined,
             author: c.author,
             likeCount: c.likeCount,
+            videoId: c.videoId,
+            videoTitle: c.videoTitle,
+            commentId: c.commentId,
+            sourceUrl,
           }
         })
       })(),

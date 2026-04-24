@@ -251,18 +251,42 @@ export default function ResultCard({ result, onReset }: Props) {
                     「{comment.text}」
                   </p>
                 )}
-                {(comment.author || comment.likeCount) && (
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                    {comment.author && (
-                      <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>— {comment.author}</span>
-                    )}
-                    {comment.likeCount && comment.likeCount > 0 && (
-                      <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>👍 {comment.likeCount}</span>
-                    )}
-                  </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', marginTop: '6px' }}>
+                  {comment.author && (
+                    <span style={{ fontSize: '11px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>— {comment.author}</span>
+                  )}
+                  {comment.likeCount !== undefined && comment.likeCount > 0 && (
+                    <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>👍 {comment.likeCount}</span>
+                  )}
+                  {comment.sourceUrl && (
+                    <a
+                      href={comment.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        fontSize: '11px',
+                        color: 'var(--forest-mid)',
+                        textDecoration: 'none',
+                        letterSpacing: '-0.01em',
+                        marginLeft: 'auto',
+                        fontWeight: 500,
+                      }}
+                      title={comment.videoTitle ? `來源影片：${comment.videoTitle}` : '在 YouTube 查看原留言'}
+                    >
+                      → 看原文
+                    </a>
+                  )}
+                </div>
+                {comment.videoTitle && (
+                  <p style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginTop: '3px', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    出自影片：{comment.videoTitle}
+                  </p>
                 )}
               </div>
             ))}
+            <p style={{ fontSize: '10px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em', marginTop: '2px', lineHeight: 1.5 }}>
+              中文為 AI 翻譯，僅供參考，點「看原文」可到 YouTube 驗證真偽
+            </p>
           </div>
         </div>
       )}
