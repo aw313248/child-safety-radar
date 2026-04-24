@@ -7,6 +7,7 @@ export interface VideoInfo {
   tags: string[]
   viewCount: string
   commentsDisabled: boolean
+  madeForKids: boolean  // YouTube 官方合規標記（由頻道主設定，COPPA 合規）
 }
 
 export interface ChannelInfo {
@@ -127,9 +128,11 @@ async function buildChannelInfo(
         description: (v.snippet.description || '').slice(0, 300),
         tags: v.snippet.tags || [],
         viewCount: v.statistics?.viewCount || '0',
+        // 拆開兩個訊號：madeForKids 是 YouTube 官方 COPPA 合規標記（正派幼兒頻道會是 true）
+        // commentsDisabled 才是「頻道主主動關閉留言」的訊號
+        madeForKids: v.status?.madeForKids === true,
         commentsDisabled:
-          v.status?.madeForKids === true ||
-          (v.statistics?.commentCount === '0' && v.status?.privacyStatus === 'public'),
+          v.statistics?.commentCount === '0' && v.status?.privacyStatus === 'public',
       })) || []
     }
   }

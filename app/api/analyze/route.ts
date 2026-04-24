@@ -105,7 +105,10 @@ async function translateWarningComments(
 
   try {
     const genAI = new GoogleGenerativeAI(apiKey)
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
+    })
     const prompt = `請把下列 YouTube 留言翻譯成繁體中文（台灣用語），每則留言獨立一行，只輸出翻譯結果、不要加編號或解釋。保留原文的語氣（可疑、讚美、警告都要翻出來）。如果原文已是中文，就原文照貼回來。
 
 ${comments.map((c, i) => `${i + 1}. ${c.text.replace(/\n/g, ' ').slice(0, 250)}`).join('\n')}`
@@ -135,18 +138,33 @@ async function analyzeWithGemini(params: {
   childAppealSignals: string[]
   commentsDisabled: boolean
   commentsDisabledRatio: number
+  madeForKidsRatio: number
+  isLegitKidsChannel: boolean
 }): Promise<{ summary: string; riskScore: number; recommendation: string; riskType?: string }> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+  // 鎖死 temperature = 0，同頻道必給同分數（方針 2）
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.5-flash',
+    generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
+  })
 
   const {
     channelName, channelDescription, subscriberCount, videoCount,
     videoTitles, videoDescriptions, warningComments,
     childTargetingSignals, childAppealSignals,
     commentsDisabled, commentsDisabledRatio,
+    madeForKidsRatio, isLegitKidsChannel,
   } = params
 
   const prompt = `你是一位專門評估 YouTube 內容是否適合 6 歲以下幼兒的安全分析師。
+
+【最重要的前置判斷 — 必須先讀】
+本頻道有 ${Math.round(madeForKidsRatio * 100)}% 的影片被 YouTube 官方標註為「Made for Kids（兒童內容）」。
+${isLegitKidsChannel
+    ? '⚠️ 此為「YouTube 官方認證的合規兒童頻道」。依照 COPPA 法規，兒童頻道的留言區必須關閉（13 歲以下不得留言），這是法律要求、不是刻意迴避家長。請不要把「留言關閉」列為警戒訊號。除非內容本身明顯不當（暴力、恐怖、色情、成人梗），否則 riskScore 應落在 0–25，riskType 應為 "child_magnet" 或 "mixed"、絕不該是 "elsagate"。'
+    : madeForKidsRatio >= 0.5
+      ? '本頻道部分標註為兒童內容，但未達「合規幼兒頻道」標準（可能是小頻道或內容定位模糊），留言關閉可能是 COPPA 要求，判斷時請納入考量。'
+      : '本頻道未標註為兒童內容，若出現大量兒童吸引元素 + 留言關閉 = 高警戒訊號（可能為刻意迴避家長監督）。'}
 
 【評估框架：三種風險類型】
 
@@ -172,6 +190,7 @@ async function analyzeWithGemini(params: {
 頻道名稱：${channelName}
 訂閱人數：${Number(subscriberCount).toLocaleString()} 人
 影片總數（此次分析）：${videoCount} 部
+Made for Kids 比率（YouTube 官方合規標記）：${Math.round(madeForKidsRatio * 100)}%
 留言區關閉比率：${Math.round(commentsDisabledRatio * 100)}%
 
 【頻道簡介】
@@ -279,6 +298,15 @@ export async function POST(req: NextRequest) {
     const commentsDisabledRatio = videosChecked > 0 ? 1 - (videosWithComments / videosChecked) : 0
     const commentsDisabled = commentsDisabledRatio >= 0.7
 
+    // 3b. Made for Kids 比率（方針 1：YouTube 官方 COPPA 標記）
+    const madeForKidsCount = channelInfo.videos.filter(v => v.madeForKids).length
+    const madeForKidsRatio = channelInfo.videos.length > 0
+      ? madeForKidsCount / channelInfo.videos.length
+      : 0
+    // 合規幼兒頻道判定：70% 以上影片 madeForKids + 訂閱 ≥ 10,000
+    const subCountForLegit = Number(channelInfo.subscriberCount)
+    const isLegitKidsChannel = madeForKidsRatio >= 0.7 && subCountForLegit >= 10000
+
     // 4. Video descriptions as fallback text analysis (critical when comments are off)
     const videoDescriptions = channelInfo.videos
       .map(v => v.description)
@@ -311,6 +339,8 @@ export async function POST(req: NextRequest) {
       childAppealSignals,
       commentsDisabled,
       commentsDisabledRatio,
+      madeForKidsRatio,
+      isLegitKidsChannel,
     })
 
     // 7. 評分機制 v2：AI 基底 + 組合訊號 + 黑名單
@@ -337,13 +367,20 @@ export async function POST(req: NextRequest) {
     }
 
     // 組合訊號：留言關閉 + 兒童磁鐵 = 警戒
-    if (commentsDisabledRatio >= 0.7 && childAppealScore >= 30) {
+    // 例外：合規幼兒頻道的留言關閉是 COPPA 法規要求，不扣分（方針 2）
+    if (isLegitKidsChannel) {
       breakdown.push({
-        label: `留言區關閉 ${Math.round(commentsDisabledRatio * 100)}% + 兒童吸引力訊號`,
+        label: `YouTube 官方認證兒童頻道（${Math.round(madeForKidsRatio * 100)}% 影片 Made for Kids）`,
+        points: -15,
+        category: 'adjustment',
+      })
+    } else if (commentsDisabledRatio >= 0.7 && childAppealScore >= 40) {
+      breakdown.push({
+        label: `留言區關閉 ${Math.round(commentsDisabledRatio * 100)}% + 高兒童吸引力訊號`,
         points: 15,
         category: 'combo',
       })
-    } else if (commentsDisabledRatio >= 0.7 && childAppealScore >= 15) {
+    } else if (commentsDisabledRatio >= 0.7 && childAppealScore >= 25 && madeForKidsRatio < 0.5) {
       breakdown.push({
         label: `留言區關閉 ${Math.round(commentsDisabledRatio * 100)}%（無法驗證家長反饋）`,
         points: 8,
