@@ -214,10 +214,10 @@ export default function Home() {
               {unlocked
                 ? '已解鎖 · 無限掃描'
                 : scanCount === 0
-                  ? `前 ${FREE_SCANS} 次免費，用掉再付 NT$99`
+                  ? `前 ${FREE_SCANS} 次免費，用掉再付 NT$99／月`
                   : scanCount < FREE_SCANS
                     ? `還剩 ${FREE_SCANS - scanCount} 次免費`
-                    : '免費次數用完，解鎖 NT$99 無限用'}
+                    : '免費次數用完，NT$99／月解鎖無限掃描'}
             </p>
           </div>
         )}

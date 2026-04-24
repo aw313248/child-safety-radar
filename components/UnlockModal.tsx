@@ -82,18 +82,18 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
             一杯手搖的錢<br />換小孩 YouTube 的安全
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.65, letterSpacing: '-0.01em' }}>
-            NT$99 無限掃描，付一次就好，不是訂閱制<br />
+            NT$99 /月，隨時取消，支援 Apple Pay · Google Pay<br />
             每次小孩說「我要看這個」，20 秒就知道 OK 不 OK
           </p>
         </div>
 
         <a
-          href="https://ko-fi.com/minehoooo"
+          href="https://peekkids.lemonsqueezy.com/checkout/buy/5468a3b1-03e2-467e-830a-bfabf0b1f20b"
           target="_blank"
           rel="noopener noreferrer"
           style={{
             display: 'block',
-            background: '#FF5E5B',
+            background: 'var(--forest-mid)',
             color: 'white',
             fontWeight: 600,
             fontSize: '15px',
@@ -103,16 +103,16 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
             textAlign: 'center',
             textDecoration: 'none',
             marginBottom: '20px',
-            boxShadow: '0 2px 12px rgba(255,94,91,0.3)',
+            boxShadow: '0 2px 12px rgba(74,143,87,0.3)',
             transition: 'transform 0.12s var(--ease-spring)',
           }}
         >
-          NT$99 · 解鎖無限掃描（Ko-fi）
+          NT$99／月 · 立即解鎖無限掃描
         </a>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
           <div style={{ flex: 1, height: 1, background: 'var(--separator)' }} />
-          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>已有存取碼</span>
+          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>已有授權碼</span>
           <div style={{ flex: 1, height: 1, background: 'var(--separator)' }} />
         </div>
 
@@ -121,9 +121,9 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
           value={code}
           onChange={(e) => { setCode(e.target.value.toUpperCase()); setError('') }}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-          placeholder="RADAR-XXXX"
+          placeholder="付款後信箱會收到授權碼"
           className={`input-field${error ? ' input-field--error' : ''}`}
-          style={{ textAlign: 'center', letterSpacing: '0.12em', fontFamily: 'monospace', marginBottom: '10px', fontSize: '16px' }}
+          style={{ textAlign: 'center', letterSpacing: '0.06em', fontFamily: 'monospace', marginBottom: '10px', fontSize: '14px' }}
           disabled={loading}
         />
 
@@ -142,7 +142,7 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
         </button>
 
         <p style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '11px', marginTop: '14px', letterSpacing: '-0.01em' }}>
-          付款後在 Ko-fi 留言取得存取碼 · @minehoooo
+          付款完成後，授權碼會自動寄到你的信箱
         </p>
       </div>
     </div>
