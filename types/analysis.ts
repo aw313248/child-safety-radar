@@ -20,6 +20,7 @@ export interface ScoreBreakdownItem {
 export interface AnalysisResult {
   riskLevel: RiskLevel
   riskScore: number // 0-100
+  channelId?: string // UC… YouTube 頻道 ID，用於兒童模式播放器
   channelName: string
   channelThumbnail?: string
   videoCount?: number

@@ -427,6 +427,7 @@ export async function POST(req: NextRequest) {
     const result: AnalysisResult = {
       riskLevel,
       riskScore: finalScore,
+      channelId: channelInfo.id,
       channelName: channelInfo.name,
       channelThumbnail: channelInfo.thumbnail,
       videoCount: channelInfo.videos.length,
