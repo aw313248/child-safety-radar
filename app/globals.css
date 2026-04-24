@@ -144,6 +144,73 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
+   Bee Card — 全站統一卡片樣式（奶油底 + 深咖啡粗邊框）
+   所有 section、card、panel 都用這個
+   ══════════════════════════════════════════════════ */
+.bee-card {
+  background: var(--card-hex);
+  border: 2.5px solid var(--ink-hex);
+  border-radius: 24px;
+  box-shadow: 6px 6px 0 rgba(43, 24, 16, 0.92);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
+}
+.bee-card-honey {
+  background: var(--honey-hex);
+  border: 2.5px solid var(--ink-hex);
+  border-radius: 24px;
+  box-shadow: 6px 6px 0 rgba(43, 24, 16, 0.92);
+}
+.bee-card-flat {
+  background: var(--card-hex);
+  border: 2px solid var(--ink-hex);
+  border-radius: 20px;
+}
+button.bee-card:hover,
+a.bee-card:hover,
+button.bee-card-honey:hover,
+a.bee-card-honey:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 rgba(43, 24, 16, 0.92);
+}
+button.bee-card:active,
+a.bee-card:active,
+button.bee-card-honey:active,
+a.bee-card-honey:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(43, 24, 16, 0.92);
+}
+
+/* Segmented control — pill 版本 Busy Bee 風 */
+.bee-segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding: 5px;
+  background: var(--card-hex);
+  border: 2.5px solid var(--ink-hex);
+  border-radius: 9999px;
+  box-shadow: 4px 4px 0 rgba(43, 24, 16, 0.92);
+}
+.bee-segmented__item {
+  padding: 11px 14px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: var(--ink-hex);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.bee-segmented__item--active {
+  background: var(--ink-hex);
+  color: var(--honey-hex);
+  font-weight: 900;
+}
+
+/* ══════════════════════════════════════════════════
    Pill 按鈕 — Busy Bee 風格深咖啡 + 箭頭
    ══════════════════════════════════════════════════ */
 .btn-pill {

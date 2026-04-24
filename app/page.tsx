@@ -153,43 +153,48 @@ export default function Home() {
     <main style={{ minHeight: '100vh', padding: '24px 20px 56px' }}>
       <div style={{ width: '100%', maxWidth: 440, margin: '0 auto' }}>
 
-        {/* ═══ Top bar — 小 logo + 歷史入口（明確標籤） ═══ */}
+        {/* ═══ Top bar — Busy Bee 風：黑底蜂蜜文字 + pill ═══ */}
         <nav style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 32,
+          marginBottom: 20,
+          padding: '10px 14px',
+          background: 'var(--ink-hex)',
+          borderRadius: 9999,
+          border: '2.5px solid var(--ink-hex)',
+          boxShadow: '3px 3px 0 rgba(43, 24, 16, 0.45)',
         }}>
           <span style={{
-            fontSize: 13,
-            fontWeight: 700,
-            letterSpacing: '-0.01em',
-            color: 'var(--text-secondary)',
+            fontSize: 14,
+            fontWeight: 900,
+            letterSpacing: '-0.02em',
+            color: 'var(--honey-hex)',
           }}>
-            CareCub Kids
+            🐻 CareCub Kids
           </span>
           <a
             href="/history"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
-              padding: '8px 14px',
+              gap: 5,
+              padding: '6px 12px',
               borderRadius: 9999,
-              background: 'var(--ink-05)',
-              border: '1px solid var(--border-soft)',
-              color: 'var(--text-primary)',
-              fontSize: 13,
-              fontWeight: 600,
+              background: 'var(--honey-hex)',
+              color: 'var(--ink-hex)',
+              fontSize: 12,
+              fontWeight: 900,
               letterSpacing: '-0.01em',
               textDecoration: 'none',
+              border: '1.5px solid var(--ink-hex)',
             }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="9" />
               <polyline points="12 7 12 12 15 14" />
             </svg>
-            掃描歷史
+            歷史
           </a>
         </nav>
 
@@ -279,75 +284,48 @@ export default function Home() {
         {/* ═══ 一鍵開啟兒童模式 — 主打 CTA ═══ */}
         <a
           href="/kids"
+          className="bee-card-honey"
           style={{
-            display: 'flex', alignItems: 'center', gap: 14,
-            padding: '16px 18px',
-            marginBottom: 18,
-            background: 'var(--ink-hex)',
-            color: '#FBF7EA',
-            borderRadius: 22,
+            display: 'flex', alignItems: 'center', gap: 16,
+            padding: '20px 22px',
+            marginBottom: 22,
+            color: 'var(--ink-hex)',
             textDecoration: 'none',
-            boxShadow: '0 12px 28px rgba(58, 40, 32, 0.28)',
-            transition: 'transform 0.2s var(--ease-spring), box-shadow 0.2s',
-            border: '2px solid var(--honey-hex)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 18px 36px rgba(58, 40, 32, 0.36)' }}
-          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 12px 28px rgba(58, 40, 32, 0.28)' }}
         >
           <div style={{
-            width: 48, height: 48, borderRadius: '50%',
-            background: 'var(--honey-hex)',
-            color: 'var(--ink-hex)',
+            width: 60, height: 60, borderRadius: '50%',
+            background: 'var(--ink-hex)',
+            color: 'var(--honey-hex)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 26, flexShrink: 0,
-            boxShadow: '0 3px 8px rgba(58,40,32,0.25)',
+            fontSize: 32, flexShrink: 0,
+            border: '3px solid var(--ink-hex)',
           }}>🐻</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', color: 'var(--honey-hex)', textTransform: 'uppercase', marginBottom: 3 }}>
-              Bear Mode
+            <p style={{ fontSize: 11, fontWeight: 900, letterSpacing: '0.16em', color: 'var(--ink-hex)', textTransform: 'uppercase', marginBottom: 4, opacity: 0.7 }}>
+              ★ Bear Mode ★
             </p>
-            <p style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.04em' }}>
+            <p className="font-display" style={{ fontSize: 26, lineHeight: 1.02, color: 'var(--ink-hex)' }}>
               打開熊熊守護模式
             </p>
-            <p style={{ fontSize: 12, opacity: 0.72, letterSpacing: '-0.01em', marginTop: 3 }}>
+            <p style={{ fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', marginTop: 5, fontWeight: 600, opacity: 0.78 }}>
               內建真人驗證頻道，平板丟給小孩也安心
             </p>
           </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.7 }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </a>
 
-        {/* ═══ Segmented control ═══ */}
-        <div style={{
-          background: 'var(--ink-05)',
-          border: '1px solid var(--border-soft)',
-          borderRadius: 9999,
-          padding: 4,
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 2,
-          marginBottom: 24,
-        }}>
+        {/* ═══ Segmented control — Busy Bee pill ═══ */}
+        <div className="bee-segmented" style={{ marginBottom: 24 }}>
           {(['scan', 'cases'] as const).map(t => {
             const active = tab === t
             return (
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                style={{
-                  padding: '10px 14px',
-                  borderRadius: 9999,
-                  border: 'none',
-                  background: active ? 'var(--ink-hex)' : 'transparent',
-                  color: active ? '#fff' : 'var(--text-secondary)',
-                  fontFamily: 'inherit',
-                  fontSize: 13,
-                  fontWeight: active ? 700 : 500,
-                  letterSpacing: '-0.01em',
-                  cursor: 'pointer',
-                  transition: 'background 0.25s, color 0.25s',
-                }}
+                className={`bee-segmented__item${active ? ' bee-segmented__item--active' : ''}`}
               >
                 {t === 'scan' ? '頻道掃描' : '真實案例'}
               </button>
@@ -365,8 +343,8 @@ export default function Home() {
 
             {!result && (
               <>
-                {/* Hero input card — 單一 stone tint */}
-                <div className="surface-stone" style={{
+                {/* Hero input card — Busy Bee 奶油底 + 深咖啡邊 */}
+                <div className="bee-card" style={{
                   padding: '22px 22px 20px',
                   marginBottom: 28,
                 }}>
@@ -393,16 +371,18 @@ export default function Home() {
                     </span>
                   </div>
 
-                  {/* Input + send — iMessage 風 */}
+                  {/* Input + send — Busy Bee 粗邊黑底 pill */}
                   <div style={{
                     background: '#FFFFFF',
                     borderRadius: 9999,
-                    border: '1px solid var(--border-soft)',
-                    padding: '5px 5px 5px 18px',
+                    border: '2.5px solid var(--ink-hex)',
+                    padding: '4px 4px 4px 18px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 8,
-                    boxShadow: error ? '0 0 0 3px rgba(194,65,59,0.12)' : 'var(--shadow-hair)',
+                    boxShadow: error
+                      ? '0 0 0 3px rgba(194,65,59,0.18), 3px 3px 0 rgba(43,24,16,0.35)'
+                      : '3px 3px 0 rgba(43,24,16,0.35)',
                     transition: 'box-shadow 0.2s',
                   }}>
                     <input
@@ -431,24 +411,24 @@ export default function Home() {
                       aria-label="開始掃描"
                       style={{
                         flex: '0 0 auto',
-                        width: 44, height: 44,
+                        width: 46, height: 46,
                         borderRadius: '50%',
                         border: 'none',
-                        background: canSubmit ? 'var(--ink-hex)' : 'var(--ink-10)',
-                        color: '#fff',
+                        background: canSubmit ? 'var(--honey-hex)' : 'var(--ink-10)',
+                        color: 'var(--ink-hex)',
                         cursor: canSubmit ? 'pointer' : 'not-allowed',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'background 0.15s, transform 0.1s',
-                        boxShadow: canSubmit ? '0 4px 12px rgba(10,10,10,0.22)' : 'none',
+                        boxShadow: canSubmit ? '0 3px 0 var(--ink-hex)' : 'none',
                       }}
                     >
                       {loading ? (
                         <span style={{
                           width: 16, height: 16,
-                          border: '2.5px solid rgba(255,255,255,0.3)',
-                          borderTopColor: '#fff',
+                          border: '2.5px solid rgba(43,24,16,0.3)',
+                          borderTopColor: 'var(--ink-hex)',
                           borderRadius: '50%',
                           animation: 'peekkids-spin 0.8s linear infinite',
                         }} />
@@ -473,31 +453,45 @@ export default function Home() {
 
                 {error && !loading && (
                   <div className="stagger-1" style={{
-                    padding: '14px 18px',
+                    padding: '16px 20px',
                     marginBottom: 24,
-                    background: 'rgba(194,65,59,0.06)',
-                    border: '1px solid rgba(194,65,59,0.18)',
-                    borderRadius: 'var(--radius-lg)',
+                    background: '#FFF4E6',
+                    border: '2.5px solid var(--terra-hex)',
+                    borderRadius: 20,
+                    boxShadow: '4px 4px 0 var(--terra-hex)',
                   }}>
-                    <p style={{ color: 'var(--risk-red)', fontSize: 13, letterSpacing: '-0.01em', fontWeight: 700 }}>
+                    <p style={{ color: 'var(--terra-hex)', fontSize: 14, letterSpacing: '-0.02em', fontWeight: 900 }}>
                       {error}
                     </p>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: 12, marginTop: 4, letterSpacing: '-0.01em' }}>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: 12, marginTop: 4, letterSpacing: '-0.01em', fontWeight: 600 }}>
                       確認網址格式，或直接貼瀏覽器網址列
                     </p>
                   </div>
                 )}
 
-                {/* 怎麼用 section */}
+                {/* 怎麼用 section — 黑體大字 + 蜂蜜底線 */}
                 <h2 style={{
-                  fontSize: 20,
-                  fontWeight: 800,
-                  letterSpacing: '-0.03em',
-                  color: 'var(--text-primary)',
-                  margin: '8px 0 14px',
+                  fontSize: 32,
+                  fontWeight: 900,
+                  letterSpacing: '-0.055em',
+                  color: 'var(--ink-hex)',
+                  margin: '8px 0 16px',
                   paddingLeft: 4,
+                  lineHeight: 1,
+                  display: 'inline-block',
+                  position: 'relative',
                 }}>
                   怎麼用
+                  <span style={{
+                    position: 'absolute',
+                    bottom: -4,
+                    left: 4,
+                    right: 4,
+                    height: 8,
+                    background: 'var(--honey-hex)',
+                    zIndex: -1,
+                    borderRadius: 4,
+                  }} />
                 </h2>
 
                 <div style={{
@@ -512,27 +506,26 @@ export default function Home() {
                         key={item.n}
                         type="button"
                         onClick={() => setActiveStep(isActive ? null : item.n)}
-                        className={`surface-white stagger-${idx + 1} step-card`}
+                        className={`bee-card stagger-${idx + 1}`}
                         style={{
-                          padding: '18px 12px 16px',
+                          padding: '20px 12px 16px',
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
                           textAlign: 'center',
                           gap: 10,
                           cursor: 'pointer',
-                          border: isActive ? '1px solid var(--ink-40)' : '1px solid var(--border-soft)',
-                          background: isActive ? 'var(--ink-05)' : '#FFFFFF',
+                          background: isActive ? 'var(--honey-hex)' : 'var(--card-hex)',
                           fontFamily: 'inherit',
-                          transition: 'all 0.2s var(--ease-out)',
                         }}
                         aria-expanded={isActive}
                       >
                         <div className="step-icon" style={{
-                          width: 44, height: 44,
+                          width: 48, height: 48,
                           borderRadius: '50%',
-                          background: 'var(--ink-hex)',
-                          color: '#fff',
+                          background: isActive ? 'var(--ink-hex)' : 'var(--honey-hex)',
+                          color: isActive ? 'var(--honey-hex)' : 'var(--ink-hex)',
+                          border: '2.5px solid var(--ink-hex)',
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -541,34 +534,35 @@ export default function Home() {
                           <StepIcon name={item.icon} />
                           <span style={{
                             position: 'absolute',
-                            top: -4, right: -4,
-                            minWidth: 18, height: 18,
+                            top: -6, right: -6,
+                            minWidth: 20, height: 20,
                             padding: '0 5px',
                             borderRadius: 9999,
-                            background: 'var(--stone-hex)',
-                            color: 'var(--ink-hex)',
+                            background: 'var(--ink-hex)',
+                            color: 'var(--honey-hex)',
                             fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-                            fontSize: 10,
-                            fontWeight: 700,
+                            fontSize: 11,
+                            fontWeight: 900,
                             display: 'inline-flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            border: '2px solid #FFFFFF',
+                            border: '2px solid var(--card-hex)',
                           }}>{item.n}</span>
                         </div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1.3 }}>{item.t}</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em', lineHeight: 1.45 }}>{item.s}</div>
+                        <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.03em', lineHeight: 1.2 }}>{item.t}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.45, fontWeight: 600 }}>{item.s}</div>
                         <div style={{
                           fontSize: 10,
-                          color: 'var(--text-tertiary)',
+                          color: 'var(--ink-hex)',
                           marginTop: 2,
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: 3,
-                          fontWeight: 600,
-                          letterSpacing: '-0.01em',
+                          fontWeight: 800,
+                          letterSpacing: '0.02em',
+                          textTransform: 'uppercase',
                         }}>
-                          {isActive ? '收起' : '了解更多'}
+                          {isActive ? '收起' : '詳情'}
                           <span style={{
                             display: 'inline-block',
                             transition: 'transform 0.25s var(--ease-out)',
@@ -586,48 +580,43 @@ export default function Home() {
                   const item = steps.find(s => s.n === activeStep)!
                   return (
                     <div
-                      className="animate-fade-scale-in surface-stone-soft"
+                      className="animate-fade-scale-in bee-card-flat"
                       style={{
-                        marginTop: 10,
-                        padding: '16px 18px',
+                        marginTop: 12,
+                        padding: '18px 20px',
+                        borderLeft: '8px solid var(--honey-hex)',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                         <span style={{
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-                          fontSize: 10,
-                          fontWeight: 700,
-                          padding: '2px 8px',
+                          fontSize: 11,
+                          fontWeight: 900,
+                          padding: '3px 10px',
                           borderRadius: 9999,
-                          background: 'var(--ink-hex)',
-                          color: '#fff',
+                          background: 'var(--honey-hex)',
+                          color: 'var(--ink-hex)',
+                          border: '2px solid var(--ink-hex)',
                           letterSpacing: '0.02em',
-                        }}>{item.n}</span>
-                        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                        }}>STEP {item.n}</span>
+                        <span style={{ fontSize: 16, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
                           {item.t}
                         </span>
                       </div>
-                      <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65, letterSpacing: '-0.01em' }}>
+                      <p style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.65, letterSpacing: '-0.01em', fontWeight: 500 }}>
                         {item.detail}
                       </p>
                       {item.action && (
                         <button
                           onClick={item.action.onClick}
+                          className="btn-pill btn-pill-honey"
                           style={{
-                            marginTop: 12,
-                            padding: '10px 16px',
-                            borderRadius: 9999,
-                            background: 'var(--ink-hex)',
-                            color: '#fff',
-                            border: 'none',
-                            fontFamily: 'inherit',
+                            marginTop: 14,
+                            padding: '12px 20px',
                             fontSize: 12,
-                            fontWeight: 600,
-                            letterSpacing: '-0.01em',
-                            cursor: 'pointer',
                           }}
                         >
-                          {item.action.label} →
+                          {item.action.label} <span className="arrow">→</span>
                         </button>
                       )}
                     </div>
@@ -648,13 +637,16 @@ export default function Home() {
         )}
 
         <p style={{
-          marginTop: 40,
+          marginTop: 48,
           textAlign: 'center',
-          fontSize: 11,
-          color: 'var(--text-tertiary)',
-          letterSpacing: '-0.01em',
+          fontSize: 12,
+          color: 'var(--ink-hex)',
+          letterSpacing: '0.08em',
+          fontWeight: 800,
+          textTransform: 'uppercase',
+          opacity: 0.55,
         }}>
-          AI 輔助分析 · 結果僅供參考
+          🐻 AI 輔助分析 · 結果僅供參考 🐝
         </p>
       </div>
 
