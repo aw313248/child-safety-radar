@@ -5,50 +5,48 @@
 <title>PeekKids</title>
 <style>
   :root {
-    --forest: #1A3828;
-    --forest-mid: #2C5A42;
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-tertiary: #94A3B8;
-    --risk-red: #DC2626;
-    --risk-orange: #EA580C;
-    --risk-green: #16A34A;
-    --bg: #FAFBFC;
+    --pk-blue: #007AFF;
+    --pk-blue-dark: #0062CC;
+    --pk-green: #34C759;
+    --pk-orange: #FF9500;
+    --pk-red: #FF3B30;
+    --text: #111111;
+    --text-secondary: #8E8E93;
+    --bg: #F2F2F7;
     --surface: #FFFFFF;
-    --border: rgba(15, 23, 42, 0.10);
+    --border: rgba(60, 60, 67, 0.12);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    width: 320px;
+    width: 340px;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC', 'Noto Sans TC', sans-serif;
     background: var(--bg);
-    color: var(--text-primary);
+    color: var(--text);
     -webkit-font-smoothing: antialiased;
   }
   .header {
-    padding: 16px 18px 12px;
-    text-align: center;
+    padding: 18px 20px 14px;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
   }
   .header h1 {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 800;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
     line-height: 1;
   }
-  .header h1 span { color: var(--forest-mid); }
+  .header h1 span { color: var(--pk-blue); }
   .header p {
-    font-size: 11px;
-    color: var(--text-tertiary);
+    font-size: 12px;
+    color: var(--text-secondary);
     margin-top: 4px;
     letter-spacing: -0.01em;
   }
   .body { padding: 14px 16px; }
   .channel-label {
     font-size: 11px;
-    color: var(--text-tertiary);
-    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     font-weight: 600;
     margin-bottom: 6px;
@@ -57,116 +55,118 @@
     font-size: 12px;
     color: var(--text-secondary);
     word-break: break-all;
-    padding: 8px 10px;
+    padding: 10px 12px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 10px;
     letter-spacing: -0.01em;
     line-height: 1.5;
     margin-bottom: 12px;
   }
   .btn {
     width: 100%;
-    padding: 12px;
-    background: var(--forest);
+    padding: 13px;
+    background: var(--pk-blue);
     color: #fff;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-family: inherit;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     letter-spacing: -0.01em;
     cursor: pointer;
     transition: background 0.15s, transform 0.1s;
   }
-  .btn:hover:not(:disabled) { background: var(--forest-mid); }
+  .btn:hover:not(:disabled) { background: var(--pk-blue-dark); }
   .btn:active:not(:disabled) { transform: scale(0.98); }
   .btn:disabled {
-    background: rgba(15, 23, 42, 0.1);
-    color: rgba(15, 23, 42, 0.4);
+    background: rgba(60, 60, 67, 0.12);
+    color: rgba(60, 60, 67, 0.4);
     cursor: not-allowed;
   }
   .error {
     font-size: 12px;
-    color: var(--risk-red);
-    background: rgba(220, 38, 38, 0.06);
-    border: 1px solid rgba(220, 38, 38, 0.18);
-    padding: 8px 10px;
-    border-radius: 8px;
+    color: var(--pk-red);
+    background: rgba(255, 59, 48, 0.08);
+    border: 1px solid rgba(255, 59, 48, 0.20);
+    padding: 10px 12px;
+    border-radius: 10px;
     letter-spacing: -0.01em;
-    line-height: 1.45;
+    line-height: 1.5;
   }
   .result-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
+    border-radius: 14px;
+    padding: 16px;
     margin-bottom: 10px;
   }
   .score-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .score {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: 800;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.04em;
     line-height: 1;
+    color: var(--text);
   }
-  .score span { font-size: 12px; color: var(--text-tertiary); font-weight: 500; margin-left: 4px; }
+  .score span { font-size: 13px; color: var(--text-secondary); font-weight: 500; margin-left: 4px; }
   .level {
     font-size: 11px;
     font-weight: 700;
-    padding: 3px 9px;
-    border-radius: 999px;
+    padding: 4px 10px;
+    border-radius: 9999px;
     letter-spacing: -0.005em;
   }
-  .level--high   { background: rgba(220,38,38,0.08);  color: #B91C1C; }
-  .level--medium { background: rgba(234,88,12,0.08);  color: #C2410C; }
-  .level--low    { background: rgba(22,163,74,0.08);  color: #15803D; }
-  .score--high   { color: var(--risk-red); }
-  .score--medium { color: var(--risk-orange); }
-  .score--low    { color: var(--risk-green); }
+  .level--high   { background: rgba(255,59,48,0.10);  color: var(--pk-red); }
+  .level--medium { background: rgba(255,149,0,0.12);  color: var(--pk-orange); }
+  .level--low    { background: rgba(52,199,89,0.10);  color: var(--pk-green); }
+  .score--high   { color: var(--pk-red); }
+  .score--medium { color: var(--pk-orange); }
+  .score--low    { color: var(--pk-green); }
   .channel-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
   .summary {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-secondary);
-    line-height: 1.55;
+    line-height: 1.6;
     letter-spacing: -0.01em;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .recommendation {
-    font-size: 11px;
-    color: var(--text-primary);
-    line-height: 1.5;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.55;
     letter-spacing: -0.01em;
-    padding: 8px 10px;
-    background: rgba(15, 23, 42, 0.03);
-    border-radius: 6px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 10px;
   }
   .footer {
-    padding: 10px 16px 14px;
+    padding: 12px 16px 16px;
     text-align: center;
   }
   .footer a {
-    font-size: 11px;
-    color: var(--text-tertiary);
+    font-size: 12px;
+    color: var(--text-secondary);
     text-decoration: none;
     letter-spacing: -0.01em;
+    font-weight: 500;
   }
-  .footer a:hover { color: var(--forest-mid); }
+  .footer a:hover { color: var(--pk-blue); }
   .hint {
-    font-size: 11px;
-    color: var(--text-tertiary);
+    font-size: 12px;
+    color: var(--text-secondary);
     letter-spacing: -0.01em;
-    line-height: 1.5;
+    line-height: 1.55;
     text-align: center;
     padding: 8px 0;
   }
