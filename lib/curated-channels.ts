@@ -51,6 +51,16 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     emoji: '🎵',
   },
   {
+    channelId: 'UCepXGfvoX1evyA6lB553Y7Q',
+    name: 'Play BIG 小啼大作',
+    handle: '@playbigmusic',
+    description: '台灣原創兒童音樂與動畫，中文兒歌首選',
+    ageGroups: ['0-3', '3-6'],
+    categories: ['song', 'cartoon'],
+    language: 'zh',
+    emoji: '🎤',
+  },
+  {
     channelId: 'UCuM8Rv0KiPPcN7WQVW1SC3g',
     name: 'ChuChu TV',
     handle: '@chuchutv',
