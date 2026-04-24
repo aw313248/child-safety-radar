@@ -46,7 +46,7 @@ async function analyzeWithGemini(
   commentsDisabled: boolean
 ): Promise<{ summary: string; riskScore: number; recommendation: string }> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
   const prompt = `你是一個專門保護兒童的內容安全分析師。請分析以下 YouTube 頻道資訊，評估是否存在「Elsagate」類型風險（將危險、不適合兒童的內容偽裝成兒童影片）。
 
