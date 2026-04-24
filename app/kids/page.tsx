@@ -2,7 +2,39 @@
 
 import { useEffect, useState } from 'react'
 import { CuratedChannel, AgeGroup, filterChannelsByAge } from '@/lib/curated-channels'
+import { getUserChannels, removeUserChannel, UserChannel } from '@/lib/user-channels'
 import LockScreenGuide from '@/components/LockScreenGuide'
+
+// 統一顯示用
+type DisplayChannel = {
+  channelId: string
+  name: string
+  description: string
+  emoji: string
+  ageGroups: AgeGroup[]
+  source: 'curated' | 'user'
+}
+
+function curatedToDisplay(c: CuratedChannel): DisplayChannel {
+  return {
+    channelId: c.channelId,
+    name: c.name,
+    description: c.description,
+    emoji: c.emoji,
+    ageGroups: c.ageGroups,
+    source: 'curated',
+  }
+}
+function userToDisplay(c: UserChannel): DisplayChannel {
+  return {
+    channelId: c.channelId,
+    name: c.name,
+    description: '爸媽驗證後加入',
+    emoji: c.emoji,
+    ageGroups: [c.ageGroup],
+    source: 'user',
+  }
+}
 
 const LOCK_GUIDE_KEY = 'peekkids_lock_guide_seen'
 const AGE_KEY = 'peekkids_kids_age'
@@ -18,7 +50,8 @@ export default function KidsModePage() {
   const [mounted, setMounted] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
   const [age, setAge] = useState<AgeGroup | 'all'>('3-6')
-  const [selectedChannel, setSelectedChannel] = useState<CuratedChannel | null>(null)
+  const [userChannels, setUserChannels] = useState<UserChannel[]>([])
+  const [selectedChannel, setSelectedChannel] = useState<DisplayChannel | null>(null)
   const [videos, setVideos] = useState<SafeVideo[]>([])
   const [loadingVideos, setLoadingVideos] = useState(false)
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
@@ -46,16 +79,26 @@ export default function KidsModePage() {
     setShowGuide(localStorage.getItem(LOCK_GUIDE_KEY) !== '1')
     const savedAge = localStorage.getItem(AGE_KEY) as AgeGroup | 'all' | null
     if (savedAge) setAge(savedAge)
+    setUserChannels(getUserChannels())
   }, [])
+
+  const removeMyChannel = (channelId: string) => {
+    const next = removeUserChannel(channelId)
+    setUserChannels(next)
+  }
 
   const saveAge = (a: AgeGroup | 'all') => {
     setAge(a)
     localStorage.setItem(AGE_KEY, a)
   }
 
-  const channels = filterChannelsByAge(age)
+  // 合併官方精選 + 爸媽加入的，再依年齡篩
+  const curated = filterChannelsByAge(age).map(curatedToDisplay)
+  const mine = userChannels
+    .filter(c => age === 'all' || c.ageGroup === age)
+    .map(userToDisplay)
 
-  const openChannel = async (ch: CuratedChannel) => {
+  const openChannel = async (ch: DisplayChannel) => {
     setSelectedChannel(ch)
     setVideos([])
     setPlayingVideoId(null)
@@ -339,13 +382,20 @@ export default function KidsModePage() {
           </p>
         </div>
 
-        {/* 頻道格 */}
+        {/* 官方精選 */}
+        <p style={{
+          fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)',
+          letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10,
+        }}>
+          官方精選 · 100% 驗證
+        </p>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
           gap: 12,
+          marginBottom: 28,
         }}>
-          {channels.map(ch => (
+          {curated.map(ch => (
             <button
               key={ch.channelId}
               onClick={() => openChannel(ch)}
@@ -403,6 +453,98 @@ export default function KidsModePage() {
             </button>
           ))}
         </div>
+
+        {/* 爸媽加入的 */}
+        {mine.length > 0 && (
+          <>
+            <p style={{
+              fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)',
+              letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10,
+            }}>
+              爸媽加入的 · 自行驗證
+            </p>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+              gap: 12,
+            }}>
+              {mine.map(ch => (
+                <div
+                  key={ch.channelId}
+                  style={{
+                    position: 'relative',
+                    background: '#FFFFFF',
+                    border: '1px dashed var(--border-soft)',
+                    borderRadius: 20,
+                    padding: 16,
+                    textAlign: 'center',
+                    transition: 'transform 0.15s var(--ease-spring), box-shadow 0.15s',
+                  }}
+                >
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (confirm(`移除「${ch.name}」？`)) removeMyChannel(ch.channelId)
+                    }}
+                    aria-label="移除"
+                    style={{
+                      position: 'absolute', top: 8, right: 8,
+                      width: 24, height: 24,
+                      borderRadius: '50%',
+                      background: 'var(--ink-05)',
+                      border: '1px solid var(--border-soft)',
+                      cursor: 'pointer', fontFamily: 'inherit',
+                      fontSize: 11, color: 'var(--text-secondary)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      lineHeight: 1,
+                    }}
+                  >
+                    ✕
+                  </button>
+                  <button
+                    onClick={() => openChannel(ch)}
+                    style={{
+                      width: '100%', background: 'transparent', border: 'none',
+                      cursor: 'pointer', fontFamily: 'inherit', padding: 0,
+                    }}
+                  >
+                    <div style={{
+                      width: 64, height: 64, margin: '0 auto 10px',
+                      borderRadius: '50%',
+                      background: 'var(--stone-hex)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 32,
+                    }}>{ch.emoji}</div>
+                    <p style={{
+                      fontSize: 13, fontWeight: 800,
+                      color: 'var(--text-primary)', letterSpacing: '-0.02em',
+                      marginBottom: 4, lineHeight: 1.2,
+                    }}>
+                      {ch.name}
+                    </p>
+                    <p style={{
+                      fontSize: 10, color: 'var(--text-tertiary)',
+                      letterSpacing: '-0.005em', lineHeight: 1.4,
+                    }}>
+                      {ch.description}
+                    </p>
+                    <div style={{
+                      marginTop: 8,
+                      display: 'inline-block',
+                      padding: '2px 8px',
+                      borderRadius: 9999,
+                      background: 'var(--ink-05)',
+                      fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
+                      color: 'var(--text-secondary)',
+                    }}>
+                      {ch.ageGroups.join(' · ')} 歲
+                    </div>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         <p style={{
           textAlign: 'center', marginTop: 28,

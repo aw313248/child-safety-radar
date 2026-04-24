@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { AnalysisResult, ScoreBreakdownItem } from '@/types/analysis'
 import DiscussionReporter from './DiscussionReporter'
 import ShareQRModal from './ShareQRModal'
+import AddToKidsMode from './AddToKidsMode'
 
 const CATEGORY_LABEL: Record<ScoreBreakdownItem['category'], string> = {
   ai: 'AI 分析',
@@ -325,6 +326,15 @@ export default function ResultCard({ result, onReset }: Props) {
           {result.recommendation}
         </p>
       </div>
+
+      {/* 非高風險 → 給爸媽一鍵加入兒童安心模式 */}
+      <AddToKidsMode
+        channelId={result.channelId}
+        channelName={result.channelName}
+        channelThumbnail={result.channelThumbnail}
+        riskScore={result.riskScore}
+        riskLevel={result.riskLevel}
+      />
 
       {/* UGC：評分回報 + 討論補充 */}
       <DiscussionReporter
