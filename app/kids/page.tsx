@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { CuratedChannel, AgeGroup, filterChannelsByAge } from '@/lib/curated-channels'
 import { getUserChannels, removeUserChannel, UserChannel } from '@/lib/user-channels'
 import LockScreenGuide from '@/components/LockScreenGuide'
+import KidsTimer from '@/components/KidsTimer'
 
 // 統一顯示用
 type DisplayChannel = {
@@ -235,6 +236,15 @@ export default function KidsModePage() {
         background: '#000',
         display: 'flex', flexDirection: 'column',
       }}>
+        <KidsTimer
+          onTimeUp={() => setPlayingVideoId(null)}
+          onExit={() => {
+            allowLeaveRef.current = true
+            if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
+            localStorage.removeItem('peekkids_timer_end_ts')
+            window.location.href = '/'
+          }}
+        />
         {/* 頂部控制條 */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -287,6 +297,15 @@ export default function KidsModePage() {
         padding: '20px 16px 40px',
         background: 'var(--paper-hex)',
       }}>
+        <KidsTimer
+          onTimeUp={() => setPlayingVideoId(null)}
+          onExit={() => {
+            allowLeaveRef.current = true
+            if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
+            localStorage.removeItem('peekkids_timer_end_ts')
+            window.location.href = '/'
+          }}
+        />
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <button
             onClick={() => setSelectedChannel(null)}
@@ -404,6 +423,17 @@ export default function KidsModePage() {
       padding: '20px 16px 40px',
       background: 'var(--paper-hex)',
     }}>
+      {/* ⏱ 計時／護眼守護 */}
+      <KidsTimer
+        onTimeUp={() => setPlayingVideoId(null)}
+        onExit={() => {
+          allowLeaveRef.current = true
+          if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
+          localStorage.removeItem('peekkids_timer_end_ts')
+          window.location.href = '/'
+        }}
+      />
+
       <div style={{ maxWidth: 960, margin: '0 auto' }}>
         {/* 頂部 */}
         <div style={{
@@ -446,6 +476,25 @@ export default function KidsModePage() {
                 🔳 全螢幕鎖
               </button>
             )}
+            <button
+              onClick={() => {
+                // 清掉 end_ts 讓 KidsTimer 重跳設定
+                localStorage.removeItem('peekkids_timer_end_ts')
+                window.location.reload()
+              }}
+              aria-label="重設時間"
+              title="重設時間"
+              style={{
+                padding: '8px 12px',
+                borderRadius: 9999,
+                background: 'var(--honey-hex)', border: '2px solid var(--ink-hex)',
+                color: 'var(--ink-hex)',
+                fontSize: 12, fontWeight: 900, letterSpacing: '-0.01em',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              ⏱️ 時間
+            </button>
             <button
               onClick={() => setShowGuide(true)}
               aria-label="重看鎖螢幕教學"
