@@ -1,25 +1,24 @@
 // 精選安心頻道清單
 // 原則：寧缺勿濫。只收錄「百分百確定是官方原版」的頻道
 // 所有 UC ID 都是全球 TOP 等級幼兒頻道的官方認證 ID
-// 第一版只有 5 個，其餘讓爸媽自己掃描驗證後加入
+// 其餘中文 / 本地頻道讓爸媽自己掃描驗證後加入
 //
-// ⚠️ 教訓：不要憑記憶填 UC ID，否則可能指到 Elsagate 山寨頻道
+// ⚠️ 教訓：不要憑記憶填 UC ID，Little Baby Bum 的 UC 曾被填成遊戲實況頻道已移除
 
 export type AgeGroup = '0-3' | '3-6'
 export type Category = 'song' | 'story' | 'learn' | 'cartoon'
 
 export interface CuratedChannel {
-  channelId: string      // UC… 開頭的 YouTube 頻道 ID
-  name: string           // 顯示名稱（繁中）
-  handle?: string        // YouTube handle，用於連回原頻道
-  description: string    // 一句話描述
-  ageGroups: AgeGroup[]  // 適合年齡
-  categories: Category[] // 內容類別
+  channelId: string
+  name: string
+  handle?: string
+  description: string
+  ageGroups: AgeGroup[]
+  categories: Category[]
   language: 'zh' | 'en' | 'both'
-  emoji: string          // 封面 emoji
+  emoji: string
 }
 
-// 全球兒歌 TOP 5 — 全部 YouTube 官方認證 COPPA 合規
 export const CURATED_CHANNELS: CuratedChannel[] = [
   {
     channelId: 'UCbCmjCuTUZos6Inko4u57UQ',
@@ -52,16 +51,6 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     emoji: '🎵',
   },
   {
-    channelId: 'UCpqXJOEqGS-TCnazcHCo0rA',
-    name: 'Little Baby Bum',
-    handle: '@LittleBabyBum',
-    description: '英文童謠動畫，專為幼兒設計',
-    ageGroups: ['0-3', '3-6'],
-    categories: ['song'],
-    language: 'en',
-    emoji: '🐑',
-  },
-  {
     channelId: 'UCuM8Rv0KiPPcN7WQVW1SC3g',
     name: 'ChuChu TV',
     handle: '@chuchutv',
@@ -75,7 +64,6 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
 
 // ═══ 影片級關鍵字黑名單 ═══════════════════════════════════════
 // 第三層防護：即使頻道 OK，標題含這些字就不顯示
-// 收錄原則：寧可錯殺、不可放過，因為 6 歲以下真的不能看到
 export const VIDEO_TITLE_BLOCKLIST = [
   // ── 中文高風險 ──
   '挑戰', '恐怖', '驚悚', '血', '殺', '鬼', '嚇', '整人', '惡作劇',
@@ -90,10 +78,13 @@ export const VIDEO_TITLE_BLOCKLIST = [
   'zombie', 'ghost', 'monster', 'demon', 'devil', 'hell',
   'vomit', 'poop', 'pee', 'butt',
   'sexy', 'sex', 'adult', 'nude', 'naked',
+  // ── 遊戲實況 / 成人遊戲關鍵字（Little Baby Bum 事件教訓） ──
+  'walkthrough', 'gameplay', 'resident evil', 'crimson desert',
+  'pragmata', 'samson', 'god of war', 'boss', 'final boss',
   // ── Elsagate 典型 ──
   'inject', 'injection', 'syringe', 'pregnant', 'kiss', 'marry',
   'giving birth', 'baby born', 'poison', 'hospital',
-  // ── 可疑模式（過去常見偽兒童影片手法）──
+  // ── 可疑模式 ──
   'finger family', 'elsa spiderman', 'spiderman elsa',
   'buried alive', 'trapped',
 ]
@@ -103,7 +94,6 @@ export function shouldBlockVideoTitle(title: string): boolean {
   return VIDEO_TITLE_BLOCKLIST.some(kw => t.includes(kw.toLowerCase()))
 }
 
-// 依年齡篩頻道
 export function filterChannelsByAge(age: AgeGroup | 'all'): CuratedChannel[] {
   if (age === 'all') return CURATED_CHANNELS
   return CURATED_CHANNELS.filter(c => c.ageGroups.includes(age))

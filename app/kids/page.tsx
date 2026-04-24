@@ -382,18 +382,19 @@ export default function KidsModePage() {
           </p>
         </div>
 
-        {/* 官方精選 */}
-        <p style={{
-          fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)',
-          letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10,
-        }}>
-          官方精選 · 100% 驗證
-        </p>
+        {curated.length > 0 && (
+          <p style={{
+            fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)',
+            letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10,
+          }}>
+            官方精選 · 100% 驗證
+          </p>
+        )}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
           gap: 12,
-          marginBottom: 28,
+          marginBottom: curated.length > 0 ? 28 : 0,
         }}>
           {curated.map(ch => (
             <button
@@ -544,6 +545,32 @@ export default function KidsModePage() {
               ))}
             </div>
           </>
+        )}
+
+        {curated.length === 0 && mine.length === 0 && (
+          <div style={{
+            padding: 32, textAlign: 'center',
+            background: 'var(--card-hex, #FBF7EA)',
+            border: '1px dashed var(--border-soft)',
+            borderRadius: 20,
+          }}>
+            <div style={{ fontSize: 42, marginBottom: 10 }}>🛡️</div>
+            <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 6 }}>
+              目前沒有已驗證的頻道
+            </p>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.6 }}>
+              回 PeekKids 首頁掃描你想給小孩看的頻道，<br />
+              非高風險就能點「加入兒童安心模式」
+            </p>
+            <a href="/" style={{
+              display: 'inline-block', marginTop: 14,
+              padding: '10px 20px', borderRadius: 9999,
+              background: 'var(--ink-hex)', color: '#fff',
+              textDecoration: 'none', fontSize: 13, fontWeight: 700,
+            }}>
+              回首頁掃描
+            </a>
+          </div>
         )}
 
         <p style={{

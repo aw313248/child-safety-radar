@@ -3,20 +3,22 @@
 @tailwind utilities;
 
 /* ══════════════════════════════════════════════════
-   PeekKids — Tide-inspired 乾淨系
-   只用 3 個顏色：黑 / 白 / 暖米（stone）
-   所有層次都靠「不透明度」堆出來：5% / 10% / 20% / 40% / 80%
+   PeekKids — 兒童護眼配色（低藍光 + 暖奶油 + 豆沙綠）
+   依據：AAO、WHO、TÜV Rheinland 低藍光認證、中國眼科醫學會護眼色
+   避開純白 #FFFFFF（對幼兒視網膜產生 glare）
+   避開高飽和藍（400-450nm 對發育中眼球最傷）
    ══════════════════════════════════════════════════ */
 :root {
-  /* ─── 3-color palette ─── */
+  /* ─── 3-color palette（護眼版） ─── */
   --ink:         10, 10, 10;        /* 主色：黑（rgb 值，配 alpha 用） */
-  --paper:       250, 248, 244;     /* 紙面：暖白 */
-  --stone:       220, 210, 196;     /* 單一暖米色 accent */
+  --paper:       243, 238, 221;     /* 紙面：奶油米（暖色偏黃，降藍光） */
+  --stone:       210, 221, 194;     /* accent：豆沙綠（護眼 520-560nm） */
 
   /* ─── 固定 hex（按鈕 / emoji 之類硬色值） ─── */
   --ink-hex:     #0A0A0A;
-  --paper-hex:   #FAF8F4;
-  --stone-hex:   #DCD2C4;
+  --paper-hex:   #F3EEDD;           /* 奶油米（取代原 #FAF8F4） */
+  --stone-hex:   #D2DDC2;           /* 豆沙綠（取代原 #DCD2C4） */
+  --card-hex:    #FBF7EA;           /* 卡片暖奶油底（取代所有 #FFFFFF） */
 
   /* ─── 系統風險色（只在結果卡內用，整體風格不計入三色） ─── */
   --risk-red:    #C2413B;
@@ -67,8 +69,8 @@
 
   /* 舊 var 相容（其他 component 還在用） */
   --bg:             var(--paper-hex);
-  --surface:        #FFFFFF;
-  --surface-raised: #FFFFFF;
+  --surface:        var(--card-hex);
+  --surface-raised: var(--card-hex);
   --forest:         var(--ink-hex);
   --forest-mid:     rgba(var(--ink), 0.85);
   --separator:      var(--border-hair);
@@ -87,11 +89,11 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 
-  /* Gentler Streak 式：純白底 + 一點點 stone 微光（不透明度壓很低） */
-  background-color: #FFFFFF;
+  /* 護眼底：奶油米 + 豆沙綠微光（避開純白 #FFFFFF glare） */
+  background-color: var(--paper-hex);
   background-image:
-    radial-gradient(ellipse 60% 45% at 15% 5%,   rgba(var(--stone), 0.28), transparent 60%),
-    radial-gradient(ellipse 55% 40% at 88% 95%,  rgba(var(--stone), 0.20), transparent 60%);
+    radial-gradient(ellipse 60% 45% at 15% 5%,   rgba(var(--stone), 0.35), transparent 60%),
+    radial-gradient(ellipse 55% 40% at 88% 95%,  rgba(var(--stone), 0.28), transparent 60%);
   background-attachment: fixed;
 }
 
