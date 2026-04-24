@@ -627,19 +627,21 @@ a[href]:has(> svg),
 button:has(> svg) { transition: background 0.15s, transform 0.12s; }
 
 /* ══════════════════════════════════════════════════
-   CANDY LAND THEME — 美式高飽和 × 毛玻璃
-   觸發：<html class="candy">
-   用於 /kids 兒童頁，保留既有 .bee-card 結構，整組重新上色
+   CC BEAR HERO THEME — 復古美漫英雄 × 毛玻璃
+   觸發：<html class="candy">（沿用 class name）
+   調色：小析(CC Bear)身上的披風紅 × 英雄藍 × CC 金盾
    ══════════════════════════════════════════════════ */
 
 :root {
-  --candy-pink:   #FF3B9A;
-  --candy-yellow: #FFD60A;
-  --candy-blue:   #3B6EF5;
-  --candy-lime:   #32E875;
-  --candy-orange: #FF8A00;
-  --candy-purple: #8B3FE4;
-  --candy-cyan:   #00D9F5;
+  --cc-navy:      #1E3A5F;   /* 英雄藍（披風+西裝底） */
+  --cc-navy-deep: #0F2444;   /* 夜空深藍 */
+  --cc-red:       #C2413B;   /* 披風紅 */
+  --cc-red-deep:  #8E2A24;   /* 血紅陰影 */
+  --cc-gold:      #F2B84B;   /* CC 金盾 */
+  --cc-gold-deep: #D99422;   /* 獎章深金 */
+  --cc-sky:       #8ECAE6;   /* 天空藍點綴 */
+  --cc-cream:     #F3EEDD;   /* 奶油米文字 */
+  --cc-fur:       #A87351;   /* 熊毛棕 */
 }
 
 /* 文字／表面變數整組改寫：讓既有 inline style 裡的 var(--ink-hex)
@@ -664,31 +666,47 @@ html.candy {
   --honey-deep: var(--candy-orange);
 }
 
-/* 彩虹 blob 滿版背景（鎖定在 viewport） */
+/* 英雄夜空 — 深藍底 + 披風紅暈 + 金光 */
 html.candy,
 html.candy body {
   background:
-    radial-gradient(ellipse 55% 45% at  8%  10%, #FF3B9A 0%, transparent 58%),
-    radial-gradient(ellipse 50% 40% at 92%  18%, #FFD60A 0%, transparent 58%),
-    radial-gradient(ellipse 60% 55% at 95% 100%, #3B6EF5 0%, transparent 58%),
-    radial-gradient(ellipse 50% 45% at  5%  95%, #32E875 0%, transparent 60%),
-    radial-gradient(ellipse 60% 60% at 50%  55%, #8B3FE4 0%, transparent 65%),
-    #1a0932;
+    radial-gradient(ellipse 60% 45% at  8%  12%, rgba(194, 65, 59, 0.55) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 40% at 92%  18%, rgba(242,184, 75, 0.45) 0%, transparent 60%),
+    radial-gradient(ellipse 65% 55% at 95% 100%, rgba(142,202,230, 0.35) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 50% at  8%  92%, rgba(242,184, 75, 0.35) 0%, transparent 60%),
+    linear-gradient(135deg, #0F2444 0%, #1E3A5F 55%, #0F2444 100%);
   background-attachment: fixed;
 }
 
-/* 頂層 blob 漂浮動畫（比背景再暖一點） */
+/* 金星點點（英雄夜空感）+ 漂浮披風光暈 */
 html.candy body::before {
   content: '';
   position: fixed;
-  inset: -20%;
+  inset: -10%;
   background:
-    radial-gradient(circle at 22% 30%, rgba(255, 59,154, 0.55) 0%, transparent 26%),
-    radial-gradient(circle at 78% 68%, rgba( 59,110,245, 0.55) 0%, transparent 26%),
-    radial-gradient(circle at 60% 15%, rgba(255,214, 10, 0.45) 0%, transparent 22%),
-    radial-gradient(circle at 35% 85%, rgba( 50,232,117, 0.40) 0%, transparent 22%);
-  filter: blur(70px);
+    radial-gradient(circle at 20% 25%, rgba(194, 65, 59, 0.45) 0%, transparent 22%),
+    radial-gradient(circle at 78% 65%, rgba(242,184, 75, 0.45) 0%, transparent 22%),
+    radial-gradient(circle at 60% 12%, rgba(255,255,255, 0.10) 0%, transparent 14%),
+    radial-gradient(circle at 35% 85%, rgba(142,202,230, 0.35) 0%, transparent 20%);
+  filter: blur(60px);
   animation: candy-drift 22s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+/* 金色小星星散佈（漫畫分鏡感） */
+html.candy body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 12% 18%, #F2B84B 0 1.2px, transparent 1.5px),
+    radial-gradient(circle at 88% 32%, #F2B84B 0 1.4px, transparent 1.8px),
+    radial-gradient(circle at 24% 78%, #F2B84B 0 1.0px, transparent 1.4px),
+    radial-gradient(circle at 72% 88%, #F2B84B 0 1.2px, transparent 1.6px),
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,0.8) 0 0.8px, transparent 1.2px),
+    radial-gradient(circle at 18% 58%, rgba(255,255,255,0.6) 0 0.6px, transparent 1.0px);
+  background-size: 520px 520px, 680px 680px, 460px 460px, 600px 600px, 380px 380px, 440px 440px;
+  opacity: 0.7;
   pointer-events: none;
   z-index: 0;
 }
@@ -722,12 +740,14 @@ html.candy a.bee-card:active {
   transform: translateY(-1px) scale(0.98);
 }
 
-/* Honey 卡 — 霓虹漸層，文字保持深色 */
+/* Honey 卡 — 披風金紅漸層，小析的超人色 */
 html.candy .bee-card-honey {
-  background: linear-gradient(135deg, #FFD60A 0%, #FF8A00 55%, #FF3B9A 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  background: linear-gradient(135deg, #F2B84B 0%, #D99422 55%, #C2413B 100%);
+  border: 1.5px solid rgba(242, 184, 75, 0.85);
   border-radius: 28px;
-  box-shadow: 0 24px 60px -18px rgba(255, 59, 154, 0.55);
+  box-shadow:
+    0 24px 60px -18px rgba(194, 65, 59, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
   color: #2B1810;
 }
 html.candy .bee-card-honey,
@@ -752,23 +772,23 @@ html.candy .bee-segmented {
 }
 html.candy .bee-segmented__item { color: #fff; }
 html.candy .bee-segmented__item--active {
-  background: linear-gradient(135deg, #FF3B9A 0%, #FFD60A 100%);
-  color: #2B1810;
-  box-shadow: 0 6px 18px rgba(255, 59, 154, 0.55);
+  background: linear-gradient(135deg, #F2B84B 0%, #C2413B 100%);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(194, 65, 59, 0.55);
 }
 
-/* Pill 主按鈕 */
+/* Pill 主按鈕 — 披風紅金 */
 html.candy .btn-pill {
-  background: linear-gradient(135deg, #FF3B9A 0%, #FF8A00 55%, #FFD60A 100%);
+  background: linear-gradient(135deg, #C2413B 0%, #D99422 55%, #F2B84B 100%);
   color: #fff;
-  box-shadow: 0 12px 32px rgba(255, 59, 154, 0.45);
+  box-shadow: 0 12px 32px rgba(194, 65, 59, 0.45);
 }
 html.candy .btn-pill:hover:not(:disabled) {
-  background: linear-gradient(135deg, #FF2D8E 0%, #FF7A00 55%, #FFCA0A 100%);
-  box-shadow: 0 18px 40px rgba(255, 59, 154, 0.55);
+  background: linear-gradient(135deg, #B03730 0%, #C88330 55%, #E6A93A 100%);
+  box-shadow: 0 18px 40px rgba(194, 65, 59, 0.55);
 }
 html.candy .btn-pill-honey {
-  background: linear-gradient(135deg, #FFD60A 0%, #FF8A00 100%);
+  background: linear-gradient(135deg, #F2B84B 0%, #D99422 100%);
   color: #2B1810;
 }
 
@@ -777,12 +797,12 @@ html.candy .bee-card img {
   border-color: rgba(255,255,255,0.6) !important;
 }
 
-/* 候選「兒童認證」綠徽章在 candy 下用霓虹綠 */
+/* 「兒童認證」徽章 — 金盾風 */
 html.candy .bee-card [style*="--risk-green"],
 html.candy .bee-card [style*="risk-green"] {
-  background: linear-gradient(135deg, #32E875 0%, #00D9F5 100%) !important;
-  border-color: rgba(255,255,255,0.6) !important;
-  color: #0a2b1a !important;
+  background: linear-gradient(135deg, #F2B84B 0%, #D99422 100%) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  color: #2B1810 !important;
 }
 
 /* 標題打光 */
@@ -790,80 +810,94 @@ html.candy h1, html.candy h2, html.candy h3 {
   text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
 }
 
-/* Hero logo badge（候 .candy 才顯示） */
+/* CC Bear logo 字 — 紅金藍三色漸變（呼應色卡上的 CC BEAR 字） */
 html.candy .candy-logo {
-  background: linear-gradient(135deg, #FFD60A 0%, #FF3B9A 50%, #8B3FE4 100%);
+  background: linear-gradient(90deg, #C2413B 0%, #F2B84B 50%, #8ECAE6 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+/* 頭像底 — 金盾感（金邊 + 奶油底） */
 html.candy .candy-bear {
-  background: linear-gradient(135deg, #FFD60A 0%, #FF3B9A 100%) !important;
-  border: 2px solid rgba(255,255,255,0.7) !important;
+  background: radial-gradient(circle at 35% 30%, #F3EEDD 0%, #F2B84B 70%, #D99422 100%) !important;
+  border: 2.5px solid #F2B84B !important;
   box-shadow:
-    0 12px 28px rgba(255, 59, 154, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+    0 10px 28px rgba(194, 65, 59, 0.35),
+    inset 0 2px 0 rgba(255, 255, 255, 0.7) !important;
 }
 
 /* ── KidsTimer 專屬覆寫 ─────────────────────────── */
 
-/* TimeUp 滿版 — 整片彩虹糖果 */
+/* TimeUp 滿版 — 小析的晚安夜空（呼應色卡上的睡覺場景） */
 html.candy .kids-timer-timeup {
   background:
-    radial-gradient(circle at 20% 20%, #FF3B9A 0%, transparent 45%),
-    radial-gradient(circle at 85% 25%, #FFD60A 0%, transparent 45%),
-    radial-gradient(circle at 75% 85%, #3B6EF5 0%, transparent 50%),
-    radial-gradient(circle at 15% 90%, #32E875 0%, transparent 45%),
-    linear-gradient(135deg, #8B3FE4 0%, #FF3B9A 100%) !important;
+    radial-gradient(circle at 20% 25%, rgba(194, 65, 59, 0.45) 0%, transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(242, 184, 75, 0.40) 0%, transparent 45%),
+    radial-gradient(circle at 75% 85%, rgba(142, 202, 230, 0.30) 0%, transparent 50%),
+    linear-gradient(135deg, #0F2444 0%, #1E3A5F 55%, #0F2444 100%) !important;
 }
+/* 星空點點 */
+html.candy .kids-timer-timeup::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 22%, #F2B84B 0 1.5px, transparent 2px),
+    radial-gradient(circle at 82% 34%, #F2B84B 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 28% 75%, #F2B84B 0 1.0px, transparent 1.4px),
+    radial-gradient(circle at 70% 88%, #F2B84B 0 1.4px, transparent 2px),
+    radial-gradient(circle at 50% 40%, rgba(255,255,255,0.9) 0 0.8px, transparent 1.2px);
+  background-size: 320px 320px, 420px 420px, 280px 280px, 380px 380px, 240px 240px;
+  opacity: 0.75; pointer-events: none;
+}
+html.candy .kids-timer-timeup > * { position: relative; z-index: 1; }
 html.candy .kids-timer-timeup h1 { color: #fff !important; text-shadow: 0 6px 30px rgba(0,0,0,0.4); }
 html.candy .kids-timer-timeup p  { color: rgba(255,255,255,0.92) !important; }
 
-/* Setup 底層改成更深 + 漂亮毛玻璃 */
+/* Setup 底層 — 深藍夜空毛玻璃 */
 html.candy .kids-timer-setup-backdrop {
   background:
-    radial-gradient(circle at 30% 30%, rgba(139, 63, 228, 0.55) 0%, transparent 50%),
-    radial-gradient(circle at 70% 70%, rgba(255, 59, 154, 0.55) 0%, transparent 50%),
-    rgba(10, 5, 30, 0.70) !important;
+    radial-gradient(circle at 30% 30%, rgba(194, 65, 59, 0.45) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(242, 184, 75, 0.35) 0%, transparent 50%),
+    rgba(15, 36, 68, 0.78) !important;
   backdrop-filter: blur(18px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
 }
 
-/* 頂欄 chip 按鈕 — candy 下統一毛玻璃 */
+/* 頂欄 chip — 毛玻璃 + 金邊 */
 html.candy .candy-chip {
-  background: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
   backdrop-filter: blur(16px) saturate(170%);
   -webkit-backdrop-filter: blur(16px) saturate(170%);
-  border: 1.5px solid rgba(255, 255, 255, 0.32) !important;
+  border: 1.5px solid rgba(242, 184, 75, 0.45) !important;
   color: #fff !important;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.20);
+  box-shadow: 0 6px 18px rgba(15, 36, 68, 0.35);
 }
 html.candy .candy-chip:hover {
-  background: rgba(255, 255, 255, 0.24) !important;
-  border-color: rgba(255, 255, 255, 0.50) !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(242, 184, 75, 0.80) !important;
 }
 html.candy .candy-chip--primary {
-  background: linear-gradient(135deg, #FFD60A 0%, #FF8A00 100%) !important;
+  background: linear-gradient(135deg, #F2B84B 0%, #D99422 100%) !important;
   border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
   color: #2B1810 !important;
-  box-shadow: 0 8px 22px rgba(255, 138, 0, 0.50) !important;
+  box-shadow: 0 8px 22px rgba(217, 148, 34, 0.55) !important;
 }
 
-/* 三層防護綠 bar — 霓虹綠青漸層 */
+/* 三層防護 bar — 金盾漸層 */
 html.candy .candy-shield {
-  background: linear-gradient(135deg, rgba(50, 232, 117, 0.25) 0%, rgba(0, 217, 245, 0.25) 100%) !important;
-  border-left-color: #32E875 !important;
+  background: linear-gradient(135deg, rgba(242, 184, 75, 0.28) 0%, rgba(142, 202, 230, 0.22) 100%) !important;
+  border-left-color: #F2B84B !important;
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
 }
 
-/* Timer Bubble（右上角計時泡泡）— 彩虹漸層 */
+/* Timer Bubble — 披風紅金 */
 html.candy button[title*="重新設定時間"] {
-  background: linear-gradient(135deg, #FF3B9A 0%, #8B3FE4 100%) !important;
+  background: linear-gradient(135deg, #C2413B 0%, #D99422 100%) !important;
   color: #fff !important;
-  border: 1.5px solid rgba(255,255,255,0.7) !important;
-  box-shadow: 0 10px 28px rgba(255, 59, 154, 0.50) !important;
+  border: 1.5px solid rgba(242, 184, 75, 0.85) !important;
+  box-shadow: 0 10px 28px rgba(194, 65, 59, 0.55) !important;
 }
 
 /* Reduce motion 支援 — 關 blob 動畫 */
