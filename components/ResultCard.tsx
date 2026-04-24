@@ -327,7 +327,7 @@ export default function ResultCard({ result, onReset }: Props) {
         </p>
       </div>
 
-      {/* 非高風險 → 給爸媽一鍵加入兒童安心模式 */}
+      {/* 非高風險 → 給爸媽一鍵加入熊熊守護模式 */}
       <AddToKidsMode
         channelId={result.channelId}
         channelName={result.channelName}

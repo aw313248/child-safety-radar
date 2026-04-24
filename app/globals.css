@@ -18,17 +18,18 @@
   /* ─── 核心三色 ─── */
   --ink:         58, 40, 32;        /* 主色：深可可咖啡（取代純黑） */
   --paper:       243, 238, 221;     /* 紙面：奶油米（暖色偏黃，降藍光） */
-  --honey:       245, 193, 61;      /* accent：蜂蜜黃（Busy Bee 主色） */
+  --honey:       255, 183, 3;       /* accent：蜂蜜黃（高飽和升級） */
   --stone:       210, 221, 194;     /* 舊相容：豆沙綠 */
 
-  /* ─── 固定 hex ─── */
-  --ink-hex:     #3A2820;           /* 深可可咖啡（pill 按鈕、標題色） */
+  /* ─── 固定 hex（飽和度升級版） ─── */
+  --ink-hex:     #2B1810;           /* 深可可咖啡（再壓深） */
   --paper-hex:   #F3EEDD;           /* 奶油米背景 */
-  --honey-hex:   #F5C13D;           /* 蜂蜜黃 — hero / 強調區塊 */
-  --honey-deep:  #E8A923;           /* 深蜂蜜 — hover 色 */
+  --honey-hex:   #FFB703;           /* 高飽和蜂蜜黃（升級） */
+  --honey-deep:  #FB8500;           /* 深橘蜂蜜 — hover 色 */
   --stone-hex:   #D2DDC2;
   --card-hex:    #FBF7EA;           /* 卡片暖奶油底 */
-  --sky-hex:     #B8D8E8;           /* 復古藍徽章（Made in USA 那顆） */
+  --sky-hex:     #8ECAE6;           /* 高飽和復古藍徽章 */
+  --terra-hex:   #BC4B4B;           /* 磚紅口音色 */
 
   /* ─── 系統風險色（只在結果卡內用，整體風格不計入三色） ─── */
   --risk-red:    #C2413B;
@@ -99,8 +100,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text',
-               'PingFang TC', 'Noto Sans TC', 'Inter', sans-serif;
+  font-family: var(--font-heihei), 'PingFang TC', -apple-system, BlinkMacSystemFont,
+               'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
   color: var(--text-primary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -114,19 +115,32 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
-   Display Typography — Fraunces 復古 serif
-   用於 hero 標題、section 大字、徽章
+   Display Typography — 超黑黑體（Noto Sans TC 900）
+   用於 hero 標題、section 大字
+   中文要用 900 才有 Busy Bee Honey 的主視覺衝擊感
    ══════════════════════════════════════════════════ */
 .font-display {
-  font-family: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+  font-family: var(--font-heihei), 'PingFang TC', 'Noto Sans TC', sans-serif;
   font-weight: 900;
-  letter-spacing: -0.02em;
-  line-height: 1.02;
+  letter-spacing: -0.055em;
+  line-height: 0.95;
 }
-.font-display-italic {
-  font-family: var(--font-fraunces), Georgia, serif;
-  font-style: italic;
-  font-weight: 700;
+.font-display-accent {
+  font-family: var(--font-heihei), 'PingFang TC', sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--honey-hex);
+  -webkit-text-stroke: 1px var(--ink-hex);
+  text-stroke: 1px var(--ink-hex);
+}
+
+/* 超大 hero 級 — 直接用 clamp 隨裝置放大 */
+.font-hero {
+  font-family: var(--font-heihei), 'PingFang TC', sans-serif;
+  font-weight: 900;
+  font-size: clamp(44px, 13vw, 82px);
+  letter-spacing: -0.065em;
+  line-height: 0.92;
 }
 
 /* ══════════════════════════════════════════════════

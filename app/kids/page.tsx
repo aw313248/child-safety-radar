@@ -418,19 +418,21 @@ export default function KidsModePage() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           marginBottom: 20,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: '50%',
-              background: 'var(--stone-hex)',
+              width: 52, height: 52, borderRadius: '50%',
+              background: 'var(--honey-hex)',
+              border: '2.5px solid var(--ink-hex)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 22,
-            }}>🦉</div>
+              fontSize: 26,
+              boxShadow: '0 3px 10px rgba(43,24,16,0.22)',
+            }}>🐻</div>
             <div>
-              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                PeekKids
+              <p style={{ fontSize: 10, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '0.18em', textTransform: 'uppercase', opacity: 0.7 }}>
+                PeekKids · Bear Mode
               </p>
-              <h1 style={{ fontSize: 18, fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)', lineHeight: 1 }}>
-                安心看片模式
+              <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1 }}>
+                熊熊守護模式
               </h1>
             </div>
           </div>
@@ -707,7 +709,7 @@ export default function KidsModePage() {
             </p>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.6 }}>
               回 PeekKids 首頁掃描你想給小孩看的頻道，<br />
-              非高風險就能點「加入兒童安心模式」
+              非高風險就能點「加入熊熊守護模式」
             </p>
             <a href="/" style={{
               display: 'inline-block', marginTop: 14,

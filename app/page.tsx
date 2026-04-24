@@ -193,31 +193,47 @@ export default function Home() {
           </a>
         </nav>
 
-        {/* ═══ Hero — Busy Bee 風格：蜂蜜黃塊 + 復古 serif 標題 + 熊+蜜蜂 ═══ */}
+        {/* ═══ Hero — 蜂蜜黃大塊 + 超黑黑體巨字 + 熊+蜜蜂 ═══ */}
         <section style={{
           position: 'relative',
           marginBottom: 28,
-          padding: '34px 22px 28px',
+          padding: '44px 22px 38px',
           background: 'var(--honey-hex)',
-          borderRadius: 28,
+          borderRadius: 32,
           overflow: 'hidden',
-          boxShadow: '0 16px 44px rgba(58, 40, 32, 0.18)',
+          boxShadow: '0 20px 50px rgba(43, 24, 16, 0.28)',
+          border: '3px solid var(--ink-hex)',
         }}>
+          {/* 左上英文 tag */}
+          <p className="stagger-1" style={{
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: '0.24em',
+            color: 'var(--ink-hex)',
+            textTransform: 'uppercase',
+            marginBottom: 14,
+            opacity: 0.85,
+          }}>
+            PeekKids · Bear Mode
+          </p>
+
           {/* 右上復古徽章 */}
           <div
             className="retro-badge stagger-1"
             style={{
               position: 'absolute',
-              top: 18,
-              right: 18,
-              width: 64,
-              height: 64,
-              fontSize: 9,
+              top: 22,
+              right: 22,
+              width: 72,
+              height: 72,
+              fontSize: 10,
               fontWeight: 900,
-              letterSpacing: '0.08em',
+              letterSpacing: '0.06em',
               textAlign: 'center',
               lineHeight: 1.1,
               color: 'var(--ink-hex)',
+              background: 'var(--sky-hex)',
+              border: '2px solid var(--ink-hex)',
             }}
           >
             真人<br />驗證<br />過
@@ -227,35 +243,36 @@ export default function Home() {
           <div className="stagger-2" style={{
             display: 'flex',
             justifyContent: 'center',
-            marginBottom: 18,
+            marginBottom: 14,
+            marginTop: 4,
           }}>
-            <BeeBearMascot state={mascotState} size={130} />
+            <BeeBearMascot state={mascotState} size={140} />
           </div>
 
-          {/* 復古 serif 主標 */}
-          <h1 className="font-display stagger-3" style={{
-            fontSize: 'clamp(30px, 9vw, 40px)',
+          {/* 超大黑體主標 */}
+          <h1 className="font-hero stagger-3" style={{
             color: 'var(--ink-hex)',
             textAlign: 'center',
-            marginBottom: 10,
+            marginBottom: 14,
           }}>
-            20 秒，<br />
-            <span className="font-display-italic">看穿卡通底下</span><br />
+            20 秒<br />
+            看穿卡通<br />
             藏什麼
           </h1>
 
-          {/* 副標 — 全大寫 sans */}
+          {/* 副標 — 粗黑體 + 分隔點 */}
           <p className="stagger-4" style={{
-            fontSize: 11,
+            fontSize: 13,
             fontWeight: 700,
-            letterSpacing: '0.22em',
+            letterSpacing: '0.02em',
             color: 'var(--ink-hex)',
             textAlign: 'center',
-            textTransform: 'uppercase',
-            opacity: 0.78,
-            marginTop: 4,
+            lineHeight: 1.5,
+            opacity: 0.82,
+            padding: '0 8px',
           }}>
-            Bear-guarded · bee-safe · elsagate-free
+            貼上 YouTube 頻道 · AI 翻遍影片跟留言<br />
+            紅橘綠燈秒判斷能不能給小孩看
           </p>
         </section>
 
@@ -289,7 +306,7 @@ export default function Home() {
             <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', color: 'var(--honey-hex)', textTransform: 'uppercase', marginBottom: 3 }}>
               Bear Mode
             </p>
-            <p className="font-display" style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.02em' }}>
+            <p style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.04em' }}>
               打開熊熊守護模式
             </p>
             <p style={{ fontSize: 12, opacity: 0.72, letterSpacing: '-0.01em', marginTop: 3 }}>

@@ -61,7 +61,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
       }}>
         <span style={{ fontSize: 18 }}>✅</span>
         <p style={{ flex: 1, fontSize: 12, color: 'var(--text-primary)', letterSpacing: '-0.01em', fontWeight: 600 }}>
-          已加入兒童安心模式
+          已加入熊熊守護模式
         </p>
         <button
           onClick={handleRemove}
@@ -96,7 +96,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
         }}
       >
         <span style={{ fontSize: 16 }}>🛡️</span>
-        加入兒童安心模式
+        加入熊熊守護模式
       </button>
 
       {showModal && (
@@ -119,7 +119,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
             <div style={{ textAlign: 'center', marginBottom: 18 }}>
               <div style={{ fontSize: 42, marginBottom: 6 }}>🛡️</div>
               <h3 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)', marginBottom: 4 }}>
-                加入兒童安心模式？
+                加入熊熊守護模式？
               </h3>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
                 「{channelName}」將出現在 /kids 頁面<br />

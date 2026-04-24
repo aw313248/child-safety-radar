@@ -1,14 +1,13 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
-import { Fraunces } from 'next/font/google'
+import { Noto_Sans_TC } from 'next/font/google'
 import './globals.css'
 
-// 復古 serif display — Busy Bee Honey 風格靈魂字體
-const fraunces = Fraunces({
+// 黑體 display — 中文必須用超黑 (900) 才有 Busy Bee Honey 那種主視覺衝擊力
+const notoSansTC = Noto_Sans_TC({
   subsets: ['latin'],
-  weight: ['500', '700', '900'],
-  style: ['normal', 'italic'],
-  variable: '--font-fraunces',
+  weight: ['400', '500', '700', '900'],
+  variable: '--font-heihei',
   display: 'swap',
 })
 
@@ -37,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-TW" className={fraunces.variable}>
+    <html lang="zh-TW" className={notoSansTC.variable}>
       <body className="antialiased">
         {children}
         <Analytics />
