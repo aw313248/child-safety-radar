@@ -625,3 +625,248 @@ a.bee-card-honey:active {
 /* 膠囊按鈕 hover */
 a[href]:has(> svg),
 button:has(> svg) { transition: background 0.15s, transform 0.12s; }
+
+/* ══════════════════════════════════════════════════
+   CANDY LAND THEME — 美式高飽和 × 毛玻璃
+   觸發：<html class="candy">
+   用於 /kids 兒童頁，保留既有 .bee-card 結構，整組重新上色
+   ══════════════════════════════════════════════════ */
+
+:root {
+  --candy-pink:   #FF3B9A;
+  --candy-yellow: #FFD60A;
+  --candy-blue:   #3B6EF5;
+  --candy-lime:   #32E875;
+  --candy-orange: #FF8A00;
+  --candy-purple: #8B3FE4;
+  --candy-cyan:   #00D9F5;
+}
+
+/* 文字／表面變數整組改寫：讓既有 inline style 裡的 var(--ink-hex)
+   自動變成白色；var(--card-hex) 變透明，避免卡片底色蓋掉毛玻璃 */
+html.candy {
+  --ink-hex:        #FFFFFF;
+  --text-primary:   #FFFFFF;
+  --text-secondary: rgba(255,255,255,0.82);
+  --text-tertiary:  rgba(255,255,255,0.62);
+  --text-quaternary:rgba(255,255,255,0.40);
+  --border-soft:    rgba(255,255,255,0.28);
+  --border-default: rgba(255,255,255,0.42);
+  --ink-05: rgba(255,255,255,0.08);
+  --ink-08: rgba(255,255,255,0.12);
+  --ink-10: rgba(255,255,255,0.16);
+  --ink-20: rgba(255,255,255,0.24);
+  --ink-40: rgba(255,255,255,0.48);
+  --ink-80: rgba(255,255,255,0.82);
+  --card-hex:  rgba(255,255,255,0.14);
+  --paper-hex: transparent;
+  --honey-hex: var(--candy-yellow);
+  --honey-deep: var(--candy-orange);
+}
+
+/* 彩虹 blob 滿版背景（鎖定在 viewport） */
+html.candy,
+html.candy body {
+  background:
+    radial-gradient(ellipse 55% 45% at  8%  10%, #FF3B9A 0%, transparent 58%),
+    radial-gradient(ellipse 50% 40% at 92%  18%, #FFD60A 0%, transparent 58%),
+    radial-gradient(ellipse 60% 55% at 95% 100%, #3B6EF5 0%, transparent 58%),
+    radial-gradient(ellipse 50% 45% at  5%  95%, #32E875 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 50%  55%, #8B3FE4 0%, transparent 65%),
+    #1a0932;
+  background-attachment: fixed;
+}
+
+/* 頂層 blob 漂浮動畫（比背景再暖一點） */
+html.candy body::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 22% 30%, rgba(255, 59,154, 0.55) 0%, transparent 26%),
+    radial-gradient(circle at 78% 68%, rgba( 59,110,245, 0.55) 0%, transparent 26%),
+    radial-gradient(circle at 60% 15%, rgba(255,214, 10, 0.45) 0%, transparent 22%),
+    radial-gradient(circle at 35% 85%, rgba( 50,232,117, 0.40) 0%, transparent 22%);
+  filter: blur(70px);
+  animation: candy-drift 22s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes candy-drift {
+  0%, 100% { transform: translate( 0,  0) rotate(0); }
+  33%      { transform: translate( 2%,-3%) rotate( 2deg); }
+  66%      { transform: translate(-3%, 2%) rotate(-2deg); }
+}
+html.candy main { position: relative; z-index: 1; }
+
+/* Glass 卡 — .bee-card 在 candy 下整組翻新 */
+html.candy .bee-card {
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(26px) saturate(180%);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  border: 1.5px solid rgba(255, 255, 255, 0.42);
+  border-radius: 28px;
+  box-shadow:
+    0 24px 64px -20px rgba(0, 0, 0, 0.50),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+html.candy button.bee-card:hover,
+html.candy a.bee-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 32px 80px -20px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+html.candy button.bee-card:active,
+html.candy a.bee-card:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* Honey 卡 — 霓虹漸層，文字保持深色 */
+html.candy .bee-card-honey {
+  background: linear-gradient(135deg, #FFD60A 0%, #FF8A00 55%, #FF3B9A 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  border-radius: 28px;
+  box-shadow: 0 24px 60px -18px rgba(255, 59, 154, 0.55);
+  color: #2B1810;
+}
+html.candy .bee-card-honey,
+html.candy .bee-card-honey * { --text-primary: #2B1810; --text-secondary: rgba(43,24,16,0.70); }
+
+/* Flat 卡（爸媽加的 / 警示 bar） */
+html.candy .bee-card-flat {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1.5px solid rgba(255, 255, 255, 0.32);
+  border-radius: 22px;
+}
+
+/* Segmented — 彩虹 pill */
+html.candy .bee-segmented {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  border: 1.5px solid rgba(255, 255, 255, 0.38);
+  box-shadow: 0 16px 40px -14px rgba(0, 0, 0, 0.35);
+}
+html.candy .bee-segmented__item { color: #fff; }
+html.candy .bee-segmented__item--active {
+  background: linear-gradient(135deg, #FF3B9A 0%, #FFD60A 100%);
+  color: #2B1810;
+  box-shadow: 0 6px 18px rgba(255, 59, 154, 0.55);
+}
+
+/* Pill 主按鈕 */
+html.candy .btn-pill {
+  background: linear-gradient(135deg, #FF3B9A 0%, #FF8A00 55%, #FFD60A 100%);
+  color: #fff;
+  box-shadow: 0 12px 32px rgba(255, 59, 154, 0.45);
+}
+html.candy .btn-pill:hover:not(:disabled) {
+  background: linear-gradient(135deg, #FF2D8E 0%, #FF7A00 55%, #FFCA0A 100%);
+  box-shadow: 0 18px 40px rgba(255, 59, 154, 0.55);
+}
+html.candy .btn-pill-honey {
+  background: linear-gradient(135deg, #FFD60A 0%, #FF8A00 100%);
+  color: #2B1810;
+}
+
+/* 影片縮圖 & 頭像邊框在 candy 下換白框 */
+html.candy .bee-card img {
+  border-color: rgba(255,255,255,0.6) !important;
+}
+
+/* 候選「兒童認證」綠徽章在 candy 下用霓虹綠 */
+html.candy .bee-card [style*="--risk-green"],
+html.candy .bee-card [style*="risk-green"] {
+  background: linear-gradient(135deg, #32E875 0%, #00D9F5 100%) !important;
+  border-color: rgba(255,255,255,0.6) !important;
+  color: #0a2b1a !important;
+}
+
+/* 標題打光 */
+html.candy h1, html.candy h2, html.candy h3 {
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Hero logo badge（候 .candy 才顯示） */
+html.candy .candy-logo {
+  background: linear-gradient(135deg, #FFD60A 0%, #FF3B9A 50%, #8B3FE4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.candy .candy-bear {
+  background: linear-gradient(135deg, #FFD60A 0%, #FF3B9A 100%) !important;
+  border: 2px solid rgba(255,255,255,0.7) !important;
+  box-shadow:
+    0 12px 28px rgba(255, 59, 154, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ── KidsTimer 專屬覆寫 ─────────────────────────── */
+
+/* TimeUp 滿版 — 整片彩虹糖果 */
+html.candy .kids-timer-timeup {
+  background:
+    radial-gradient(circle at 20% 20%, #FF3B9A 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, #FFD60A 0%, transparent 45%),
+    radial-gradient(circle at 75% 85%, #3B6EF5 0%, transparent 50%),
+    radial-gradient(circle at 15% 90%, #32E875 0%, transparent 45%),
+    linear-gradient(135deg, #8B3FE4 0%, #FF3B9A 100%) !important;
+}
+html.candy .kids-timer-timeup h1 { color: #fff !important; text-shadow: 0 6px 30px rgba(0,0,0,0.4); }
+html.candy .kids-timer-timeup p  { color: rgba(255,255,255,0.92) !important; }
+
+/* Setup 底層改成更深 + 漂亮毛玻璃 */
+html.candy .kids-timer-setup-backdrop {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(139, 63, 228, 0.55) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(255, 59, 154, 0.55) 0%, transparent 50%),
+    rgba(10, 5, 30, 0.70) !important;
+  backdrop-filter: blur(18px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
+}
+
+/* 頂欄 chip 按鈕 — candy 下統一毛玻璃 */
+html.candy .candy-chip {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(16px) saturate(170%);
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  border: 1.5px solid rgba(255, 255, 255, 0.32) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.20);
+}
+html.candy .candy-chip:hover {
+  background: rgba(255, 255, 255, 0.24) !important;
+  border-color: rgba(255, 255, 255, 0.50) !important;
+}
+html.candy .candy-chip--primary {
+  background: linear-gradient(135deg, #FFD60A 0%, #FF8A00 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+  color: #2B1810 !important;
+  box-shadow: 0 8px 22px rgba(255, 138, 0, 0.50) !important;
+}
+
+/* 三層防護綠 bar — 霓虹綠青漸層 */
+html.candy .candy-shield {
+  background: linear-gradient(135deg, rgba(50, 232, 117, 0.25) 0%, rgba(0, 217, 245, 0.25) 100%) !important;
+  border-left-color: #32E875 !important;
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+}
+
+/* Timer Bubble（右上角計時泡泡）— 彩虹漸層 */
+html.candy button[title*="重新設定時間"] {
+  background: linear-gradient(135deg, #FF3B9A 0%, #8B3FE4 100%) !important;
+  color: #fff !important;
+  border: 1.5px solid rgba(255,255,255,0.7) !important;
+  box-shadow: 0 10px 28px rgba(255, 59, 154, 0.50) !important;
+}
+
+/* Reduce motion 支援 — 關 blob 動畫 */
+@media (prefers-reduced-motion: reduce) {
+  html.candy body::before { animation: none; }
+}

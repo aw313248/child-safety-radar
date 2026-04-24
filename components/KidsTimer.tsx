@@ -195,7 +195,7 @@ function SetupScreen({
   }
 
   return (
-    <div style={{
+    <div className="kids-timer-setup-backdrop" style={{
       position: 'fixed', inset: 0, zIndex: 9500,
       background: 'rgba(43,24,16,0.55)',
       backdropFilter: 'blur(8px)',
@@ -438,7 +438,7 @@ function TimeUpScreen({
   onExit: () => void
 }) {
   return (
-    <div style={{
+    <div className="kids-timer-timeup" style={{
       position: 'fixed', inset: 0, zIndex: 9900,
       background: 'var(--honey-hex)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',

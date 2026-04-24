@@ -97,6 +97,9 @@ export default function KidsModePage() {
     const savedAge = localStorage.getItem(AGE_KEY) as AgeGroup | 'all' | null
     if (savedAge) setAge(savedAge)
     setUserChannels(getUserChannels())
+    // Candy Land 主題（美式高飽和 + 毛玻璃）
+    document.documentElement.classList.add('candy')
+    return () => { document.documentElement.classList.remove('candy') }
   }, [])
 
   // ═══ 影片播完自動跳回選單（不給 YouTube 推薦下手） ═══
@@ -323,7 +326,7 @@ export default function KidsModePage() {
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-            <div style={{
+            <div className="candy-bear" style={{
               width: 72, height: 72, borderRadius: '50%',
               background: 'var(--honey-hex)',
               border: '2.5px solid var(--ink-hex)',
@@ -441,7 +444,7 @@ export default function KidsModePage() {
           marginBottom: 20,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{
+            <div className="candy-bear" style={{
               width: 52, height: 52, borderRadius: '50%',
               background: 'var(--honey-hex)',
               border: '2.5px solid var(--ink-hex)',
@@ -450,10 +453,10 @@ export default function KidsModePage() {
               boxShadow: '0 3px 10px rgba(43,24,16,0.22)',
             }}>🐻</div>
             <div>
-              <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.18em', textTransform: 'uppercase', opacity: 0.55, marginBottom: 3 }}>
-                CareCub Kids · Bear Mode
+              <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', opacity: 0.85, marginBottom: 3 }}>
+                <span className="candy-logo">CareCub Kids · Bear Mode</span>
               </p>
-              <h1 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1.05 }}>
+              <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1.05 }}>
                 熊熊守護模式
               </h1>
             </div>
@@ -464,6 +467,7 @@ export default function KidsModePage() {
                 onClick={enterFullscreen}
                 aria-label="進入全螢幕鎖定"
                 title="進入全螢幕（把網址列也鎖掉）"
+                className="candy-chip"
                 style={{
                   padding: '8px 12px',
                   borderRadius: 9999,
@@ -484,6 +488,7 @@ export default function KidsModePage() {
               }}
               aria-label="重設時間"
               title="重設時間"
+              className="candy-chip candy-chip--primary"
               style={{
                 padding: '8px 12px',
                 borderRadius: 9999,
@@ -499,6 +504,7 @@ export default function KidsModePage() {
               onClick={() => setShowGuide(true)}
               aria-label="重看鎖螢幕教學"
               title="重看鎖螢幕教學"
+              className="candy-chip"
               style={{
                 padding: '8px 12px',
                 borderRadius: 9999,
@@ -513,6 +519,7 @@ export default function KidsModePage() {
             <button
               onClick={() => setShowExitConfirm(true)}
               aria-label="找爸爸媽媽"
+              className="candy-chip"
               style={{
                 padding: '8px 14px',
                 borderRadius: 9999,
@@ -545,7 +552,7 @@ export default function KidsModePage() {
         </div>
 
         {/* 第三層防護提示 */}
-        <div className="bee-card-flat" style={{
+        <div className="bee-card-flat candy-shield" style={{
           background: '#DCEAD1',
           borderLeft: '8px solid var(--risk-green)',
           padding: '12px 16px',
@@ -584,7 +591,7 @@ export default function KidsModePage() {
                 textAlign: 'center',
               }}
             >
-              <div style={{
+              <div className="candy-bear" style={{
                 width: 72, height: 72, margin: '0 auto 12px',
                 borderRadius: '50%',
                 background: 'var(--honey-hex)',
