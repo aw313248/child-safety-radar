@@ -237,9 +237,20 @@ export default function ResultCard({ result, onReset }: Props) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {result.warningComments.map((comment, i) => (
               <div key={i} style={{ background: 'var(--surface-raised)', borderRadius: 'var(--radius-md)', padding: '11px 13px' }}>
-                <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.6, letterSpacing: '-0.01em' }}>
-                  「{comment.text}」
-                </p>
+                {comment.textZh ? (
+                  <>
+                    <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.6, letterSpacing: '-0.01em', fontWeight: 500 }}>
+                      「{comment.textZh}」
+                    </p>
+                    <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', lineHeight: 1.5, marginTop: '4px', letterSpacing: '-0.01em' }}>
+                      原文：{comment.text}
+                    </p>
+                  </>
+                ) : (
+                  <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.6, letterSpacing: '-0.01em' }}>
+                    「{comment.text}」
+                  </p>
+                )}
                 {(comment.author || comment.likeCount) && (
                   <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
                     {comment.author && (

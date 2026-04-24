@@ -87,6 +87,40 @@ function detectChildTargetingSignals(allTags: string[], titles: string[], channe
   return Array.from(new Set(found)).slice(0, 8)
 }
 
+// ── 批次翻譯家長警示留言（英文 → 繁中）─────────────────────────
+async function translateWarningComments(
+  comments: CommentThread[],
+  apiKey: string
+): Promise<string[]> {
+  if (comments.length === 0) return []
+  // 如果全部已經是中文，直接回傳空翻譯（前端會 fallback 不顯示）
+  const needsTranslation = comments.map(c => {
+    const chineseChars = c.text.match(/[\u4e00-\u9fa5]/g)
+    const ratio = chineseChars ? chineseChars.length / c.text.length : 0
+    return ratio < 0.3 // 中文字比例 < 30% 視為需要翻譯
+  })
+  if (!needsTranslation.some(Boolean)) return comments.map(() => '')
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey)
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+    const prompt = `請把下列 YouTube 留言翻譯成繁體中文（台灣用語），每則留言獨立一行，只輸出翻譯結果、不要加編號或解釋。保留原文的語氣（可疑、讚美、警告都要翻出來）。如果原文已是中文，就原文照貼回來。
+
+${comments.map((c, i) => `${i + 1}. ${c.text.replace(/\n/g, ' ').slice(0, 250)}`).join('\n')}`
+
+    const result = await model.generateContent(prompt)
+    const text = result.response.text().trim()
+    // 移除每行開頭可能的編號 "1. " / "2. "
+    const lines = text.split('\n').map(l => l.replace(/^\s*\d+[.、)]\s*/, '').trim()).filter(Boolean)
+    // 對齊數量（不夠就補空字串、超過就截斷）
+    if (lines.length >= comments.length) return lines.slice(0, comments.length)
+    return [...lines, ...Array(comments.length - lines.length).fill('')]
+  } catch (err) {
+    console.error('Translation error:', err)
+    return comments.map(() => '')
+  }
+}
+
 async function analyzeWithGemini(params: {
   channelName: string
   channelDescription: string
@@ -224,7 +258,10 @@ export async function POST(req: NextRequest) {
       videoTitles
     )
 
-    // 6. AI analysis
+    // 6a. 翻譯警示留言（與 AI 分析並行跑，節省時間）
+    const translationsPromise = translateWarningComments(warningComments, geminiApiKey)
+
+    // 6b. AI analysis
     const aiResult = await analyzeWithGemini({
       channelName: channelInfo.name,
       channelDescription: channelInfo.description,
@@ -320,11 +357,19 @@ export async function POST(req: NextRequest) {
       channelThumbnail: channelInfo.thumbnail,
       videoCount: channelInfo.videos.length,
       commentsDisabled,
-      warningComments: warningComments.map(c => ({
-        text: c.text.replace(/<[^>]+>/g, ''),
-        author: c.author,
-        likeCount: c.likeCount,
-      })),
+      warningComments: await (async () => {
+        const translations = await translationsPromise
+        return warningComments.map((c, i) => {
+          const cleanText = c.text.replace(/<[^>]+>/g, '')
+          const translated = translations[i]?.trim()
+          return {
+            text: cleanText,
+            textZh: translated && translated !== cleanText.trim() ? translated : undefined,
+            author: c.author,
+            likeCount: c.likeCount,
+          }
+        })
+      })(),
       suspiciousTags: [...childTargetingSignals, ...childAppealSignals].slice(0, 8),
       aiSummary: aiResult.summary,
       recommendation: aiResult.recommendation,

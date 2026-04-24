@@ -2,6 +2,7 @@ export type RiskLevel = 'high' | 'medium' | 'low'
 
 export interface WarningComment {
   text: string
+  textZh?: string // 繁中翻譯（若原文非中文）
   author?: string
   likeCount?: number
 }
