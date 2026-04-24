@@ -29,7 +29,7 @@ function userToDisplay(c: UserChannel): DisplayChannel {
   return {
     channelId: c.channelId,
     name: c.name,
-    description: '爸媽驗證後加入',
+    description: '爸媽自己加的頻道',
     emoji: c.emoji,
     ageGroups: [c.ageGroup],
     source: 'user',
@@ -303,25 +303,26 @@ export default function KidsModePage() {
             ← 回到頻道列表
           </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
             <div style={{
-              width: 64, height: 64, borderRadius: '50%',
-              background: 'var(--stone-hex)',
+              width: 72, height: 72, borderRadius: '50%',
+              background: 'var(--honey-hex)',
+              border: '2.5px solid var(--ink-hex)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 32,
+              fontSize: 36,
             }}>
               {selectedChannel.emoji}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 style={{
-                fontSize: 28, fontWeight: 900, letterSpacing: '-0.04em',
-                color: 'var(--text-primary)', lineHeight: 1.1,
+                fontSize: 28, fontWeight: 900, letterSpacing: '-0.045em',
+                color: 'var(--ink-hex)', lineHeight: 1.08,
               }}>
                 {selectedChannel.name}
               </h1>
               <p style={{
-                fontSize: 13, color: 'var(--text-secondary)',
-                letterSpacing: '-0.01em', marginTop: 4,
+                fontSize: 14, color: 'var(--text-secondary)',
+                letterSpacing: '-0.005em', marginTop: 6, fontWeight: 500, lineHeight: 1.55,
               }}>
                 {selectedChannel.description}
               </p>
@@ -346,26 +347,15 @@ export default function KidsModePage() {
                 <button
                   key={v.id}
                   onClick={() => setPlayingVideoId(v.id)}
+                  className="bee-card"
                   style={{
                     textAlign: 'left',
-                    background: '#FFFFFF',
-                    border: '1px solid var(--border-soft)',
-                    borderRadius: 18,
                     padding: 10,
                     cursor: 'pointer',
                     fontFamily: 'inherit',
-                    transition: 'transform 0.15s var(--ease-spring), box-shadow 0.15s',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-2px)'
-                    e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.08)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = ''
-                    e.currentTarget.style.boxShadow = ''
                   }}
                 >
-                  <div style={{ position: 'relative', aspectRatio: '16/9', borderRadius: 12, overflow: 'hidden', marginBottom: 8, background: 'var(--ink-05)' }}>
+                  <div style={{ position: 'relative', aspectRatio: '16/9', borderRadius: 14, overflow: 'hidden', marginBottom: 10, background: 'var(--ink-05)', border: '2px solid var(--ink-hex)' }}>
                     {v.thumbnail && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -378,17 +368,19 @@ export default function KidsModePage() {
                       <span style={{
                         position: 'absolute', top: 8, left: 8,
                         background: 'var(--risk-green)', color: '#fff',
-                        padding: '3px 8px', borderRadius: 9999,
-                        fontSize: 10, fontWeight: 700, letterSpacing: '-0.01em',
+                        padding: '4px 10px', borderRadius: 9999,
+                        fontSize: 10, fontWeight: 900, letterSpacing: '0.02em',
+                        border: '2px solid var(--ink-hex)',
                       }}>
-                        YouTube 兒童認證
+                        ✓ 兒童認證
                       </span>
                     )}
                   </div>
                   <p style={{
-                    fontSize: 13, fontWeight: 700,
-                    color: 'var(--text-primary)', letterSpacing: '-0.02em',
-                    lineHeight: 1.4,
+                    fontSize: 14, fontWeight: 800,
+                    color: 'var(--ink-hex)', letterSpacing: '-0.02em',
+                    lineHeight: 1.45,
+                    padding: '0 4px 4px',
                     display: '-webkit-box',
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical',
@@ -428,10 +420,10 @@ export default function KidsModePage() {
               boxShadow: '0 3px 10px rgba(43,24,16,0.22)',
             }}>🐻</div>
             <div>
-              <p style={{ fontSize: 10, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '0.18em', textTransform: 'uppercase', opacity: 0.7 }}>
+              <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.18em', textTransform: 'uppercase', opacity: 0.55, marginBottom: 3 }}>
                 CareCub Kids · Bear Mode
               </p>
-              <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1 }}>
+              <h1 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1.05 }}>
                 熊熊守護模式
               </h1>
             </div>
@@ -487,12 +479,7 @@ export default function KidsModePage() {
         </div>
 
         {/* 年齡選擇（只影響顯示的頻道） */}
-        <div style={{
-          display: 'flex', gap: 6, marginBottom: 18,
-          background: 'rgba(255,255,255,0.7)',
-          borderRadius: 14, padding: 4,
-          border: '1px solid var(--border-soft)',
-        }}>
+        <div className="bee-segmented" style={{ marginBottom: 18, gridTemplateColumns: 'repeat(3, 1fr)' }}>
           {([
             ['0-3', '0–3 歲'],
             ['3-6', '3–6 歲'],
@@ -501,15 +488,7 @@ export default function KidsModePage() {
             <button
               key={k}
               onClick={() => saveAge(k)}
-              style={{
-                flex: 1, padding: '10px 0',
-                borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: age === k ? 'var(--ink-hex)' : 'transparent',
-                color: age === k ? '#fff' : 'var(--text-secondary)',
-                fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
-                fontFamily: 'inherit',
-                transition: 'all 0.2s',
-              }}
+              className={`bee-segmented__item${age === k ? ' bee-segmented__item--active' : ''}`}
             >
               {label}
             </button>
@@ -517,86 +496,75 @@ export default function KidsModePage() {
         </div>
 
         {/* 第三層防護提示 */}
-        <div style={{
-          background: 'rgba(74,143,87,0.08)',
-          border: '1px solid rgba(74,143,87,0.2)',
-          borderRadius: 14,
-          padding: '10px 14px',
-          marginBottom: 20,
+        <div className="bee-card-flat" style={{
+          background: '#DCEAD1',
+          borderLeft: '8px solid var(--risk-green)',
+          padding: '12px 16px',
+          marginBottom: 22,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
-          <span style={{ fontSize: 16 }}>🛡️</span>
-          <p style={{ flex: 1, fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
-            三層防護：官方頻道 × <strong style={{ color: 'var(--text-primary)' }}>YouTube 兒童認證</strong> × 標題黑名單，6 歲內專用
+          <span style={{ fontSize: 18 }}>🛡️</span>
+          <p style={{ flex: 1, fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.55, fontWeight: 600 }}>
+            三層防護：官方頻道 × <strong style={{ fontWeight: 900 }}>YouTube 兒童認證</strong> × 標題黑名單，6 歲內專用
           </p>
         </div>
 
         {curated.length > 0 && (
           <p style={{
-            fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)',
-            letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10,
+            fontSize: 12, fontWeight: 900, color: 'var(--ink-hex)',
+            letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12, opacity: 0.7,
           }}>
-            官方精選 · 100% 驗證
+            ★ 官方精選 · 100% 驗證 ★
           </p>
         )}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-          gap: 12,
-          marginBottom: curated.length > 0 ? 28 : 0,
+          gap: 14,
+          marginBottom: curated.length > 0 ? 32 : 0,
         }}>
           {curated.map(ch => (
             <button
               key={ch.channelId}
               onClick={() => openChannel(ch)}
+              className="bee-card"
               style={{
-                background: '#FFFFFF',
-                border: '1px solid var(--border-soft)',
-                borderRadius: 20,
                 padding: 16,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 textAlign: 'center',
-                transition: 'transform 0.15s var(--ease-spring), box-shadow 0.15s',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-3px)'
-                e.currentTarget.style.boxShadow = '0 14px 28px rgba(0,0,0,0.08)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = ''
-                e.currentTarget.style.boxShadow = ''
               }}
             >
               <div style={{
-                width: 64, height: 64, margin: '0 auto 10px',
+                width: 72, height: 72, margin: '0 auto 12px',
                 borderRadius: '50%',
-                background: 'var(--stone-hex)',
+                background: 'var(--honey-hex)',
+                border: '2.5px solid var(--ink-hex)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 32,
+                fontSize: 34,
               }}>{ch.emoji}</div>
               <p style={{
-                fontSize: 13, fontWeight: 800,
-                color: 'var(--text-primary)', letterSpacing: '-0.02em',
+                fontSize: 14, fontWeight: 900,
+                color: 'var(--ink-hex)', letterSpacing: '-0.03em',
                 marginBottom: 4, lineHeight: 1.2,
               }}>
                 {ch.name}
               </p>
               <p style={{
-                fontSize: 10, color: 'var(--text-tertiary)',
-                letterSpacing: '-0.005em', lineHeight: 1.4,
+                fontSize: 11, color: 'var(--text-secondary)',
+                letterSpacing: '-0.005em', lineHeight: 1.45, fontWeight: 600,
                 display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
               }}>
                 {ch.description}
               </p>
               <div style={{
-                marginTop: 8,
+                marginTop: 10,
                 display: 'inline-block',
-                padding: '2px 8px',
+                padding: '3px 10px',
                 borderRadius: 9999,
-                background: 'var(--ink-05)',
-                fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
-                color: 'var(--text-secondary)',
+                background: 'var(--ink-hex)',
+                fontSize: 10, fontWeight: 900, letterSpacing: '0.04em',
+                color: 'var(--honey-hex)',
               }}>
                 {ch.ageGroups.join(' · ')} 歲
               </div>
@@ -611,7 +579,7 @@ export default function KidsModePage() {
               fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)',
               letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10,
             }}>
-              爸媽加入的 · 自行驗證
+              ★ 爸媽自己加的 ★
             </p>
             <div style={{
               display: 'grid',
@@ -621,14 +589,12 @@ export default function KidsModePage() {
               {mine.map(ch => (
                 <div
                   key={ch.channelId}
+                  className="bee-card-flat"
                   style={{
                     position: 'relative',
-                    background: '#FFFFFF',
-                    border: '1px dashed var(--border-soft)',
-                    borderRadius: 20,
                     padding: 16,
                     textAlign: 'center',
-                    transition: 'transform 0.15s var(--ease-spring), box-shadow 0.15s',
+                    borderStyle: 'dashed',
                   }}
                 >
                   <button
@@ -639,14 +605,14 @@ export default function KidsModePage() {
                     aria-label="移除"
                     style={{
                       position: 'absolute', top: 8, right: 8,
-                      width: 24, height: 24,
+                      width: 26, height: 26,
                       borderRadius: '50%',
-                      background: 'var(--ink-05)',
-                      border: '1px solid var(--border-soft)',
+                      background: 'var(--card-hex)',
+                      border: '2px solid var(--ink-hex)',
                       cursor: 'pointer', fontFamily: 'inherit',
-                      fontSize: 11, color: 'var(--text-secondary)',
+                      fontSize: 12, color: 'var(--ink-hex)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      lineHeight: 1,
+                      lineHeight: 1, fontWeight: 900,
                     }}
                   >
                     ✕
@@ -659,33 +625,34 @@ export default function KidsModePage() {
                     }}
                   >
                     <div style={{
-                      width: 64, height: 64, margin: '0 auto 10px',
+                      width: 72, height: 72, margin: '0 auto 12px',
                       borderRadius: '50%',
-                      background: 'var(--stone-hex)',
+                      background: 'var(--honey-hex)',
+                      border: '2.5px solid var(--ink-hex)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 32,
+                      fontSize: 34,
                     }}>{ch.emoji}</div>
                     <p style={{
-                      fontSize: 13, fontWeight: 800,
-                      color: 'var(--text-primary)', letterSpacing: '-0.02em',
-                      marginBottom: 4, lineHeight: 1.2,
+                      fontSize: 14, fontWeight: 900,
+                      color: 'var(--ink-hex)', letterSpacing: '-0.03em',
+                      marginBottom: 5, lineHeight: 1.2,
                     }}>
                       {ch.name}
                     </p>
                     <p style={{
-                      fontSize: 10, color: 'var(--text-tertiary)',
-                      letterSpacing: '-0.005em', lineHeight: 1.4,
+                      fontSize: 11, color: 'var(--text-secondary)',
+                      letterSpacing: '-0.005em', lineHeight: 1.5, fontWeight: 500,
                     }}>
                       {ch.description}
                     </p>
                     <div style={{
-                      marginTop: 8,
+                      marginTop: 10,
                       display: 'inline-block',
-                      padding: '2px 8px',
+                      padding: '3px 10px',
                       borderRadius: 9999,
-                      background: 'var(--ink-05)',
-                      fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
-                      color: 'var(--text-secondary)',
+                      background: 'var(--ink-hex)',
+                      fontSize: 10, fontWeight: 900, letterSpacing: '0.04em',
+                      color: 'var(--honey-hex)',
                     }}>
                       {ch.ageGroups.join(' · ')} 歲
                     </div>

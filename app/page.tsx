@@ -241,7 +241,7 @@ export default function Home() {
               border: '2px solid var(--ink-hex)',
             }}
           >
-            真人<br />驗證<br />過
+            人工<br />精選<br />過
           </div>
 
           {/* 熊 + 蜜蜂 吉祥物 */}
@@ -258,23 +258,24 @@ export default function Home() {
           <h1 className="font-hero stagger-3" style={{
             color: 'var(--ink-hex)',
             textAlign: 'center',
-            marginBottom: 14,
+            marginBottom: 20,
+            lineHeight: 0.98,
           }}>
             20 秒<br />
             看穿卡通<br />
             藏什麼
           </h1>
 
-          {/* 副標 — 粗黑體 + 分隔點 */}
+          {/* 副標 — 正常字重 + 放大 + 行距 */}
           <p className="stagger-4" style={{
-            fontSize: 13,
-            fontWeight: 700,
-            letterSpacing: '0.02em',
+            fontSize: 15,
+            fontWeight: 500,
+            letterSpacing: '-0.005em',
             color: 'var(--ink-hex)',
             textAlign: 'center',
-            lineHeight: 1.5,
-            opacity: 0.82,
-            padding: '0 8px',
+            lineHeight: 1.7,
+            opacity: 0.75,
+            padding: '0 12px',
           }}>
             貼上 YouTube 頻道 · AI 翻遍影片跟留言<br />
             紅橘綠燈秒判斷能不能給小孩看
@@ -308,8 +309,8 @@ export default function Home() {
             <p className="font-display" style={{ fontSize: 26, lineHeight: 1.02, color: 'var(--ink-hex)' }}>
               打開熊熊守護模式
             </p>
-            <p style={{ fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', marginTop: 5, fontWeight: 600, opacity: 0.78 }}>
-              內建真人驗證頻道，平板丟給小孩也安心
+            <p style={{ fontSize: 13, color: 'var(--ink-hex)', letterSpacing: '-0.005em', marginTop: 6, fontWeight: 500, opacity: 0.7, lineHeight: 1.5 }}>
+              人工精選頻道，平板丟給小孩也安心
             </p>
           </div>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
@@ -549,8 +550,8 @@ export default function Home() {
                             border: '2px solid var(--card-hex)',
                           }}>{item.n}</span>
                         </div>
-                        <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.03em', lineHeight: 1.2 }}>{item.t}</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.45, fontWeight: 600 }}>{item.s}</div>
+                        <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.03em', lineHeight: 1.25 }}>{item.t}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.005em', lineHeight: 1.6, fontWeight: 500, marginTop: 2 }}>{item.s}</div>
                         <div style={{
                           fontSize: 10,
                           color: 'var(--ink-hex)',

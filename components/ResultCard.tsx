@@ -25,15 +25,19 @@ const RISK_CONFIG = {
     label: '高風險',
     tagline: '不建議讓孩子觀看',
     badgeClass: 'badge-high',
-    barColor: 'var(--risk-red)',
-    scoreColor: 'var(--risk-red)',
+    barColor: 'var(--terra-hex)',
+    scoreColor: 'var(--terra-hex)',
+    headerBg: '#FFE8E0',
+    emoji: '🚨',
   },
   medium: {
     label: '注意觀察',
     tagline: '建議家長全程陪同',
     badgeClass: 'badge-medium',
-    barColor: 'var(--risk-orange)',
-    scoreColor: 'var(--risk-orange)',
+    barColor: 'var(--honey-deep)',
+    scoreColor: 'var(--honey-deep)',
+    headerBg: 'var(--honey-hex)',
+    emoji: '⚠️',
   },
   low: {
     label: '目前安全',
@@ -41,6 +45,8 @@ const RISK_CONFIG = {
     badgeClass: 'badge-low',
     barColor: 'var(--risk-green)',
     scoreColor: 'var(--risk-green)',
+    headerBg: '#DCEAD1',
+    emoji: '🐻',
   },
 }
 
@@ -64,37 +70,42 @@ export default function ResultCard({ result, onReset }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
-      {/* Risk header */}
-      <div className="card stagger-1" style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
-          <div>
-            <span className={cfg.badgeClass} style={{
-              display: 'inline-block',
+      {/* Risk header — Busy Bee big score card */}
+      <div className="bee-card stagger-1" style={{ padding: '24px', background: cfg.headerBg }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px', gap: 14 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
               fontSize: '12px',
-              fontWeight: 600,
-              padding: '3px 10px',
-              borderRadius: 'var(--radius-pill)',
-              marginBottom: '6px',
-              letterSpacing: '-0.01em',
+              fontWeight: 900,
+              padding: '5px 12px',
+              borderRadius: 9999,
+              background: 'var(--ink-hex)',
+              color: cfg.scoreColor,
+              marginBottom: '10px',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              border: '2px solid var(--ink-hex)',
             }}>
-              {cfg.label}
-            </span>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', letterSpacing: '-0.01em' }}>{cfg.tagline}</p>
+              <span>{cfg.emoji}</span> {cfg.label}
+            </div>
+            <p className="font-display" style={{ fontSize: 22, color: 'var(--ink-hex)', lineHeight: 1.1 }}>
+              {cfg.tagline}
+            </p>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '36px', fontWeight: 700, color: cfg.scoreColor, lineHeight: 1, letterSpacing: '-0.04em' }}>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div className="font-display" style={{ fontSize: '64px', color: cfg.scoreColor, lineHeight: 0.9, letterSpacing: '-0.06em' }}>
               {result.riskScore}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>/ 100</div>
+            <div style={{ fontSize: '11px', color: 'var(--ink-hex)', marginTop: '4px', fontWeight: 800, opacity: 0.6, letterSpacing: '0.08em' }}>/ 100</div>
           </div>
         </div>
 
-        <div style={{ background: 'rgba(60,60,67,0.08)', borderRadius: 99, height: 5, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(43,24,16,0.12)', borderRadius: 99, height: 8, overflow: 'hidden', border: '2px solid var(--ink-hex)' }}>
           <div style={{
             height: '100%',
             width: `${result.riskScore}%`,
             background: cfg.barColor,
-            borderRadius: 99,
             transition: 'width 1s var(--ease-out)',
           }} />
         </div>
@@ -206,37 +217,37 @@ export default function ResultCard({ result, onReset }: Props) {
       </div>
 
       {/* Channel info */}
-      <div className="card stagger-2" style={{ padding: '18px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '11px', marginBottom: '12px' }}>
+      <div className="bee-card stagger-2" style={{ padding: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
           {result.channelThumbnail && (
             <Image
               src={result.channelThumbnail}
               alt={result.channelName}
-              width={38}
-              height={38}
-              style={{ borderRadius: '50%', objectFit: 'cover' }}
+              width={44}
+              height={44}
+              style={{ borderRadius: '50%', objectFit: 'cover', border: '2.5px solid var(--ink-hex)' }}
             />
           )}
-          <div>
-            <p style={{ fontWeight: 600, fontSize: '14px', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontWeight: 900, fontSize: '16px', letterSpacing: '-0.03em', color: 'var(--ink-hex)', lineHeight: 1.2 }}>
               {result.channelName}
             </p>
-            <p style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px', letterSpacing: '-0.01em' }}>
-              {result.commentsDisabled ? '⚠️ 留言區已關閉' : '留言區開啟'}
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '3px', letterSpacing: '-0.01em', fontWeight: 600 }}>
+              {result.commentsDisabled ? '⚠️ 留言區已關閉' : '💬 留言區開啟'}
               {result.videoCount ? ` · ${result.videoCount} 部影片` : ''}
             </p>
           </div>
         </div>
-        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.65, letterSpacing: '-0.01em' }}>
+        <p style={{ fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.75, letterSpacing: '-0.005em', fontWeight: 400 }}>
           {result.aiSummary}
         </p>
       </div>
 
       {/* Warning comments */}
       {result.warningComments.length > 0 && (
-        <div className="card stagger-3" style={{ padding: '18px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '12px' }}>
-            家長警示留言
+        <div className="bee-card stagger-3" style={{ padding: '20px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '14px', opacity: 0.7 }}>
+            ⚠️ 家長警示留言
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {result.warningComments.map((comment, i) => (
@@ -297,9 +308,9 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {/* Suspicious tags */}
       {result.suspiciousTags.length > 0 && (
-        <div className="card stagger-3" style={{ padding: '18px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '10px' }}>
-            異常標籤
+        <div className="bee-card stagger-3" style={{ padding: '20px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '12px', opacity: 0.7 }}>
+            🏷️ 異常標籤
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {result.suspiciousTags.map((tag, i) => (
@@ -318,11 +329,11 @@ export default function ResultCard({ result, onReset }: Props) {
       )}
 
       {/* Recommendation */}
-      <div className="card stagger-4" style={{ padding: '18px' }}>
-        <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '8px' }}>
-          建議
+      <div className="bee-card-honey stagger-4" style={{ padding: '20px' }}>
+        <p style={{ fontSize: '11px', fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '10px', opacity: 0.7 }}>
+          🐻 熊爸熊媽建議
         </p>
-        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.65, letterSpacing: '-0.01em' }}>
+        <p style={{ fontSize: '15px', color: 'var(--ink-hex)', lineHeight: 1.75, letterSpacing: '-0.01em', fontWeight: 500 }}>
           {result.recommendation}
         </p>
       </div>
@@ -362,8 +373,8 @@ export default function ResultCard({ result, onReset }: Props) {
         <button onClick={handleShare} className="btn-secondary" style={{ flex: 1, fontSize: '13px', padding: '12px' }}>
           分享
         </button>
-        <button onClick={onReset} className="btn-primary" style={{ flex: 2, fontSize: '13px', padding: '12px' }}>
-          再掃一個
+        <button onClick={onReset} className="btn-pill btn-pill-honey" style={{ flex: 2, fontSize: '13px', padding: '14px' }}>
+          再掃一個 <span className="arrow">→</span>
         </button>
       </div>
 
