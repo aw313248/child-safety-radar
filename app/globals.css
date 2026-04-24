@@ -345,3 +345,38 @@ body {
 }
 .btn-secondary:hover  { background: var(--ink-08); border-color: var(--border-default); }
 .btn-secondary:active { transform: scale(0.98); }
+
+/* ── Step cards — hover/tap 互動 + icon 呼吸 ── */
+.step-card {
+  transition: transform 0.25s var(--ease-spring),
+              box-shadow 0.25s var(--ease-out),
+              border-color 0.2s;
+}
+.step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--border-default);
+}
+.step-card:active { transform: translateY(-1px) scale(0.98); }
+.step-card:hover .step-icon { animation: step-icon-pop 0.5s var(--ease-spring); }
+
+@keyframes step-icon-pop {
+  0%   { transform: scale(1) rotate(0deg); }
+  40%  { transform: scale(1.12) rotate(-6deg); }
+  70%  { transform: scale(0.95) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* 每張 step card 的 icon 有自己的閒置動畫（stagger 開始） */
+.step-card:nth-child(1) .step-icon { animation: step-idle-float 4s ease-in-out infinite; }
+.step-card:nth-child(2) .step-icon { animation: step-idle-float 4s ease-in-out infinite 1.3s; }
+.step-card:nth-child(3) .step-icon { animation: step-idle-float 4s ease-in-out infinite 2.6s; }
+
+@keyframes step-idle-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+
+/* 膠囊按鈕 hover */
+a[href]:has(> svg),
+button:has(> svg) { transition: background 0.15s, transform 0.12s; }

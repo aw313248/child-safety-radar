@@ -1,6 +1,14 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 import './globals.css'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#FAF8F4',
+  viewportFit: 'cover',
+}
 
 export const metadata: Metadata = {
   title: 'PeekKids — 20 秒看穿 YouTube 頻道藏沒藏「艾莎門」',

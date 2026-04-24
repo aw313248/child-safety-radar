@@ -84,11 +84,24 @@ export default function Home() {
   const remainingFree = Math.max(FREE_SCANS - scanCount, 0)
   const canSubmit = url.trim().length > 0 && !loading
 
-  const steps = [
-    { n: '01', t: '打開 YouTube 找到頻道', s: '複製 youtube.com/@xxx 或任一影片網址' },
-    { n: '02', t: '貼到上面輸入框',         s: 'AI 讀標題、看影片、翻留言' },
-    { n: '03', t: '20–40 秒看結果',         s: '紅橘綠三燈 + AI 摘要與建議' },
+  const steps: Array<{ n: string; t: string; s: string; icon: 'link' | 'brain' | 'shield' }> = [
+    { n: '01', t: '貼上頻道網址', s: 'youtube.com/@xxx', icon: 'link' },
+    { n: '02', t: 'AI 掃描內容',   s: '讀標題 · 看影片 · 翻留言', icon: 'brain' },
+    { n: '03', t: '秒看風險燈號', s: '紅橘綠 + 摘要建議', icon: 'shield' },
   ]
+
+  const StepIcon = ({ name }: { name: 'link' | 'brain' | 'shield' }) => {
+    const common = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+    if (name === 'link') return (
+      <svg {...common}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+    )
+    if (name === 'brain') return (
+      <svg {...common}><path d="M9.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 11-5 0V17a3 3 0 01-3-3 3 3 0 01.5-5 3 3 0 013-3 2.5 2.5 0 012-4z"/><path d="M14.5 2A2.5 2.5 0 0012 4.5v15a2.5 2.5 0 105 0V17a3 3 0 003-3 3 3 0 00-.5-5 3 3 0 00-3-3 2.5 2.5 0 00-2-4z"/></svg>
+    )
+    return (
+      <svg {...common}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+    )
+  }
 
   return (
     <main style={{ minHeight: '100vh', padding: '24px 20px 56px' }}>
@@ -140,14 +153,14 @@ export default function Home() {
           marginBottom: 36,
         }}>
           <div style={{
-            width: 120, height: 120,
-            margin: '0 auto 20px',
+            width: 84, height: 84,
+            margin: '0 auto 16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
           }}>
-            <OwlMascot state={owlState} size={120} />
+            <OwlMascot state={owlState} size={84} />
           </div>
           <h1 style={{
             fontSize: 42,
@@ -350,32 +363,55 @@ export default function Home() {
                   怎麼用
                 </h2>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {steps.map(item => (
-                    <div key={item.n} className="surface-white" style={{
-                      padding: '16px 18px',
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 14,
-                    }}>
-                      <div style={{
-                        flex: '0 0 auto',
-                        width: 28, height: 28,
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: 8,
+                }}>
+                  {steps.map((item, idx) => (
+                    <div
+                      key={item.n}
+                      className={`surface-white stagger-${idx + 1} step-card`}
+                      style={{
+                        padding: '18px 12px 16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        gap: 10,
+                        cursor: 'default',
+                      }}
+                    >
+                      <div className="step-icon" style={{
+                        width: 44, height: 44,
                         borderRadius: '50%',
                         background: 'var(--ink-hex)',
                         color: '#fff',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-                        fontSize: 11,
-                        fontWeight: 700,
-                        letterSpacing: '0.02em',
-                      }}>{item.n}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 3 }}>{item.t}</div>
-                        <div style={{ fontSize: 13, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.55 }}>{item.s}</div>
+                        position: 'relative',
+                      }}>
+                        <StepIcon name={item.icon} />
+                        <span style={{
+                          position: 'absolute',
+                          top: -4, right: -4,
+                          minWidth: 18, height: 18,
+                          padding: '0 5px',
+                          borderRadius: 9999,
+                          background: 'var(--stone-hex)',
+                          color: 'var(--ink-hex)',
+                          fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
+                          fontSize: 10,
+                          fontWeight: 700,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: '2px solid var(--paper-hex)',
+                        }}>{item.n}</span>
                       </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1.3 }}>{item.t}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em', lineHeight: 1.45 }}>{item.s}</div>
                     </div>
                   ))}
                 </div>
