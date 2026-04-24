@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import { AnalysisResult, ScoreBreakdownItem } from '@/types/analysis'
+import DiscussionReporter from './DiscussionReporter'
 
 const CATEGORY_LABEL: Record<ScoreBreakdownItem['category'], string> = {
   ai: 'AI 分析',
@@ -322,6 +323,13 @@ export default function ResultCard({ result, onReset }: Props) {
           {result.recommendation}
         </p>
       </div>
+
+      {/* UGC：評分回報 + 討論補充 */}
+      <DiscussionReporter
+        channelName={result.channelName}
+        channelUrl={result.channelUrl}
+        riskScore={result.riskScore}
+      />
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: '8px', paddingTop: '2px' }}>
