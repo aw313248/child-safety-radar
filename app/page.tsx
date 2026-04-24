@@ -85,59 +85,102 @@ export default function Home() {
   const canSubmit = url.trim().length > 0 && !loading
 
   const steps = [
-    { n: '01', t: '打開 YouTube 找到頻道', s: '複製 youtube.com/@xxx 或任一影片網址', glass: 'glass-lavender' },
-    { n: '02', t: '貼到上面輸入框',         s: 'AI 讀標題、看影片、翻留言',          glass: 'glass-mint' },
-    { n: '03', t: '20–40 秒看結果',         s: '紅橘綠三燈 + AI 摘要與建議',         glass: 'glass-peach' },
+    { n: '01', t: '打開 YouTube 找到頻道', s: '複製 youtube.com/@xxx 或任一影片網址' },
+    { n: '02', t: '貼到上面輸入框',         s: 'AI 讀標題、看影片、翻留言' },
+    { n: '03', t: '20–40 秒看結果',         s: '紅橘綠三燈 + AI 摘要與建議' },
   ]
 
   return (
-    <main style={{ minHeight: '100vh', padding: '28px 20px 56px' }}>
+    <main style={{ minHeight: '100vh', padding: '24px 20px 56px' }}>
       <div style={{ width: '100%', maxWidth: 440, margin: '0 auto' }}>
 
-        {/* ═══ Hero Header ═══ */}
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 40 }}>
-          <div>
-            <h1 style={{
-              fontSize: 44,
-              fontWeight: 900,
-              letterSpacing: '-0.055em',
-              color: 'var(--text-primary)',
-              lineHeight: 0.95,
-              marginBottom: 10,
-            }}>
-              PeekKids
-            </h1>
-            <p style={{ fontSize: 14, color: 'var(--text-secondary)', letterSpacing: '-0.01em', fontWeight: 500 }}>
-              YouTube 頻道兒童安全雷達
-            </p>
-          </div>
+        {/* ═══ Top bar — 小 logo + 歷史入口（明確標籤） ═══ */}
+        <nav style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 32,
+        }}>
+          <span style={{
+            fontSize: 13,
+            fontWeight: 700,
+            letterSpacing: '-0.01em',
+            color: 'var(--text-secondary)',
+          }}>
+            PeekKids
+          </span>
           <a
             href="/history"
-            aria-label="掃描歷史"
-            className="glass"
             style={{
-              flex: '0 0 auto',
-              width: 52, height: 52,
-              borderRadius: '50%',
               display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              gap: 6,
+              padding: '8px 14px',
+              borderRadius: 9999,
+              background: 'var(--ink-05)',
+              border: '1px solid var(--border-soft)',
               color: 'var(--text-primary)',
+              fontSize: 13,
+              fontWeight: 600,
+              letterSpacing: '-0.01em',
               textDecoration: 'none',
             }}
           >
-            <OwlMascot state={owlState} size={28} />
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <polyline points="12 7 12 12 15 14" />
+            </svg>
+            掃描歷史
           </a>
-        </header>
+        </nav>
 
-        {/* ═══ Segmented control — glass pill ═══ */}
-        <div className="glass" style={{
+        {/* ═══ Hero — 大貓頭鷹 + 主標題 ═══ */}
+        <section style={{
+          textAlign: 'center',
+          marginBottom: 36,
+        }}>
+          <div style={{
+            width: 120, height: 120,
+            margin: '0 auto 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+          }}>
+            <OwlMascot state={owlState} size={120} />
+          </div>
+          <h1 style={{
+            fontSize: 42,
+            fontWeight: 900,
+            letterSpacing: '-0.055em',
+            color: 'var(--text-primary)',
+            lineHeight: 1,
+            marginBottom: 10,
+          }}>
+            PeekKids
+          </h1>
+          <p style={{
+            fontSize: 15,
+            color: 'var(--text-secondary)',
+            letterSpacing: '-0.01em',
+            fontWeight: 500,
+            lineHeight: 1.5,
+          }}>
+            YouTube 頻道兒童安全雷達，<br />
+            20 秒幫你看穿「艾莎門」
+          </p>
+        </section>
+
+        {/* ═══ Segmented control ═══ */}
+        <div style={{
+          background: 'var(--ink-05)',
+          border: '1px solid var(--border-soft)',
           borderRadius: 9999,
           padding: 4,
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: 2,
-          marginBottom: 28,
+          marginBottom: 24,
         }}>
           {(['scan', 'cases'] as const).map(t => {
             const active = tab === t
@@ -146,10 +189,10 @@ export default function Home() {
                 key={t}
                 onClick={() => setTab(t)}
                 style={{
-                  padding: '11px 14px',
+                  padding: '10px 14px',
                   borderRadius: 9999,
                   border: 'none',
-                  background: active ? '#0A0A0A' : 'transparent',
+                  background: active ? 'var(--ink-hex)' : 'transparent',
                   color: active ? '#fff' : 'var(--text-secondary)',
                   fontFamily: 'inherit',
                   fontSize: 13,
@@ -175,28 +218,26 @@ export default function Home() {
 
             {!result && (
               <>
-                {/* Section heading */}
-                <h2 style={{
-                  fontSize: 22,
-                  fontWeight: 800,
-                  letterSpacing: '-0.03em',
-                  color: 'var(--text-primary)',
-                  marginBottom: 14,
-                  paddingLeft: 4,
+                {/* Hero input card — 單一 stone tint */}
+                <div className="surface-stone" style={{
+                  padding: '22px 22px 20px',
+                  marginBottom: 28,
                 }}>
-                  開始掃描
-                </h2>
-
-                {/* Hero glass card — pastel sky tint */}
-                <div className="glass-sky" style={{ padding: '22px 22px 20px', marginBottom: 10 }}>
-
                   {/* meta row */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '-0.01em' }}>
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: 'var(--text-secondary)',
+                      letterSpacing: '-0.01em',
+                    }}>
                       <span style={{
-                        width: 8, height: 8, borderRadius: '50%',
-                        background: unlocked || remainingFree > 0 ? 'var(--risk-green)' : 'var(--risk-orange)',
-                        boxShadow: `0 0 0 4px ${unlocked || remainingFree > 0 ? 'rgba(52,199,89,0.18)' : 'rgba(255,149,0,0.18)'}`,
+                        width: 7, height: 7, borderRadius: '50%',
+                        background: 'var(--ink-hex)',
+                        opacity: loading ? 0.4 : (unlocked || remainingFree > 0) ? 1 : 0.25,
                       }} />
                       {loading ? '掃描中' : unlocked ? '已解鎖 · 無限' : remainingFree > 0 ? `剩 ${remainingFree} 次免費` : '免費已用完'}
                     </div>
@@ -207,14 +248,14 @@ export default function Home() {
 
                   {/* Input + send — iMessage 風 */}
                   <div style={{
-                    background: 'rgba(255,255,255,0.85)',
+                    background: '#FFFFFF',
                     borderRadius: 9999,
-                    border: '1px solid rgba(255,255,255,0.70)',
+                    border: '1px solid var(--border-soft)',
                     padding: '5px 5px 5px 18px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 8,
-                    boxShadow: error ? '0 0 0 3px rgba(255,59,48,0.15)' : '0 2px 8px rgba(10,10,10,0.04)',
+                    boxShadow: error ? '0 0 0 3px rgba(194,65,59,0.12)' : 'var(--shadow-hair)',
                     transition: 'box-shadow 0.2s',
                   }}>
                     <input
@@ -246,14 +287,14 @@ export default function Home() {
                         width: 44, height: 44,
                         borderRadius: '50%',
                         border: 'none',
-                        background: canSubmit ? '#0A0A0A' : 'rgba(10,10,10,0.15)',
+                        background: canSubmit ? 'var(--ink-hex)' : 'var(--ink-10)',
                         color: '#fff',
                         cursor: canSubmit ? 'pointer' : 'not-allowed',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'background 0.15s, transform 0.1s',
-                        boxShadow: canSubmit ? '0 4px 12px rgba(10,10,10,0.25)' : 'none',
+                        boxShadow: canSubmit ? '0 4px 12px rgba(10,10,10,0.22)' : 'none',
                       }}
                     >
                       {loading ? (
@@ -274,14 +315,20 @@ export default function Home() {
                   </div>
 
                   {loading && (
-                    <div style={{ marginTop: 14, background: 'rgba(10,10,10,0.08)', borderRadius: 99, height: 3, overflow: 'hidden' }}>
+                    <div style={{ marginTop: 14, background: 'var(--ink-08)', borderRadius: 99, height: 3, overflow: 'hidden' }}>
                       <div className="progress-shimmer" style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }} />
                     </div>
                   )}
                 </div>
 
                 {error && !loading && (
-                  <div className="stagger-1 glass-blush" style={{ padding: '14px 18px', marginBottom: 10 }}>
+                  <div className="stagger-1" style={{
+                    padding: '14px 18px',
+                    marginBottom: 24,
+                    background: 'rgba(194,65,59,0.06)',
+                    border: '1px solid rgba(194,65,59,0.18)',
+                    borderRadius: 'var(--radius-lg)',
+                  }}>
                     <p style={{ color: 'var(--risk-red)', fontSize: 13, letterSpacing: '-0.01em', fontWeight: 700 }}>
                       {error}
                     </p>
@@ -293,36 +340,40 @@ export default function Home() {
 
                 {/* 怎麼用 section */}
                 <h2 style={{
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: 800,
                   letterSpacing: '-0.03em',
                   color: 'var(--text-primary)',
-                  margin: '40px 0 14px',
+                  margin: '8px 0 14px',
                   paddingLeft: 4,
                 }}>
                   怎麼用
                 </h2>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {steps.map(item => (
-                    <div key={item.n} className={item.glass} style={{
-                      padding: '18px 20px',
+                    <div key={item.n} className="surface-white" style={{
+                      padding: '16px 18px',
                       display: 'flex',
                       alignItems: 'flex-start',
                       gap: 14,
                     }}>
                       <div style={{
                         flex: '0 0 auto',
+                        width: 28, height: 28,
+                        borderRadius: '50%',
+                        background: 'var(--ink-hex)',
+                        color: '#fff',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: 'var(--text-secondary)',
-                        letterSpacing: '0.06em',
-                        marginTop: 2,
-                        opacity: 0.7,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: '0.02em',
                       }}>{item.n}</div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 4 }}>{item.t}</div>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 3 }}>{item.t}</div>
                         <div style={{ fontSize: 13, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.55 }}>{item.s}</div>
                       </div>
                     </div>
@@ -339,20 +390,15 @@ export default function Home() {
           </div>
         )}
 
-        <div style={{ marginTop: 48, textAlign: 'center' }}>
-          <a href="/history" style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: 'var(--forest)',
-            textDecoration: 'none',
-            letterSpacing: '-0.01em',
-          }}>
-            查看掃描歷史 →
-          </a>
-          <p style={{ marginTop: 12, fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
-            AI 輔助分析 · 結果僅供參考
-          </p>
-        </div>
+        <p style={{
+          marginTop: 40,
+          textAlign: 'center',
+          fontSize: 11,
+          color: 'var(--text-tertiary)',
+          letterSpacing: '-0.01em',
+        }}>
+          AI 輔助分析 · 結果僅供參考
+        </p>
       </div>
 
       {showUnlock && <UnlockModal onUnlocked={handleUnlocked} onClose={() => setShowUnlock(false)} />}

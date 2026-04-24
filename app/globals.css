@@ -2,59 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ══════════════════════════════════════════════════
+   PeekKids — Tide-inspired 乾淨系
+   只用 3 個顏色：黑 / 白 / 暖米（stone）
+   所有層次都靠「不透明度」堆出來：5% / 10% / 20% / 40% / 80%
+   ══════════════════════════════════════════════════ */
 :root {
-  /* Surfaces — 純淨白 + pastel 光暈 */
-  --bg:              #FAFAFC;
-  --surface:         #FFFFFF;
-  --surface-raised:  #FFFFFF;
+  /* ─── 3-color palette ─── */
+  --ink:         10, 10, 10;        /* 主色：黑（rgb 值，配 alpha 用） */
+  --paper:       250, 248, 244;     /* 紙面：暖白 */
+  --stone:       220, 210, 196;     /* 單一暖米色 accent */
 
-  /* Brand — iOS system blue（只用在 accent、小連結） */
-  --forest:          #007AFF;
-  --forest-mid:      #0062CC;
+  /* ─── 固定 hex（按鈕 / emoji 之類硬色值） ─── */
+  --ink-hex:     #0A0A0A;
+  --paper-hex:   #FAF8F4;
+  --stone-hex:   #DCD2C4;
 
-  /* Text — 高對比，標題黑到底 */
-  --text-primary:    #0A0A0A;
-  --text-secondary:  #6B6E72;
-  --text-tertiary:   #9CA0A6;
+  /* ─── 系統風險色（只在結果卡內用，整體風格不計入三色） ─── */
+  --risk-red:    #C2413B;
+  --risk-orange: #C88830;
+  --risk-green:  #4A8A5C;
 
-  /* Pastel palette — glass 卡的色系 */
-  --pastel-lavender: 232, 220, 252;   /* rgba format，方便搭 alpha */
-  --pastel-mint:     200, 237, 216;
-  --pastel-peach:    255, 217, 192;
-  --pastel-sky:      197, 220, 250;
-  --pastel-blush:    253, 213, 227;
+  /* ─── Text — 全部用 ink + 不透明度 ─── */
+  --text-primary:   rgba(var(--ink), 1);
+  --text-secondary: rgba(var(--ink), 0.55);
+  --text-tertiary:  rgba(var(--ink), 0.35);
+  --text-quaternary: rgba(var(--ink), 0.18);
 
-  /* Accent */
-  --amber:           #FF9500;
+  /* ─── Opacity ladder（核心） ─── */
+  --ink-05:  rgba(var(--ink), 0.05);
+  --ink-08:  rgba(var(--ink), 0.08);
+  --ink-10:  rgba(var(--ink), 0.10);
+  --ink-20:  rgba(var(--ink), 0.20);
+  --ink-40:  rgba(var(--ink), 0.40);
+  --ink-80:  rgba(var(--ink), 0.80);
 
-  /* Risk — iOS system colors */
-  --risk-red:        #FF3B30;
-  --risk-orange:     #FF9500;
-  --risk-green:      #34C759;
+  --stone-20: rgba(var(--stone), 0.20);
+  --stone-40: rgba(var(--stone), 0.40);
+  --stone-60: rgba(var(--stone), 0.60);
+  --stone-80: rgba(var(--stone), 0.80);
 
-  /* Borders（HeroUI 靠 border 不靠陰影） */
-  --border-soft:     rgba(15, 23, 42, 0.06);
-  --border-default:  rgba(15, 23, 42, 0.10);
-  --border-strong:   rgba(15, 23, 42, 0.16);
-  --separator:       rgba(15, 23, 42, 0.08);
+  /* ─── Borders ─── */
+  --border-hair:    rgba(var(--ink), 0.06);
+  --border-soft:    rgba(var(--ink), 0.10);
+  --border-default: rgba(var(--ink), 0.14);
 
-  /* Radius — 全部圓滾滾，絕無方角 */
-  --radius-2xl:      28px;
-  --radius-xl:       24px;
-  --radius-lg:       20px;
-  --radius-md:       16px;
-  --radius-sm:       12px;
-  --radius-pill:     9999px;
+  /* ─── Radius — 全圓角 ─── */
+  --radius-2xl:   32px;
+  --radius-xl:    24px;
+  --radius-lg:    20px;
+  --radius-md:    16px;
+  --radius-sm:    12px;
+  --radius-pill:  9999px;
 
-  /* Shadows — 柔和、飄浮感 */
-  --shadow-card:     0 2px 10px rgba(10,10,10,0.04), 0 1px 3px rgba(10,10,10,0.03);
-  --shadow-raised:   0 20px 40px -12px rgba(10,10,10,0.10), 0 6px 16px rgba(10,10,10,0.05);
-  --shadow-btn:      0 4px 12px rgba(0,122,255,0.22);
+  /* ─── Shadows — 極淡 ─── */
+  --shadow-hair:  0 1px 2px rgba(var(--ink), 0.04);
+  --shadow-card:  0 2px 10px rgba(var(--ink), 0.04), 0 1px 3px rgba(var(--ink), 0.03);
+  --shadow-lift:  0 16px 40px -12px rgba(var(--ink), 0.10), 0 4px 12px rgba(var(--ink), 0.04);
 
-  /* Motion */
-  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out:        cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out:     cubic-bezier(0.45, 0, 0.55, 1);
+  /* ─── Motion ─── */
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out:  cubic-bezier(0.45, 0, 0.55, 1);
+
+  /* 舊 var 相容（其他 component 還在用） */
+  --bg:             var(--paper-hex);
+  --surface:        #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --forest:         var(--ink-hex);
+  --forest-mid:     rgba(var(--ink), 0.85);
+  --separator:      var(--border-hair);
+  --border-strong:  var(--border-default);
+  --amber:          var(--stone-hex);
+  --shadow-raised:  var(--shadow-lift);
+  --shadow-btn:     0 4px 12px rgba(var(--ink), 0.18);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -66,14 +87,11 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 
-  /* Pastel bloom 背景：純白 + 淡粉紫 + 淡薄荷 + 淡桃 */
-  background-color: var(--bg);
+  /* 單一暖米 + 紙面：只有一個顏色在變濃淡，不是彩虹 */
+  background-color: var(--paper-hex);
   background-image:
-    radial-gradient(ellipse 45% 35% at 12% 8%,  rgba(var(--pastel-lavender), 0.55), transparent 65%),
-    radial-gradient(ellipse 40% 30% at 90% 12%, rgba(var(--pastel-sky),      0.50), transparent 65%),
-    radial-gradient(ellipse 50% 35% at 50% 55%, rgba(var(--pastel-peach),    0.35), transparent 65%),
-    radial-gradient(ellipse 40% 30% at 85% 88%, rgba(var(--pastel-mint),     0.45), transparent 65%),
-    radial-gradient(ellipse 40% 30% at 15% 92%, rgba(var(--pastel-blush),    0.40), transparent 65%);
+    radial-gradient(ellipse 55% 40% at 15% 10%,  rgba(var(--stone), 0.55), transparent 65%),
+    radial-gradient(ellipse 50% 35% at 85% 85%,  rgba(var(--stone), 0.40), transparent 65%);
   background-attachment: fixed;
 }
 
@@ -83,63 +101,48 @@ body {
   from { opacity: 0; transform: scale(0.96); }
   to   { opacity: 1; transform: scale(1); }
 }
-
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(20px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-
 @keyframes float-gentle {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-5px); }
 }
-
 @keyframes owl-blink {
   0%, 92%, 100% { transform: scaleY(1); }
   95%           { transform: scaleY(0.08); }
 }
-
 @keyframes radar-sweep {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
-
 @keyframes scan-pulse {
   0%   { transform: scale(0.85); opacity: 0.5; }
   100% { transform: scale(2.0);  opacity: 0; }
 }
-
 @keyframes eye-glow-red {
-  0%, 100% { filter: drop-shadow(0 0 5px rgba(255,59,48,0.4)); }
-  50%      { filter: drop-shadow(0 0 12px rgba(255,59,48,0.85)); }
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(194,65,59,0.4)); }
+  50%      { filter: drop-shadow(0 0 12px rgba(194,65,59,0.85)); }
 }
-
 @keyframes eye-glow-green {
-  0%, 100% { filter: drop-shadow(0 0 5px rgba(52,199,89,0.4)); }
-  50%      { filter: drop-shadow(0 0 12px rgba(52,199,89,0.85)); }
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(74,138,92,0.4)); }
+  50%      { filter: drop-shadow(0 0 12px rgba(74,138,92,0.85)); }
 }
-
 @keyframes shimmer-bar {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
 }
-
 @keyframes stagger-in {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes owl-breathe {
   0%, 100% { transform: scale(1); }
   50%      { transform: scale(1.035); }
 }
+@keyframes peekkids-spin { to { transform: rotate(360deg); } }
 
-@keyframes border-beam-slide {
-  0%   { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-
-/* Animation classes */
 .animate-fade-scale-in { animation: fade-scale-in 0.45s var(--ease-out) forwards; }
 .animate-slide-up      { animation: slide-up 0.5s var(--ease-spring) forwards; }
 .animate-float         { animation: float-gentle 4s ease-in-out infinite; }
@@ -154,68 +157,148 @@ body {
 .stagger-3 { animation: stagger-in 0.4s var(--ease-out) forwards 0.19s; opacity: 0; }
 .stagger-4 { animation: stagger-in 0.4s var(--ease-out) forwards 0.26s; opacity: 0; }
 
-/* Scan pulse rings (rendered via JS in OwlWrapper) */
 .scan-ring {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   border-radius: 50%;
-  border: 1.5px solid var(--forest);
+  border: 1.5px solid var(--ink-hex);
   animation: scan-pulse 1.8s var(--ease-out) infinite;
   pointer-events: none;
 }
 .scan-ring-2 { animation-delay: 0.6s; }
 .scan-ring-3 { animation-delay: 1.2s; }
 
-/* ── Progress shimmer ────────────────────────────── */
 .progress-shimmer {
-  background: linear-gradient(90deg, var(--forest), #5AC8FA, var(--forest));
+  background: linear-gradient(90deg, var(--ink-hex), rgba(var(--ink), 0.4), var(--ink-hex));
   background-size: 200% 100%;
   animation: shimmer-bar 1.8s infinite;
 }
 
-/* ── Card — HeroUI 風：白底 + 細邊 + 幾乎無陰影 ── */
-.card {
-  background: var(--surface);
+/* ══════════════════════════════════════════════════
+   Surfaces — 只有三種：white / stone / ink
+   每一種都有 opacity 階梯
+   ══════════════════════════════════════════════════ */
+
+/* 白卡：純白 + 細邊 */
+.card,
+.surface-white {
+  background: #FFFFFF;
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
-  border: 1px solid var(--border-default);
   box-shadow: var(--shadow-card);
 }
 
-/* ── Risk badges — iOS system colors ───────────── */
-.badge-high   { background: rgba(255,59,48,0.10); color: var(--risk-red);    border: 1px solid rgba(255,59,48,0.22); }
-.badge-medium { background: rgba(255,149,0,0.12); color: var(--risk-orange); border: 1px solid rgba(255,149,0,0.25); }
-.badge-low    { background: rgba(52,199,89,0.10); color: var(--risk-green);  border: 1px solid rgba(52,199,89,0.22); }
+/* Stone tinted（主 hero 卡用，只有一種顏色） */
+.surface-stone {
+  background: rgba(var(--stone), 0.35);
+  border: 1px solid rgba(var(--stone), 0.60);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-hair);
+}
 
-/* ── Input — HeroUI 風 ─────────────────────────── */
+/* Ink inverted（需要黑底時用，如 active tab） */
+.surface-ink {
+  background: var(--ink-hex);
+  color: #FFFFFF;
+  border-radius: var(--radius-xl);
+}
+
+/* Glass — 真·毛玻璃，白半透明，不帶色偏 */
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.80);
+  box-shadow:
+    0 12px 32px -12px rgba(var(--ink), 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+  border-radius: var(--radius-xl);
+}
+
+/* 舊 glass-* 類別 → 全部收斂成單一 stone tint，避免顏色亂飛 */
+.glass-white,
+.glass-sky,
+.glass-lavender,
+.glass-mint,
+.glass-peach,
+.glass-blush {
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.85) 0%, rgba(var(--stone), 0.30) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.80);
+  box-shadow:
+    0 12px 32px -12px rgba(var(--ink), 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+  border-radius: var(--radius-2xl);
+}
+
+/* ── Risk badges（保留原本的紅橘綠，但收斂成低飽和） ── */
+.badge-high,
+.chip-danger {
+  background: rgba(194,65,59,0.08);
+  color: var(--risk-red);
+  border: 1px solid rgba(194,65,59,0.22);
+}
+.badge-medium,
+.chip-warning {
+  background: rgba(200,136,48,0.10);
+  color: var(--risk-orange);
+  border: 1px solid rgba(200,136,48,0.22);
+}
+.badge-low,
+.chip-success {
+  background: rgba(74,138,92,0.08);
+  color: var(--risk-green);
+  border: 1px solid rgba(74,138,92,0.22);
+}
+.chip-neutral {
+  background: var(--ink-05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-soft);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.4;
+  border: 1px solid transparent;
+}
+
+/* ── Input — 清爽低調 ── */
 .input-field {
-  background: var(--surface);
-  border: 1px solid var(--border-default);
+  background: #FFFFFF;
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   padding: 14px 16px;
   font-family: inherit;
   font-size: 15px;
   color: var(--text-primary);
   width: 100%;
-  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
   outline: none;
-  -webkit-font-smoothing: antialiased;
 }
 .input-field::placeholder { color: var(--text-tertiary); }
-.input-field:hover        { border-color: var(--border-strong); }
+.input-field:hover        { border-color: var(--border-default); }
 .input-field:focus {
-  border-color: var(--forest);
-  box-shadow: 0 0 0 4px rgba(0,122,255,0.12);
+  border-color: var(--ink-80);
+  box-shadow: 0 0 0 4px var(--ink-08);
 }
 .input-field--error {
   border-color: var(--risk-red);
-  box-shadow: 0 0 0 3px rgba(220,38,38,0.10);
+  box-shadow: 0 0 0 3px rgba(194,65,59,0.10);
 }
 
-/* ── Buttons — HeroUI 風：實色 + 輕陰影 + 上浮 ── */
+/* ── Buttons — 黑色 primary（主色就是 ink） ── */
 .btn-primary {
   position: relative;
-  background: var(--forest);
-  color: white;
+  background: var(--ink-hex);
+  color: #FFFFFF;
   font-family: inherit;
   font-weight: 600;
   font-size: 15px;
@@ -231,45 +314,23 @@ body {
   overflow: hidden;
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--forest-mid);
-  box-shadow: 0 4px 16px rgba(0,122,255,0.28), 0 0 0 1px rgba(0,122,255,0.3);
+  background: rgba(var(--ink), 0.88);
+  box-shadow: 0 6px 18px rgba(var(--ink), 0.22);
   transform: translateY(-1px);
 }
 .btn-primary:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 1px 4px rgba(0,122,255,0.15);
+  box-shadow: 0 1px 4px rgba(var(--ink), 0.15);
 }
 .btn-primary:disabled {
-  background: rgba(15,23,42,0.08);
-  color: rgba(15,23,42,0.35);
+  background: var(--ink-10);
+  color: var(--ink-40);
   box-shadow: none;
   cursor: not-allowed;
 }
 
-/* Border beam — CTA 藍光流動（僅 enabled 時） */
-.btn-primary:not(:disabled)::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(0,122,255,0) 30%,
-    rgba(0,122,255,0.6) 50%,
-    rgba(0,122,255,0) 70%,
-    transparent 100%);
-  background-size: 200% 100%;
-  animation: border-beam-slide 3s linear infinite;
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
 .btn-secondary {
-  background: rgba(15,23,42,0.04);
+  background: var(--ink-05);
   color: var(--text-primary);
   font-family: inherit;
   font-weight: 600;
@@ -277,128 +338,10 @@ body {
   letter-spacing: -0.01em;
   padding: 14px 24px;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-soft);
   cursor: pointer;
   width: 100%;
   transition: background 0.15s, border-color 0.15s, transform 0.12s var(--ease-spring);
 }
-.btn-secondary:hover  { background: rgba(15,23,42,0.07); border-color: var(--border-strong); }
+.btn-secondary:hover  { background: var(--ink-08); border-color: var(--border-default); }
 .btn-secondary:active { transform: scale(0.98); }
-
-/* ── Chip — HeroUI 風膠囊 ────────────────────── */
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  line-height: 1.4;
-  border: 1px solid transparent;
-}
-.chip-danger  { background: rgba(255,59,48,0.10); color: var(--risk-red);    border-color: rgba(255,59,48,0.22); }
-.chip-warning { background: rgba(255,149,0,0.12); color: #C2410C;            border-color: rgba(255,149,0,0.25); }
-.chip-success { background: rgba(52,199,89,0.10); color: #15803D;            border-color: rgba(52,199,89,0.22); }
-.chip-neutral { background: rgba(60,60,67,0.06);  color: var(--text-secondary); border-color: var(--border-default); }
-
-/* ══════════════════════════════════════════════════
-   Glass Cards — 毛玻璃 + pastel 漸層，參考圖的視覺主體
-   ══════════════════════════════════════════════════ */
-.glass {
-  background: rgba(255, 255, 255, 0.60);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.60);
-  box-shadow:
-    0 20px 40px -12px rgba(10, 10, 10, 0.08),
-    0 6px 14px rgba(10, 10, 10, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.80);
-  border-radius: var(--radius-xl);
-}
-
-.glass-lavender {
-  background:
-    linear-gradient(135deg, rgba(var(--pastel-lavender), 0.75) 0%, rgba(255, 255, 255, 0.55) 100%);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.70);
-  box-shadow:
-    0 20px 40px -12px rgba(120, 90, 200, 0.12),
-    0 6px 14px rgba(120, 90, 200, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  border-radius: var(--radius-xl);
-}
-
-.glass-sky {
-  background:
-    linear-gradient(135deg, rgba(var(--pastel-sky), 0.72) 0%, rgba(255, 255, 255, 0.55) 100%);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.70);
-  box-shadow:
-    0 20px 40px -12px rgba(70, 120, 210, 0.12),
-    0 6px 14px rgba(70, 120, 210, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  border-radius: var(--radius-xl);
-}
-
-.glass-mint {
-  background:
-    linear-gradient(135deg, rgba(var(--pastel-mint), 0.75) 0%, rgba(255, 255, 255, 0.55) 100%);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.70);
-  box-shadow:
-    0 20px 40px -12px rgba(60, 170, 120, 0.12),
-    0 6px 14px rgba(60, 170, 120, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  border-radius: var(--radius-xl);
-}
-
-.glass-peach {
-  background:
-    linear-gradient(135deg, rgba(var(--pastel-peach), 0.75) 0%, rgba(255, 255, 255, 0.55) 100%);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.70);
-  box-shadow:
-    0 20px 40px -12px rgba(230, 130, 80, 0.12),
-    0 6px 14px rgba(230, 130, 80, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  border-radius: var(--radius-xl);
-}
-
-.glass-blush {
-  background:
-    linear-gradient(135deg, rgba(var(--pastel-blush), 0.75) 0%, rgba(255, 255, 255, 0.55) 100%);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.70);
-  box-shadow:
-    0 20px 40px -12px rgba(220, 100, 150, 0.12),
-    0 6px 14px rgba(220, 100, 150, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  border-radius: var(--radius-xl);
-}
-
-/* 純白高光 glass — 主要 hero 卡用 */
-.glass-white {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.90) 0%, rgba(255, 255, 255, 0.72) 100%);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.90);
-  box-shadow:
-    0 24px 48px -12px rgba(10, 10, 10, 0.10),
-    0 8px 20px rgba(10, 10, 10, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  border-radius: var(--radius-2xl);
-}
-
-/* Update card/input radius to match */
-.card { border-radius: var(--radius-xl); }
-.input-field { border-radius: var(--radius-lg); }
-.btn-primary { border-radius: var(--radius-lg); }
-.btn-secondary { border-radius: var(--radius-lg); }
