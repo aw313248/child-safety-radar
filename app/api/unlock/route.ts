@@ -32,6 +32,12 @@ async function validateLemonSqueezyLicense(licenseKey: string): Promise<boolean>
   }
 }
 
+// 內建主控碼（給開發者 / 站長自用，永遠有效）
+const BUILTIN_CODES = new Set([
+  'PEEKKIDS-OSCAR-2026',
+  'MINEHOOOO-DEV-UNLOCK',
+])
+
 // 備用：手動存取碼（Vercel 環境變數 ACCESS_CODES，逗號分隔）
 function getManualCodes(): Set<string> {
   const raw = process.env.ACCESS_CODES || ''
@@ -48,9 +54,16 @@ export async function POST(req: NextRequest) {
 
   const trimmed = code.trim()
 
-  // 先查手動碼（以 RADAR- 開頭）
+  const upper = trimmed.toUpperCase()
+
+  // 先查內建主控碼
+  if (BUILTIN_CODES.has(upper)) {
+    return NextResponse.json({ valid: true })
+  }
+
+  // 再查環境變數的手動碼
   const manualCodes = getManualCodes()
-  if (manualCodes.has(trimmed.toUpperCase())) {
+  if (manualCodes.has(upper)) {
     return NextResponse.json({ valid: true })
   }
 

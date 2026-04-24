@@ -31,11 +31,15 @@ export default function Home() {
   useEffect(() => {
     setUnlocked(localStorage.getItem(STORAGE_KEY) === 'true')
     setScanCount(parseInt(localStorage.getItem(SCAN_COUNT_KEY) || '0', 10))
-    // 支援 ?u= 從其他頁面帶 URL 進來
+    // 支援 ?u= 從其他頁面帶 URL 進來，?unlock=1 站長自用解鎖
     try {
       const params = new URLSearchParams(window.location.search)
       const u = params.get('u')
       if (u) setUrl(u)
+      if (params.get('unlock') === '1') {
+        localStorage.setItem(STORAGE_KEY, 'true')
+        setUnlocked(true)
+      }
     } catch {}
   }, [])
 
