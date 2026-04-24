@@ -6,8 +6,8 @@ import ResultCard from '@/components/ResultCard'
 import UnlockModal from '@/components/UnlockModal'
 import { AnalysisResult } from '@/types/analysis'
 
+const FREE_SCANS = 1
 const STORAGE_KEY = 'child_radar_unlocked'
-const FREE_SCANS = 1 // 免費試用次數
 const SCAN_COUNT_KEY = 'child_radar_scan_count'
 
 export default function Home() {
@@ -22,20 +22,13 @@ export default function Home() {
   const [showUnlock, setShowUnlock] = useState(false)
 
   useEffect(() => {
-    const isUnlocked = localStorage.getItem(STORAGE_KEY) === 'true'
-    const count = parseInt(localStorage.getItem(SCAN_COUNT_KEY) || '0', 10)
-    setUnlocked(isUnlocked)
-    setScanCount(count)
+    setUnlocked(localStorage.getItem(STORAGE_KEY) === 'true')
+    setScanCount(parseInt(localStorage.getItem(SCAN_COUNT_KEY) || '0', 10))
   }, [])
 
   const handleAnalyze = async () => {
     if (!url.trim()) return
-
-    // Check if needs unlock
-    if (!unlocked && scanCount >= FREE_SCANS) {
-      setShowUnlock(true)
-      return
-    }
+    if (!unlocked && scanCount >= FREE_SCANS) { setShowUnlock(true); return }
 
     setLoading(true)
     setResult(null)
@@ -43,20 +36,15 @@ export default function Home() {
     setProgress(0)
 
     const steps = [
-      { pct: 15, text: '正在解析 YouTube 網址...' },
-      { pct: 35, text: '抓取頻道最近影片資料...' },
-      { pct: 55, text: '收集留言區內容...' },
-      { pct: 75, text: 'AI 正在分析家長警示訊號...' },
-      { pct: 90, text: '產生風險評估報告...' },
+      { pct: 20, text: '解析網址中' },
+      { pct: 40, text: '抓取頻道影片' },
+      { pct: 60, text: '讀取留言內容' },
+      { pct: 80, text: 'AI 分析中' },
+      { pct: 95, text: '產生報告' },
     ]
-
-    let stepIdx = 0
-    const progressInterval = setInterval(() => {
-      if (stepIdx < steps.length) {
-        setProgress(steps[stepIdx].pct)
-        setProgressText(steps[stepIdx].text)
-        stepIdx++
-      }
+    let i = 0
+    const timer = setInterval(() => {
+      if (i < steps.length) { setProgress(steps[i].pct); setProgressText(steps[i].text); i++ }
     }, 4000)
 
     try {
@@ -65,24 +53,19 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url.trim() }),
       })
-
-      clearInterval(progressInterval)
+      clearInterval(timer)
       setProgress(100)
-      setProgressText('分析完成')
-
       const data = await res.json()
-      if (!res.ok) {
-        setError(data.error || '分析失敗，請稍後再試')
-      } else {
-        // Increment scan count
+      if (!res.ok) { setError(data.error || '分析失敗') }
+      else {
         const newCount = scanCount + 1
         setScanCount(newCount)
         localStorage.setItem(SCAN_COUNT_KEY, String(newCount))
         setResult(data)
       }
     } catch {
-      clearInterval(progressInterval)
-      setError('網路錯誤，請檢查連線後再試')
+      clearInterval(timer)
+      setError('網路錯誤，請再試一次')
     } finally {
       setLoading(false)
     }
@@ -94,138 +77,89 @@ export default function Home() {
     setShowUnlock(false)
   }
 
-  const handleReset = () => {
-    setResult(null)
-    setUrl('')
-    setError('')
-    setProgress(0)
-  }
-
-  const remainingFree = Math.max(0, FREE_SCANS - scanCount)
-
   return (
-    <main className="min-h-screen radar-bg">
-      <div className="max-w-2xl mx-auto px-4 py-10">
-        {/* Header */}
-        <div className="text-center mb-10 animate-fade-in-up">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <RadarScanner size={48} />
-            <h1 className="text-4xl font-black tracking-tight">
+    <main className="min-h-screen flex flex-col items-center justify-start px-4 pt-20 pb-16">
+      <div className="w-full max-w-lg">
+
+        {/* Logo */}
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <RadarScanner size={40} />
+            <h1 className="text-3xl font-black tracking-tight">
               童安<span className="text-red-500">雷達</span>
             </h1>
           </div>
-          <p className="text-white/60 text-base leading-relaxed">
-            輸入 YouTube 頻道或影片網址<br />
-            AI 掃描是否含有偽裝成兒童內容的危險訊號
+          <p className="text-white/40 text-sm">
+            輸入 YouTube 頻道網址，掃描是否適合 6 歲以下觀看
           </p>
-
-          {/* Usage badge */}
-          {!unlocked && (
-            <div className="mt-4 inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5">
-              {remainingFree > 0 ? (
-                <span className="text-xs text-white/50">免費試用剩 <span className="text-white font-bold">{remainingFree}</span> 次</span>
-              ) : (
-                <span className="text-xs text-yellow-400/80">免費次數已用完</span>
-              )}
-            </div>
-          )}
-          {unlocked && (
-            <div className="mt-4 inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-1.5">
-              <span className="text-xs text-green-400">✓ 已解鎖，無限次掃描</span>
-            </div>
-          )}
         </div>
 
-        {/* Input Area */}
+        {/* Result */}
+        {result && !loading && (
+          <ResultCard result={result} onReset={() => { setResult(null); setUrl('') }} />
+        )}
+
+        {/* Input */}
         {!result && (
-          <div className="glass rounded-2xl p-6 mb-6 animate-fade-in-up">
-            <label className="block text-sm text-white/50 mb-2 font-medium">
-              YouTube 網址（頻道或影片皆可）
-            </label>
-            <div className="flex gap-3">
+          <>
+            <div className="glass rounded-2xl p-4 mb-3">
               <input
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !loading && handleAnalyze()}
-                placeholder="https://www.youtube.com/@channel 或 https://youtu.be/xxxxx"
-                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm placeholder:text-white/25 focus:outline-none focus:border-red-500/50 transition-all"
+                placeholder="https://www.youtube.com/@頻道名稱"
+                className="w-full bg-transparent text-sm placeholder:text-white/20 focus:outline-none text-white/80"
                 disabled={loading}
               />
-              <button
-                onClick={handleAnalyze}
-                disabled={loading || !url.trim()}
-                className="bg-red-500 hover:bg-red-600 disabled:bg-red-900/40 disabled:text-white/30 text-white font-bold px-5 py-3 rounded-xl transition-all whitespace-nowrap text-sm"
-              >
-                {loading ? '分析中' : '開始掃描'}
-              </button>
             </div>
-          </div>
-        )}
 
-        {/* Loading State */}
-        {loading && (
-          <div className="glass rounded-2xl p-8 mb-6 animate-fade-in-up text-center">
-            <div className="flex justify-center mb-6">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-full border-2 border-red-500/20 absolute inset-0 animate-ping-slow" />
-                <RadarScanner size={64} spinning />
-              </div>
-            </div>
-            <p className="text-white/80 font-medium mb-1">{progressText}</p>
-            <p className="text-white/30 text-sm mb-6">大約需要 20–40 秒，請稍候</p>
-            <div className="bg-white/5 rounded-full h-2 overflow-hidden">
-              <div
-                className="h-full progress-bar-shimmer rounded-full transition-all duration-1000"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <p className="text-right text-xs text-white/30 mt-1">{progress}%</p>
-          </div>
-        )}
-
-        {/* Error */}
-        {error && !loading && (
-          <div className="glass border border-red-500/30 rounded-2xl p-6 mb-6 animate-fade-in-up">
-            <p className="text-red-400 font-medium">⚠️ {error}</p>
-            <button onClick={() => setError('')} className="mt-3 text-sm text-white/40 hover:text-white/60 transition-colors">
-              重試
+            <button
+              onClick={handleAnalyze}
+              disabled={loading || !url.trim()}
+              className="w-full bg-red-500 hover:bg-red-600 disabled:opacity-30 text-white font-bold py-3.5 rounded-2xl transition-all text-sm"
+            >
+              {loading ? progressText || '分析中' : '開始掃描'}
             </button>
-          </div>
-        )}
 
-        {/* Result */}
-        {result && !loading && (
-          <ResultCard result={result} onReset={handleReset} />
-        )}
-
-        {/* How it works */}
-        {!result && !loading && (
-          <div className="mt-8 animate-fade-in-up">
-            <p className="text-white/30 text-xs text-center mb-4">掃描項目</p>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { icon: '💬', label: '家長警示留言', desc: '偵測嚇到了、不適合等關鍵訊號' },
-                { icon: '🏷️', label: '標題標籤分析', desc: '找出異常的兒童內容包裝模式' },
-                { icon: '🔒', label: '留言區狀態', desc: '關閉留言是高風險警示' },
-                { icon: '📊', label: '頻道行為模式', desc: '分析內容一致性與異常跡象' },
-              ].map((item) => (
-                <div key={item.label} className="glass rounded-xl p-4">
-                  <div className="text-2xl mb-2">{item.icon}</div>
-                  <p className="text-sm font-medium text-white/80 mb-1">{item.label}</p>
-                  <p className="text-xs text-white/40">{item.desc}</p>
+            {/* Progress bar */}
+            {loading && (
+              <div className="mt-4">
+                <div className="bg-white/5 rounded-full h-1 overflow-hidden">
+                  <div
+                    className="h-full progress-bar-shimmer rounded-full transition-all duration-1000"
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
-              ))}
+                <p className="text-right text-xs text-white/20 mt-1">{progress}%</p>
+              </div>
+            )}
+
+            {/* Error */}
+            {error && (
+              <p className="mt-4 text-red-400/80 text-sm text-center">{error}</p>
+            )}
+
+            {/* Status */}
+            <div className="mt-6 text-center">
+              {!unlocked && (
+                <span className="text-white/25 text-xs">
+                  免費試用 {Math.max(0, FREE_SCANS - scanCount)} 次剩餘
+                </span>
+              )}
+              {unlocked && (
+                <span className="text-green-500/40 text-xs">✓ 已解鎖</span>
+              )}
             </div>
-          </div>
+          </>
         )}
 
-        <p className="text-center text-white/20 text-xs mt-10">
-          童安雷達 · AI 輔助分析，結果僅供參考，建議家長陪同觀看
-        </p>
       </div>
 
-      {/* Unlock Modal */}
+      <p className="fixed bottom-5 text-white/15 text-xs">
+        AI 輔助分析，結果僅供參考
+      </p>
+
       {showUnlock && (
         <UnlockModal onUnlocked={handleUnlocked} onClose={() => setShowUnlock(false)} />
       )}
