@@ -3,12 +3,12 @@ import { Analytics } from '@vercel/analytics/react'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'PeekKids — 越「皮」的孩子，越要先 Peek 過',
-  description: '給家有「皮」小孩的爸媽用的 YouTube 把關工具，貼上頻道網址，20 秒內告訴你這個頻道給小孩看 OK 嗎',
-  keywords: 'PeekKids, Elsagate, 兒童安全, YouTube, 家長, 育兒, AI分析',
+  title: 'PeekKids — 20 秒看穿 YouTube 頻道藏沒藏「艾莎門」',
+  description: '偽裝成兒童卡通的「艾莎門」影片越來越多，PeekKids 用 AI 20 秒掃描 YouTube 頻道，看穿是否藏有暴力、恐怖、成人梗等危險內容，給家有「皮」小孩的爸媽用',
+  keywords: 'PeekKids, Elsagate, 艾莎門, 兒童安全, YouTube, 家長, 育兒, AI分析',
   openGraph: {
-    title: 'PeekKids — 越「皮」的孩子，越要先 Peek 過',
-    description: '給家有「皮」小孩的爸媽，20 秒看穿 YouTube 頻道對小孩安不安全',
+    title: 'PeekKids — 可愛卡通下可能藏著「艾莎門」',
+    description: '暴力、恐怖、成人梗偽裝成兒童影片，20 秒 AI 看穿 YouTube 頻道安不安全',
     type: 'website',
   },
 }

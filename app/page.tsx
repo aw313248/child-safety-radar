@@ -125,12 +125,23 @@ export default function Home() {
           </h1>
           <p style={{
             color: 'var(--text-primary)',
-            fontSize: '15px',
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            marginBottom: '4px',
+            fontSize: '17px',
+            fontWeight: 600,
+            letterSpacing: '-0.025em',
+            marginBottom: '6px',
+            lineHeight: 1.3,
           }}>
-            越「皮」的孩子，越要先 Peek 過
+            可愛卡通下可能藏著「艾莎門」
+          </p>
+          <p style={{
+            color: 'var(--text-secondary)',
+            fontSize: '13px',
+            fontWeight: 500,
+            letterSpacing: '-0.01em',
+            marginBottom: '6px',
+            lineHeight: 1.45,
+          }}>
+            貼上 YouTube 頻道網址，20 秒 AI 看穿是否藏有暴力、恐怖、成人梗
           </p>
           <p style={{ color: 'var(--text-tertiary)', fontSize: '12px', letterSpacing: '-0.01em' }}>
             給家有「皮」小孩的爸媽用

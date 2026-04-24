@@ -37,47 +37,61 @@ export default async function Image() {
         <div style={{ position: 'absolute', top: 60, right: 80, fontSize: 20, color: '#6C6C70', letterSpacing: '-0.01em' }}>peekkids.tw</div>
 
         {/* 貓頭鷹 */}
-        <div style={{ fontSize: 120, marginBottom: 20, display: 'flex' }}>🦉</div>
+        <div style={{ fontSize: 88, marginBottom: 24, display: 'flex' }}>🦉</div>
 
-        {/* 品牌名 */}
+        {/* 問題陳述：主文案（最大） */}
         <div
           style={{
-            fontSize: 140,
+            fontSize: 64,
             fontWeight: 800,
-            letterSpacing: '-0.04em',
             color: '#1C1C1E',
-            lineHeight: 1,
+            letterSpacing: '-0.03em',
+            lineHeight: 1.15,
             display: 'flex',
+            textAlign: 'center',
           }}
         >
-          Peek<span style={{ color: '#2D5F3F' }}>Kids</span>
+          可愛卡通下可能藏著「艾莎門」
         </div>
 
-        {/* Slogan */}
         <div
           style={{
-            fontSize: 42,
-            fontWeight: 700,
-            marginTop: 36,
-            color: '#1C1C1E',
+            fontSize: 36,
+            fontWeight: 500,
+            marginTop: 18,
+            color: '#6C6C70',
             letterSpacing: '-0.02em',
             display: 'flex',
           }}
         >
-          越「皮」的孩子，越要先 Peek 過
+          暴力、恐怖、成人梗偽裝成兒童影片
         </div>
 
-        {/* Positioning */}
+        {/* 分隔線 */}
+        <div style={{
+          width: 120,
+          height: 2,
+          background: '#2D5F3F',
+          marginTop: 40,
+          marginBottom: 28,
+          display: 'flex',
+        }} />
+
+        {/* 解法：品牌 + 功能 */}
         <div
           style={{
-            fontSize: 26,
-            marginTop: 18,
-            color: '#6C6C70',
-            letterSpacing: '-0.01em',
+            fontSize: 44,
+            fontWeight: 700,
+            color: '#1C1C1E',
+            letterSpacing: '-0.02em',
             display: 'flex',
+            alignItems: 'center',
+            gap: 16,
           }}
         >
-          給家有「皮」小孩的爸媽用的 YouTube 把關工具
+          <span>Peek<span style={{ color: '#2D5F3F' }}>Kids</span></span>
+          <span style={{ color: '#6C6C70', fontWeight: 500, fontSize: 32 }}>·</span>
+          <span style={{ fontWeight: 500, fontSize: 32 }}>20 秒 AI 看穿 YouTube 頻道</span>
         </div>
       </div>
     ),
