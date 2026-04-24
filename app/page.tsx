@@ -5,6 +5,8 @@ import ResultCard from '@/components/ResultCard'
 import UnlockModal from '@/components/UnlockModal'
 import OwlMascot from '@/components/OwlMascot'
 import CaseLibrary from '@/components/CaseLibrary'
+import ScanningStages from '@/components/ScanningStages'
+import RecentHighRisk from '@/components/RecentHighRisk'
 import { AnalysisResult } from '@/types/analysis'
 
 const FREE_SCANS = 2
@@ -24,10 +26,17 @@ export default function Home() {
   const [scanCount, setScanCount] = useState(0)
   const [showUnlock, setShowUnlock] = useState(false)
   const [tab, setTab] = useState<'scan' | 'cases'>('scan')
+  const [activeStep, setActiveStep] = useState<string | null>(null)
 
   useEffect(() => {
     setUnlocked(localStorage.getItem(STORAGE_KEY) === 'true')
     setScanCount(parseInt(localStorage.getItem(SCAN_COUNT_KEY) || '0', 10))
+    // 支援 ?u= 從其他頁面帶 URL 進來
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const u = params.get('u')
+      if (u) setUrl(u)
+    } catch {}
   }, [])
 
   const owlState = loading ? 'scanning'
@@ -84,10 +93,43 @@ export default function Home() {
   const remainingFree = Math.max(FREE_SCANS - scanCount, 0)
   const canSubmit = url.trim().length > 0 && !loading
 
-  const steps: Array<{ n: string; t: string; s: string; icon: 'link' | 'brain' | 'shield' }> = [
-    { n: '01', t: '貼上頻道網址', s: 'youtube.com/@xxx', icon: 'link' },
-    { n: '02', t: 'AI 掃描內容',   s: '讀標題 · 看影片 · 翻留言', icon: 'brain' },
-    { n: '03', t: '秒看風險燈號', s: '紅橘綠 + 摘要建議', icon: 'shield' },
+  const steps: Array<{
+    n: string
+    t: string
+    s: string
+    icon: 'link' | 'brain' | 'shield'
+    detail: string
+    action?: { label: string; onClick: () => void }
+  }> = [
+    {
+      n: '01',
+      t: '貼上頻道網址',
+      s: 'youtube.com/@xxx',
+      icon: 'link',
+      detail: '打開 YouTube 找到你想檢查的頻道，複製網址列的內容。不管是 @handle、channel 連結，或單一支影片的網址都能用',
+      action: {
+        label: '試貼一個示範頻道',
+        onClick: () => {
+          setUrl('https://www.youtube.com/@CocoMelon')
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        },
+      },
+    },
+    {
+      n: '02',
+      t: 'AI 掃描內容',
+      s: '讀標題 · 看影片 · 翻留言',
+      icon: 'brain',
+      detail: 'AI 會抓頻道最近的影片標題、縮圖風格、留言區警示訊號，綜合判斷是否有偽裝成兒童內容的暴力/恐怖/成人梗',
+    },
+    {
+      n: '03',
+      t: '秒看風險燈號',
+      s: '紅橘綠 + 摘要建議',
+      icon: 'shield',
+      detail: '紅燈（70+）不建議觀看、橘燈（40-69）陪同觀看、綠燈（0-39）相對安全。每個分數都會附 AI 摘要和具體建議',
+      action: { label: '看真實案例', onClick: () => setTab('cases') },
+    },
   ]
 
   const StepIcon = ({ name }: { name: 'link' | 'brain' | 'shield' }) => {
@@ -152,15 +194,15 @@ export default function Home() {
           textAlign: 'center',
           marginBottom: 36,
         }}>
-          <div style={{
-            width: 84, height: 84,
-            margin: '0 auto 16px',
+          <div className="mascot-halo" style={{
+            width: 108, height: 108,
+            margin: '0 auto 18px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
           }}>
-            <OwlMascot state={owlState} size={84} />
+            <OwlMascot state={owlState} size={108} />
           </div>
           <h1 style={{
             fontSize: 42,
@@ -328,9 +370,12 @@ export default function Home() {
                   </div>
 
                   {loading && (
-                    <div style={{ marginTop: 14, background: 'var(--ink-08)', borderRadius: 99, height: 3, overflow: 'hidden' }}>
-                      <div className="progress-shimmer" style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }} />
-                    </div>
+                    <>
+                      <div style={{ marginTop: 14, background: 'var(--ink-08)', borderRadius: 99, height: 3, overflow: 'hidden' }}>
+                        <div className="progress-shimmer" style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }} />
+                      </div>
+                      <ScanningStages progress={progress} />
+                    </>
                   )}
                 </div>
 
@@ -368,53 +413,137 @@ export default function Home() {
                   gridTemplateColumns: 'repeat(3, 1fr)',
                   gap: 8,
                 }}>
-                  {steps.map((item, idx) => (
-                    <div
-                      key={item.n}
-                      className={`surface-white stagger-${idx + 1} step-card`}
-                      style={{
-                        padding: '18px 12px 16px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        gap: 10,
-                        cursor: 'default',
-                      }}
-                    >
-                      <div className="step-icon" style={{
-                        width: 44, height: 44,
-                        borderRadius: '50%',
-                        background: 'var(--ink-hex)',
-                        color: '#fff',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'relative',
-                      }}>
-                        <StepIcon name={item.icon} />
-                        <span style={{
-                          position: 'absolute',
-                          top: -4, right: -4,
-                          minWidth: 18, height: 18,
-                          padding: '0 5px',
-                          borderRadius: 9999,
-                          background: 'var(--stone-hex)',
-                          color: 'var(--ink-hex)',
-                          fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-                          fontSize: 10,
-                          fontWeight: 700,
+                  {steps.map((item, idx) => {
+                    const isActive = activeStep === item.n
+                    return (
+                      <button
+                        key={item.n}
+                        type="button"
+                        onClick={() => setActiveStep(isActive ? null : item.n)}
+                        className={`surface-white stagger-${idx + 1} step-card`}
+                        style={{
+                          padding: '18px 12px 16px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                          gap: 10,
+                          cursor: 'pointer',
+                          border: isActive ? '1px solid var(--ink-40)' : '1px solid var(--border-soft)',
+                          background: isActive ? 'var(--ink-05)' : '#FFFFFF',
+                          fontFamily: 'inherit',
+                          transition: 'all 0.2s var(--ease-out)',
+                        }}
+                        aria-expanded={isActive}
+                      >
+                        <div className="step-icon" style={{
+                          width: 44, height: 44,
+                          borderRadius: '50%',
+                          background: 'var(--ink-hex)',
+                          color: '#fff',
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          border: '2px solid var(--paper-hex)',
-                        }}>{item.n}</span>
-                      </div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1.3 }}>{item.t}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em', lineHeight: 1.45 }}>{item.s}</div>
-                    </div>
-                  ))}
+                          position: 'relative',
+                        }}>
+                          <StepIcon name={item.icon} />
+                          <span style={{
+                            position: 'absolute',
+                            top: -4, right: -4,
+                            minWidth: 18, height: 18,
+                            padding: '0 5px',
+                            borderRadius: 9999,
+                            background: 'var(--stone-hex)',
+                            color: 'var(--ink-hex)',
+                            fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
+                            fontSize: 10,
+                            fontWeight: 700,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '2px solid #FFFFFF',
+                          }}>{item.n}</span>
+                        </div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1.3 }}>{item.t}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em', lineHeight: 1.45 }}>{item.s}</div>
+                        <div style={{
+                          fontSize: 10,
+                          color: 'var(--text-tertiary)',
+                          marginTop: 2,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 3,
+                          fontWeight: 600,
+                          letterSpacing: '-0.01em',
+                        }}>
+                          {isActive ? '收起' : '了解更多'}
+                          <span style={{
+                            display: 'inline-block',
+                            transition: 'transform 0.25s var(--ease-out)',
+                            transform: isActive ? 'rotate(180deg)' : 'rotate(0)',
+                            fontSize: 8,
+                          }}>▼</span>
+                        </div>
+                      </button>
+                    )
+                  })}
                 </div>
+
+                {/* 展開詳情 */}
+                {activeStep && (() => {
+                  const item = steps.find(s => s.n === activeStep)!
+                  return (
+                    <div
+                      className="animate-fade-scale-in surface-stone-soft"
+                      style={{
+                        marginTop: 10,
+                        padding: '16px 18px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                        <span style={{
+                          fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
+                          fontSize: 10,
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: 9999,
+                          background: 'var(--ink-hex)',
+                          color: '#fff',
+                          letterSpacing: '0.02em',
+                        }}>{item.n}</span>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+                          {item.t}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65, letterSpacing: '-0.01em' }}>
+                        {item.detail}
+                      </p>
+                      {item.action && (
+                        <button
+                          onClick={item.action.onClick}
+                          style={{
+                            marginTop: 12,
+                            padding: '10px 16px',
+                            borderRadius: 9999,
+                            background: 'var(--ink-hex)',
+                            color: '#fff',
+                            border: 'none',
+                            fontFamily: 'inherit',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            letterSpacing: '-0.01em',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item.action.label} →
+                        </button>
+                      )}
+                    </div>
+                  )
+                })()}
+
+                {/* 最近標記的（只有在有歷史紀錄時才顯示） */}
+                <RecentHighRisk />
               </>
             )}
           </>

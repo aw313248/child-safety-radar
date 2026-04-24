@@ -116,6 +116,7 @@ export default function ShareQRModal({ result, onClose }: Props) {
           justifyContent: 'center',
         }}>
           {qrDataUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={qrDataUrl}
               alt="分享 QR"

@@ -87,11 +87,11 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 
-  /* 單一暖米 + 紙面：只有一個顏色在變濃淡，不是彩虹 */
-  background-color: var(--paper-hex);
+  /* Gentler Streak 式：純白底 + 一點點 stone 微光（不透明度壓很低） */
+  background-color: #FFFFFF;
   background-image:
-    radial-gradient(ellipse 55% 40% at 15% 10%,  rgba(var(--stone), 0.55), transparent 65%),
-    radial-gradient(ellipse 50% 35% at 85% 85%,  rgba(var(--stone), 0.40), transparent 65%);
+    radial-gradient(ellipse 60% 45% at 15% 5%,   rgba(var(--stone), 0.28), transparent 60%),
+    radial-gradient(ellipse 55% 40% at 88% 95%,  rgba(var(--stone), 0.20), transparent 60%);
   background-attachment: fixed;
 }
 
@@ -189,10 +189,35 @@ body {
 
 /* Stone tinted（主 hero 卡用，只有一種顏色） */
 .surface-stone {
-  background: rgba(var(--stone), 0.35);
-  border: 1px solid rgba(var(--stone), 0.60);
+  background: rgba(var(--stone), 0.28);
+  border: 1px solid rgba(var(--stone), 0.50);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-hair);
+}
+
+/* Stone 更淡的版本（只有 15% 不透明度，清爽白底用） */
+.surface-stone-soft {
+  background: rgba(var(--stone), 0.15);
+  border: 1px solid rgba(var(--stone), 0.35);
+  border-radius: var(--radius-2xl);
+}
+
+/* Mascot halo — 吉祥物背後的柔光 */
+.mascot-halo {
+  position: relative;
+}
+.mascot-halo::before {
+  content: '';
+  position: absolute;
+  inset: -28%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--stone), 0.55) 0%, rgba(var(--stone), 0) 70%);
+  z-index: -1;
+  animation: mascot-breathe 3.5s ease-in-out infinite;
+}
+@keyframes mascot-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50%      { transform: scale(1.08); opacity: 1; }
 }
 
 /* Ink inverted（需要黑底時用，如 active tab） */
@@ -375,6 +400,11 @@ body {
 @keyframes step-idle-float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-3px); }
+}
+
+@keyframes scan-stage-bob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-4px) scale(1.15); }
 }
 
 /* 膠囊按鈕 hover */

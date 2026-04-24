@@ -2,7 +2,6 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Image from 'next/image'
 
 interface SharedResult {
   n: string  // channelName
