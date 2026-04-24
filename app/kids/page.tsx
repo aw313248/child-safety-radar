@@ -23,6 +23,23 @@ export default function KidsModePage() {
   const [loadingVideos, setLoadingVideos] = useState(false)
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
   const [showExitConfirm, setShowExitConfirm] = useState(false)
+  // 大人出題（小孩沒那麼快算）
+  const [exitMath] = useState(() => {
+    const a = 6 + Math.floor(Math.random() * 6) // 6–11
+    const b = 7 + Math.floor(Math.random() * 6) // 7–12
+    return { a, b, answer: a + b }
+  })
+  const [exitInput, setExitInput] = useState('')
+  const [exitError, setExitError] = useState(false)
+
+  const tryExit = () => {
+    if (parseInt(exitInput, 10) === exitMath.answer) {
+      window.location.href = '/'
+    } else {
+      setExitError(true)
+      setTimeout(() => setExitError(false), 900)
+    }
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -396,10 +413,10 @@ export default function KidsModePage() {
         </p>
       </div>
 
-      {/* 找爸爸媽媽對話 */}
+      {/* 找爸爸媽媽對話 — 需要大人解簡單算式才能離開（小孩沒那麼快） */}
       {showExitConfirm && (
         <div
-          onClick={() => setShowExitConfirm(false)}
+          onClick={() => { setShowExitConfirm(false); setExitInput(''); setExitError(false) }}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
             background: 'rgba(10,10,10,0.6)', backdropFilter: 'blur(8px)',
@@ -409,32 +426,96 @@ export default function KidsModePage() {
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: '#FFFFFF', borderRadius: 24, padding: 28, maxWidth: 340, width: '100%',
+              background: '#FFFFFF', borderRadius: 24, padding: 28, maxWidth: 360, width: '100%',
               textAlign: 'center', boxShadow: '0 28px 56px rgba(0,0,0,0.24)',
             }}
           >
             <div style={{ fontSize: 42, marginBottom: 10 }}>👋</div>
-            <h3 style={{ fontSize: 19, fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)', marginBottom: 8 }}>
-              要找爸爸媽媽嗎？
+            <h3 style={{ fontSize: 19, fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)', marginBottom: 6 }}>
+              大人才能離開
             </h3>
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5, marginBottom: 18 }}>
-              要離開安心模式，請大人同時按<br />
-              <strong style={{ color: 'var(--text-primary)' }}>返回鍵 + 概覽鍵</strong>（Android）<br />
-              或 <strong style={{ color: 'var(--text-primary)' }}>連按三下側邊鍵</strong>（iPad）
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5, marginBottom: 16 }}>
+              算一下下面這題，答對就回首頁
             </p>
-            <button
-              onClick={() => setShowExitConfirm(false)}
-              style={{
-                width: '100%', padding: 12,
-                borderRadius: 'var(--radius-lg)',
-                background: 'var(--ink-hex)', color: '#fff',
-                border: 'none', cursor: 'pointer',
-                fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em',
-                fontFamily: 'inherit',
-              }}
-            >
-              繼續看影片
-            </button>
+
+            {/* 算式 */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 10, marginBottom: 14,
+              padding: '14px 18px',
+              background: 'var(--paper-hex)',
+              border: '1px solid var(--border-soft)',
+              borderRadius: 16,
+            }}>
+              <span style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.04em', color: 'var(--text-primary)', fontFamily: 'ui-monospace, "SF Mono", monospace' }}>
+                {exitMath.a} + {exitMath.b} =
+              </span>
+              <input
+                type="number"
+                inputMode="numeric"
+                autoFocus
+                value={exitInput}
+                onChange={e => { setExitInput(e.target.value); setExitError(false) }}
+                onKeyDown={e => e.key === 'Enter' && tryExit()}
+                placeholder="?"
+                style={{
+                  width: 70, padding: '8px 0',
+                  fontSize: 26, fontWeight: 900, letterSpacing: '-0.04em',
+                  textAlign: 'center',
+                  border: `2px solid ${exitError ? 'var(--risk-red)' : 'var(--border-soft)'}`,
+                  borderRadius: 12,
+                  background: '#fff',
+                  fontFamily: 'ui-monospace, "SF Mono", monospace',
+                  color: 'var(--text-primary)',
+                  outline: 'none',
+                  transition: 'border-color 0.15s',
+                }}
+              />
+            </div>
+
+            {exitError && (
+              <p style={{ fontSize: 12, color: 'var(--risk-red)', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 10 }}>
+                答錯了，再試一次
+              </p>
+            )}
+
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={() => { setShowExitConfirm(false); setExitInput(''); setExitError(false) }}
+                style={{
+                  flex: 1, padding: 12,
+                  borderRadius: 'var(--radius-lg)',
+                  background: 'var(--ink-05)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-soft)', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
+                  fontFamily: 'inherit',
+                }}
+              >
+                繼續看影片
+              </button>
+              <button
+                onClick={tryExit}
+                disabled={!exitInput}
+                style={{
+                  flex: 1, padding: 12,
+                  borderRadius: 'var(--radius-lg)',
+                  background: exitInput ? 'var(--ink-hex)' : 'var(--ink-20)',
+                  color: '#fff',
+                  border: 'none',
+                  cursor: exitInput ? 'pointer' : 'not-allowed',
+                  fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
+                  fontFamily: 'inherit',
+                }}
+              >
+                離開安心模式
+              </button>
+            </div>
+
+            <p style={{ marginTop: 14, fontSize: 10, color: 'var(--text-tertiary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
+              若已用引導使用模式 / 螢幕釘選鎖住畫面，<br />
+              離開還需要輸入平板密碼或同時按返回+概覽鍵
+            </p>
           </div>
         </div>
       )}
