@@ -321,20 +321,37 @@ export default function KidsModePage() {
               </h1>
             </div>
           </div>
-          <button
-            onClick={() => setShowExitConfirm(true)}
-            aria-label="找爸爸媽媽"
-            style={{
-              padding: '8px 14px',
-              borderRadius: 9999,
-              background: 'var(--ink-05)', border: '1px solid var(--border-soft)',
-              color: 'var(--text-secondary)',
-              fontSize: 12, fontWeight: 700, letterSpacing: '-0.01em',
-              cursor: 'pointer', fontFamily: 'inherit',
-            }}
-          >
-            找爸爸媽媽
-          </button>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button
+              onClick={() => setShowGuide(true)}
+              aria-label="重看鎖螢幕教學"
+              title="重看鎖螢幕教學"
+              style={{
+                padding: '8px 12px',
+                borderRadius: 9999,
+                background: 'transparent', border: '1px solid var(--border-soft)',
+                color: 'var(--text-secondary)',
+                fontSize: 12, fontWeight: 700, letterSpacing: '-0.01em',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              🔒 鎖螢幕
+            </button>
+            <button
+              onClick={() => setShowExitConfirm(true)}
+              aria-label="找爸爸媽媽"
+              style={{
+                padding: '8px 14px',
+                borderRadius: 9999,
+                background: 'var(--ink-05)', border: '1px solid var(--border-soft)',
+                color: 'var(--text-secondary)',
+                fontSize: 12, fontWeight: 700, letterSpacing: '-0.01em',
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              找爸爸媽媽
+            </button>
+          </div>
         </div>
 
         {/* 年齡選擇（只影響顯示的頻道） */}
