@@ -201,23 +201,6 @@ export default function Home() {
                 ? '已解鎖 · 無限掃描'
                 : `免費剩餘 ${Math.max(0, FREE_SCANS - scanCount)} / ${FREE_SCANS} 次`}
             </p>
-
-            {/* Feature tags */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', paddingTop: '4px' }}>
-              {['留言警示', '標籤偵測', '留言區狀態', 'AI 評估'].map(f => (
-                <span key={f} style={{
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: 'var(--text-secondary)',
-                  background: 'rgba(60,60,67,0.06)',
-                  borderRadius: 'var(--radius-pill)',
-                  padding: '3px 10px',
-                  letterSpacing: '-0.01em',
-                }}>
-                  {f}
-                </span>
-              ))}
-            </div>
           </div>
         )}
       </div>
