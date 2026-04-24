@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CuratedChannel, AgeGroup, filterChannelsByAge } from '@/lib/curated-channels'
 import { getUserChannels, removeUserChannel, UserChannel } from '@/lib/user-channels'
 import LockScreenGuide from '@/components/LockScreenGuide'
@@ -64,14 +64,30 @@ export default function KidsModePage() {
   })
   const [exitInput, setExitInput] = useState('')
   const [exitError, setExitError] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  // 算對密碼後要真的離開 → 用 ref 讓 beforeunload 放行
+  const allowLeaveRef = useRef(false)
 
   const tryExit = () => {
     if (parseInt(exitInput, 10) === exitMath.answer) {
+      allowLeaveRef.current = true
+      // 退全螢幕（如果有）
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
       window.location.href = '/'
     } else {
       setExitError(true)
       setTimeout(() => setExitError(false), 900)
     }
+  }
+
+  const enterFullscreen = async () => {
+    try {
+      const el = document.documentElement as HTMLElement & {
+        webkitRequestFullscreen?: () => Promise<void>
+      }
+      if (el.requestFullscreen) await el.requestFullscreen()
+      else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen()
+    } catch {}
   }
 
   useEffect(() => {
@@ -81,6 +97,73 @@ export default function KidsModePage() {
     if (savedAge) setAge(savedAge)
     setUserChannels(getUserChannels())
   }, [])
+
+  // ═══ 瀏覽器層鎖定（除了算對數學否則跳不出去） ═══
+  useEffect(() => {
+    if (!mounted || showGuide) return
+
+    // 1. 攔截「上一頁」：塞一筆 history，popstate 時彈數學題並把 history 塞回去
+    const lockState = { peekkidsLock: true }
+    window.history.pushState(lockState, '', window.location.href)
+    const onPopState = () => {
+      window.history.pushState(lockState, '', window.location.href)
+      setShowExitConfirm(true)
+    }
+    window.addEventListener('popstate', onPopState)
+
+    // 2. 關分頁 / 重整 / 關瀏覽器：彈瀏覽器原生確認框
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (allowLeaveRef.current) return // 算對數學後放行
+      e.preventDefault()
+      e.returnValue = ''
+      return ''
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+
+    // 3. 封鎖右鍵、選字、拖曳（小孩亂搞的常見入口）
+    const pd = (e: Event) => {
+      // input / textarea 不擋（要留給算數學輸入）
+      const t = e.target as HTMLElement
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return
+      e.preventDefault()
+    }
+    document.addEventListener('contextmenu', pd)
+    document.addEventListener('selectstart', pd)
+    document.addEventListener('dragstart', pd)
+
+    // 4. 封鎖常見鍵盤捷徑
+    const onKeyDown = (e: KeyboardEvent) => {
+      const k = e.key.toLowerCase()
+      const t = e.target as HTMLElement
+      const inInput = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')
+      const combo =
+        e.key === 'F5' ||
+        e.key === 'F11' ||
+        e.key === 'F12' ||
+        (!inInput && e.key === 'Backspace') ||
+        ((e.metaKey || e.ctrlKey) && ['r', 'w', 't', 'n', 'q', 'u', 's', 'p', 'l'].includes(k)) ||
+        (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight'))
+      if (combo) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown, true)
+
+    // 5. 監聽全螢幕狀態（方便 UI 判斷）
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', onFsChange)
+
+    return () => {
+      window.removeEventListener('popstate', onPopState)
+      window.removeEventListener('beforeunload', onBeforeUnload)
+      document.removeEventListener('contextmenu', pd)
+      document.removeEventListener('selectstart', pd)
+      document.removeEventListener('dragstart', pd)
+      window.removeEventListener('keydown', onKeyDown, true)
+      document.removeEventListener('fullscreenchange', onFsChange)
+    }
+  }, [mounted, showGuide])
 
   const removeMyChannel = (channelId: string) => {
     const next = removeUserChannel(channelId)
@@ -321,7 +404,24 @@ export default function KidsModePage() {
               </h1>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            {!isFullscreen && (
+              <button
+                onClick={enterFullscreen}
+                aria-label="進入全螢幕鎖定"
+                title="進入全螢幕（把網址列也鎖掉）"
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: 9999,
+                  background: 'var(--ink-hex)', border: '1px solid var(--ink-hex)',
+                  color: '#fff',
+                  fontSize: 12, fontWeight: 800, letterSpacing: '-0.01em',
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                🔳 全螢幕鎖
+              </button>
+            )}
             <button
               onClick={() => setShowGuide(true)}
               aria-label="重看鎖螢幕教學"
