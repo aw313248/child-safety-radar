@@ -27,21 +27,20 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
     }
 
     if (platform === 'ios') {
-      // iOS：複製關鍵字到剪貼簿（這個真的有用）
+      // iOS：複製「輔助使用」而不是「引導使用模式」
+      // 原因：iOS 設定搜尋只 index 二級標題，「引導使用模式」是三級子項目搜不到
+      const keyword = '輔助使用'
       try {
-        await navigator.clipboard.writeText('引導使用模式')
+        await navigator.clipboard.writeText(keyword)
         setCopied(true)
       } catch {
-        // 舊 Safari fallback
         const ta = document.createElement('textarea')
-        ta.value = '引導使用模式'
+        ta.value = keyword
         document.body.appendChild(ta)
         ta.select()
         try { document.execCommand('copy'); setCopied(true) } catch {}
         document.body.removeChild(ta)
       }
-      // ⚠️ 不再嘗試 App-prefs: 深連結
-      // 理由：iOS Safari 必定彈「網址無效」錯誤對話框，使用者體驗更糟
     }
   }
 
@@ -93,7 +92,7 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
                 boxShadow: '0 10px 24px rgba(10,10,10,0.2)',
               }}
             >
-              {copied ? '✅ 已複製「引導使用模式」' : '📋 複製關鍵字 + 打開設定'}
+              {copied ? '✅ 已複製「輔助使用」' : '📋 複製關鍵字 + 打開設定'}
             </button>
 
             {/* 誠實說明 */}
@@ -109,8 +108,8 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
               {[
                 { n: 1, title: '打開設定 App', body: '回到桌面，點灰色齒輪圖示' },
-                { n: 2, title: '貼上剛剛複製的字', body: '設定最上方有搜尋欄 → 長按 → 貼上 → 搜尋' },
-                { n: 3, title: '打開「引導使用模式」', body: '點進去把開關打開，回 PeekKids 後連按三下側邊鍵鎖畫面' },
+                { n: 2, title: '貼上搜尋「輔助使用」', body: '設定最上方搜尋欄 → 長按貼上 → 點第一個結果「輔助使用」' },
+                { n: 3, title: '找到「引導使用模式」', body: '進去後滑到最下面 → 點「引導使用模式」→ 打開開關，回 PeekKids 連按三下側邊鍵鎖畫面' },
               ].map(s => (
                 <div key={s.n} style={{
                   display: 'flex', gap: 12, alignItems: 'flex-start',
