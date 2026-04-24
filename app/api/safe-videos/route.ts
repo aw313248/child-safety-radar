@@ -64,18 +64,20 @@ export async function GET(req: NextRequest) {
     const videos = (vData.items || [])
       // 1. 僅公開
       .filter((v: VideoItem) => v.status.privacyStatus === 'public')
-      // 2. 【嚴格】必須是 YouTube 官方標記為 Made for Kids（COPPA 合規）
-      .filter((v: VideoItem) => v.status.madeForKids === true)
-      // 3. 標題黑名單
+      // 2. 標題黑名單（第三層防護）
       .filter((v: VideoItem) => !shouldBlockVideoTitle(v.snippet.title))
       .map((v: VideoItem) => ({
         id: v.id,
         title: v.snippet.title,
         thumbnail: v.snippet.thumbnails?.high?.url || v.snippet.thumbnails?.medium?.url || '',
         publishedAt: v.snippet.publishedAt,
-        madeForKids: true,
+        madeForKids: v.status.madeForKids === true,
         duration: v.contentDetails.duration,
       }))
+      // 優先排 madeForKids，但不強制
+      .sort((a: { madeForKids: boolean }, b: { madeForKids: boolean }) =>
+        a.madeForKids === b.madeForKids ? 0 : a.madeForKids ? -1 : 1
+      )
       .slice(0, 30)
 
     return NextResponse.json({ videos })
