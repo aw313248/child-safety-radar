@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { getChannelInfo, getVideoComments, CommentThread } from '@/lib/youtube'
 import { AnalysisResult, RiskLevel, ScoreBreakdownItem } from '@/types/analysis'
+import { authenticate, corsHeaders } from '@/lib/api-auth'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 // Manual blacklist (頻道 ID，逗號分隔，從環境變數讀)
 const BLACKLIST = (process.env.CHANNEL_BLACKLIST || '').split(',').map(s => s.trim()).filter(Boolean)
@@ -211,15 +213,49 @@ ${warningComments.length > 0
   return JSON.parse(jsonMatch[0])
 }
 
+// CORS preflight — 擴充套件會先發 OPTIONS 才發 POST
+export async function OPTIONS(req: NextRequest) {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders(req),
+  })
+}
+
 export async function POST(req: NextRequest) {
+  // ── 1. 驗證來源（官網免 key，擴充套件／第三方需 x-api-key）──
+  const auth = authenticate(req)
+  if (!auth.ok) {
+    return NextResponse.json(
+      { error: auth.reason === 'missing-key' ? '需要 API Key（請在 x-api-key header 帶入）' : 'API Key 無效' },
+      { status: 401, headers: corsHeaders(req) }
+    )
+  }
+
+  // ── 2. Rate limit：官網 5/分鐘 per IP，API key 30/分鐘 per key ──
+  const rlKey = auth.via === 'api-key' ? `key:${auth.keyOrIp}` : `ip:${getClientIp(req)}`
+  const rlLimit = auth.via === 'api-key' ? 30 : 5
+  const rl = rateLimit(rlKey, rlLimit, 60_000)
+  const rlHeaders: HeadersInit = {
+    ...corsHeaders(req, auth),
+    'X-RateLimit-Limit': String(rl.limit),
+    'X-RateLimit-Remaining': String(rl.remaining),
+    'X-RateLimit-Reset': String(Math.floor(rl.resetAt / 1000)),
+  }
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: `請求過於頻繁，請稍後再試（每分鐘上限 ${rl.limit} 次）` },
+      { status: 429, headers: rlHeaders }
+    )
+  }
+
   try {
     const { url } = await req.json()
-    if (!url) return NextResponse.json({ error: '請提供 YouTube 網址' }, { status: 400 })
+    if (!url) return NextResponse.json({ error: '請提供 YouTube 網址' }, { status: 400, headers: rlHeaders })
 
     const ytApiKey = process.env.YOUTUBE_API_KEY
     const geminiApiKey = process.env.GEMINI_API_KEY
     if (!ytApiKey || !geminiApiKey) {
-      return NextResponse.json({ error: '伺服器設定錯誤，請聯絡管理員' }, { status: 500 })
+      return NextResponse.json({ error: '伺服器設定錯誤，請聯絡管理員' }, { status: 500, headers: rlHeaders })
     }
 
     // 1. Channel info
@@ -387,16 +423,16 @@ export async function POST(req: NextRequest) {
       scoreBreakdown: breakdown,
     }
 
-    return NextResponse.json(result)
+    return NextResponse.json(result, { headers: rlHeaders })
   } catch (err: unknown) {
     console.error('Analyze error:', err)
     const message = err instanceof Error ? err.message : '分析失敗'
     if (message.includes('quotaExceeded') || message.includes('403')) {
-      return NextResponse.json({ error: 'YouTube API 配額已達上限，請明天再試' }, { status: 429 })
+      return NextResponse.json({ error: 'YouTube API 配額已達上限，請明天再試' }, { status: 429, headers: rlHeaders })
     }
     if (message.includes('找不到') || message.includes('無法辨識')) {
-      return NextResponse.json({ error: message }, { status: 400 })
+      return NextResponse.json({ error: message }, { status: 400, headers: rlHeaders })
     }
-    return NextResponse.json({ error: `分析失敗：${message}` }, { status: 500 })
+    return NextResponse.json({ error: `分析失敗：${message}` }, { status: 500, headers: rlHeaders })
   }
 }
