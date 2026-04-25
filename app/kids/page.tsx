@@ -479,116 +479,76 @@ export default function KidsModePage() {
               </h1>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            {/* 統一圓形圖標鈕 — 純視覺，hover 才顯示文字 */}
-            {(() => {
-              const iconBtn = (
-                onClick: () => void,
-                label: string,
-                ariaLabel: string,
-                children: React.ReactNode,
-                variant: 'default' | 'primary' | 'danger' = 'default',
-              ) => {
-                const bg = variant === 'primary'
-                  ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
-                  : variant === 'danger'
-                  ? 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)'
-                  : 'rgba(255,255,255,0.1)'
-                const border = variant === 'primary'
-                  ? '1.5px solid #F2B84B'
-                  : variant === 'danger'
-                  ? '1.5px solid rgba(242, 184, 75, 0.5)'
-                  : '1.5px solid rgba(255,255,255,0.28)'
-                const color = variant === 'primary' ? '#0F2444' : '#FFFFFF'
-                return (
-                  <button
-                    onClick={onClick}
-                    aria-label={ariaLabel}
-                    title={label}
-                    style={{
-                      width: 44, height: 44,
-                      borderRadius: '50%',
-                      background: bg,
-                      border,
-                      color,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontFamily: 'inherit',
-                      backdropFilter: variant === 'default' ? 'blur(12px)' : undefined,
-                      boxShadow: variant === 'primary'
-                        ? '0 6px 16px -6px rgba(242, 184, 75, 0.5)'
-                        : variant === 'danger'
-                        ? '0 6px 16px -6px rgba(142, 42, 36, 0.5)'
-                        : '0 4px 12px -4px rgba(0,0,0,0.3)',
-                      transition: 'transform 0.12s, box-shadow 0.15s',
-                    }}
-                  >
-                    {children}
-                  </button>
-                )
-              }
-              return (
-                <>
-                  {!isFullscreen && iconBtn(
-                    enterFullscreen,
-                    '全螢幕（把網址列也鎖掉）',
-                    '全螢幕鎖定',
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M4 9V5a1 1 0 011-1h4M20 9V5a1 1 0 00-1-1h-4M4 15v4a1 1 0 001 1h4M20 15v4a1 1 0 01-1 1h-4"/>
-                    </svg>,
-                  )}
-                  {iconBtn(
-                    () => {
-                      localStorage.removeItem('peekkids_timer_end_ts')
-                      window.location.reload()
-                    },
-                    '重新設定時間',
-                    '重新設定時間',
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="9"/>
-                      <polyline points="12 7 12 12 15 14"/>
-                    </svg>,
-                    'primary',
-                  )}
-                  {iconBtn(
-                    () => setShowGuide(true),
-                    '看鎖螢幕教學',
-                    '鎖螢幕教學',
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="4" y="11" width="16" height="10" rx="2"/>
-                      <path d="M8 11V7a4 4 0 018 0v4"/>
-                    </svg>,
-                  )}
-                  {iconBtn(
-                    () => setShowExitConfirm(true),
-                    '離開（找爸爸媽媽）',
-                    '離開',
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-                      <polyline points="16 17 21 12 16 7"/>
-                      <line x1="21" y1="12" x2="9" y2="12"/>
-                    </svg>,
-                    'danger',
-                  )}
-                </>
-              )
-            })()}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            {/* 統一 sticker 圖示鈕 — 厚實 ink offset shadow，跟首頁同一個語言 */}
+            {!isFullscreen && (
+              <button
+                onClick={enterFullscreen}
+                aria-label="全螢幕鎖定"
+                title="全螢幕（把網址列也鎖掉）"
+                className="sticker-icon-btn sticker-pop"
+                style={{ animationDelay: '0.05s' }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 9V5a1 1 0 011-1h4M20 9V5a1 1 0 00-1-1h-4M4 15v4a1 1 0 001 1h4M20 15v4a1 1 0 01-1 1h-4"/>
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={() => {
+                localStorage.removeItem('peekkids_timer_end_ts')
+                window.location.reload()
+              }}
+              aria-label="重新設定時間"
+              title="重新設定時間"
+              className="sticker-icon-btn sticker-icon-btn--gold sticker-pop"
+              style={{ animationDelay: '0.12s' }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9"/>
+                <polyline points="12 7 12 12 15 14"/>
+              </svg>
+            </button>
+            <button
+              onClick={() => setShowGuide(true)}
+              aria-label="鎖螢幕教學"
+              title="看鎖螢幕教學"
+              className="sticker-icon-btn sticker-pop"
+              style={{ animationDelay: '0.19s' }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="11" width="16" height="10" rx="2"/>
+                <path d="M8 11V7a4 4 0 018 0v4"/>
+              </svg>
+            </button>
+            <button
+              onClick={() => setShowExitConfirm(true)}
+              aria-label="離開"
+              title="離開（找爸爸媽媽）"
+              className="sticker-icon-btn sticker-icon-btn--danger sticker-pop"
+              style={{ animationDelay: '0.26s' }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </button>
           </div>
         </div>
 
-        {/* 年齡選擇（只影響顯示的頻道） */}
-        <div className="bee-segmented" style={{ marginBottom: 18, gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        {/* 年齡選擇 — sticker 貼紙風，跟首頁同一個語言 */}
+        <div className="sticker-tabs" style={{ marginBottom: 18 }}>
           {([
             ['0-3', '0–3 歲'],
             ['3-6', '3–6 歲'],
             ['all', '全部'],
-          ] as const).map(([k, label]) => (
+          ] as const).map(([k, label], i) => (
             <button
               key={k}
               onClick={() => saveAge(k)}
-              className={`bee-segmented__item${age === k ? ' bee-segmented__item--active' : ''}`}
+              className={`sticker-tab sticker-pop${age === k ? ' is-active' : ''}`}
+              style={{ animationDelay: `${0.06 * i}s` }}
             >
               {label}
             </button>
@@ -627,12 +587,13 @@ export default function KidsModePage() {
             <button
               key={ch.channelId}
               onClick={() => openChannel(ch)}
-              className="bee-card"
+              className="bee-card sticker-wobble sticker-pop"
               style={{
                 padding: 16,
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 textAlign: 'center',
+                animationDelay: `${0.05 + idx * 0.05}s`,
               }}
             >
               <div style={{

@@ -212,16 +212,8 @@ export default function Home() {
             href="/history"
             aria-label="歷史紀錄"
             title="歷史紀錄"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center', justifyContent: 'center',
-              width: 34, height: 34,
-              borderRadius: '50%',
-              background: 'var(--cc-gold)',
-              color: 'var(--ink-hex)',
-              textDecoration: 'none',
-              border: '1.5px solid var(--ink-hex)',
-            }}
+            className="sticker-icon-btn sticker-icon-btn--gold"
+            style={{ width: 38, height: 38, textDecoration: 'none' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="9" />
