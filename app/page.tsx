@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import ResultCard from '@/components/ResultCard'
 import UnlockModal from '@/components/UnlockModal'
-import BeeBearMascot from '@/components/BeeBearMascot'
+import Mascot from '@/components/Mascot'
 import CaseLibrary from '@/components/CaseLibrary'
 import ScanningStages from '@/components/ScanningStages'
 import RecentHighRisk from '@/components/RecentHighRisk'
@@ -42,10 +42,6 @@ export default function Home() {
       }
     } catch {}
   }, [])
-
-  const mascotState: 'idle' | 'scanning' | 'safe' | 'danger' = loading ? 'scanning'
-    : result ? (result.riskLevel === 'high' ? 'danger' : result.riskLevel === 'medium' ? 'scanning' : 'safe')
-    : 'idle'
 
   const handleAnalyze = async () => {
     if (!url.trim()) return
@@ -153,25 +149,35 @@ export default function Home() {
     <main style={{ minHeight: '100vh', padding: '24px 20px 56px' }}>
       <div style={{ width: '100%', maxWidth: 440, margin: '0 auto' }}>
 
-        {/* ═══ Top bar — Busy Bee 風：黑底蜂蜜文字 + pill ═══ */}
+        {/* ═══ Top bar — CC Bear 風：奶油底 + 海軍藍字 + 金色點 ═══ */}
         <nav style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: 20,
           padding: '10px 14px',
-          background: 'var(--ink-hex)',
+          background: '#FFFFFF',
           borderRadius: 9999,
-          border: '2.5px solid var(--ink-hex)',
-          boxShadow: '3px 3px 0 rgba(43, 24, 16, 0.45)',
+          border: '1.5px solid var(--cc-navy)',
+          boxShadow: '0 4px 14px rgba(15, 36, 68, 0.12)',
         }}>
           <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
             fontSize: 14,
-            fontWeight: 900,
+            fontWeight: 800,
             letterSpacing: '-0.02em',
-            color: 'var(--honey-hex)',
+            color: 'var(--cc-navy-deep)',
           }}>
-            🐻 CareCub Kids
+            <span style={{
+              width: 22, height: 22, borderRadius: '50%',
+              background: 'var(--cc-gold)',
+              border: '1.5px solid var(--cc-navy-deep)',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 11, fontWeight: 900, color: 'var(--cc-navy-deep)',
+            }}>CC</span>
+            CareCub Kids
           </span>
           <a
             href="/history"
@@ -181,13 +187,13 @@ export default function Home() {
               gap: 5,
               padding: '6px 12px',
               borderRadius: 9999,
-              background: 'var(--honey-hex)',
-              color: 'var(--ink-hex)',
+              background: 'var(--cc-navy-deep)',
+              color: '#FFFFFF',
               fontSize: 12,
-              fontWeight: 900,
+              fontWeight: 800,
               letterSpacing: '-0.01em',
               textDecoration: 'none',
-              border: '1.5px solid var(--ink-hex)',
+              border: '1.5px solid var(--cc-navy-deep)',
             }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
@@ -198,122 +204,130 @@ export default function Home() {
           </a>
         </nav>
 
-        {/* ═══ Hero — 蜂蜜黃大塊 + 超黑黑體巨字 + 熊+蜜蜂 ═══ */}
+        {/* ═══ Hero — CC Bear 英雄風：奶油底 + 海軍藍字 + 小析守護 ═══ */}
         <section style={{
           position: 'relative',
-          marginBottom: 28,
-          padding: '44px 22px 38px',
-          background: 'var(--honey-hex)',
-          borderRadius: 32,
+          marginBottom: 24,
+          padding: '24px 20px 22px',
+          background: '#FFFFFF',
+          borderRadius: 28,
           overflow: 'hidden',
-          boxShadow: '0 20px 50px rgba(43, 24, 16, 0.28)',
-          border: '3px solid var(--ink-hex)',
+          boxShadow: '0 18px 44px -16px rgba(15, 36, 68, 0.22), 0 4px 14px rgba(15, 36, 68, 0.06)',
+          border: '1.5px solid rgba(30, 58, 95, 0.14)',
+          display: 'grid',
+          gridTemplateColumns: '1fr 110px',
+          gap: 14,
+          alignItems: 'center',
         }}>
-          {/* 左上英文 tag */}
-          <p className="stagger-1" style={{
-            fontSize: 10,
-            fontWeight: 900,
-            letterSpacing: '0.24em',
-            color: 'var(--ink-hex)',
-            textTransform: 'uppercase',
-            marginBottom: 14,
-            opacity: 0.85,
-          }}>
-            CareCub Kids · 呵護小熊般守護孩子
-          </p>
+          {/* 背景：金色光暈 */}
+          <div aria-hidden style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 88% 20%, rgba(242,184,75,0.18), transparent 55%), radial-gradient(circle at 0% 100%, rgba(142,202,230,0.16), transparent 50%)',
+            pointerEvents: 'none',
+          }} />
 
-          {/* 右上復古徽章 */}
-          <div
-            className="retro-badge stagger-1"
-            style={{
-              position: 'absolute',
-              top: 22,
-              right: 22,
-              width: 72,
-              height: 72,
+          {/* 左：文字 */}
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <p className="stagger-1" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
               fontSize: 10,
+              fontWeight: 800,
+              letterSpacing: '0.18em',
+              color: 'var(--cc-red)',
+              textTransform: 'uppercase',
+              marginBottom: 10,
+              padding: '4px 9px',
+              background: 'rgba(194, 65, 59, 0.08)',
+              borderRadius: 9999,
+              border: '1px solid rgba(194, 65, 59, 0.22)',
+            }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--cc-red)' }} />
+              小析守護中
+            </p>
+
+            <h1 className="stagger-2" style={{
+              fontSize: 'clamp(36px, 9.5vw, 52px)',
               fontWeight: 900,
-              letterSpacing: '0.06em',
-              textAlign: 'center',
-              lineHeight: 1.1,
-              color: 'var(--ink-hex)',
-              background: 'var(--sky-hex)',
-              border: '2px solid var(--ink-hex)',
-            }}
-          >
-            人工<br />精選<br />過
+              letterSpacing: '-0.045em',
+              color: 'var(--cc-navy-deep)',
+              marginBottom: 12,
+              lineHeight: 1.02,
+            }}>
+              20 秒<br />
+              看穿<span style={{ color: 'var(--cc-red)' }}>卡通</span><br />
+              藏什麼
+            </h1>
+
+            <p className="stagger-3" style={{
+              fontSize: 13,
+              fontWeight: 500,
+              letterSpacing: '-0.005em',
+              color: 'rgba(15, 36, 68, 0.72)',
+              lineHeight: 1.6,
+            }}>
+              貼上 YouTube 頻道，AI 翻遍影片跟留言，紅橘綠燈秒判斷能不能給小孩看
+            </p>
           </div>
 
-          {/* 熊 + 蜜蜂 吉祥物 */}
+          {/* 右：小析舉盾守護 */}
           <div className="stagger-2" style={{
+            position: 'relative',
+            zIndex: 1,
             display: 'flex',
             justifyContent: 'center',
-            marginBottom: 14,
-            marginTop: 4,
+            alignItems: 'center',
           }}>
-            <BeeBearMascot state={mascotState} size={140} />
+            <Mascot pose="guard" size={110} priority />
           </div>
-
-          {/* 超大黑體主標 */}
-          <h1 className="font-hero stagger-3" style={{
-            color: 'var(--ink-hex)',
-            textAlign: 'center',
-            marginBottom: 20,
-            lineHeight: 0.98,
-          }}>
-            20 秒<br />
-            看穿卡通<br />
-            藏什麼
-          </h1>
-
-          {/* 副標 — 正常字重 + 放大 + 行距 */}
-          <p className="stagger-4" style={{
-            fontSize: 15,
-            fontWeight: 500,
-            letterSpacing: '-0.005em',
-            color: 'var(--ink-hex)',
-            textAlign: 'center',
-            lineHeight: 1.7,
-            opacity: 0.75,
-            padding: '0 12px',
-          }}>
-            貼上 YouTube 頻道 · AI 翻遍影片跟留言<br />
-            紅橘綠燈秒判斷能不能給小孩看
-          </p>
         </section>
 
-        {/* ═══ 一鍵開啟兒童模式 — 主打 CTA ═══ */}
+        {/* ═══ 一鍵開啟兒童模式 — CC Bear 披風紅 CTA ═══ */}
         <a
           href="/kids"
-          className="bee-card-honey"
           style={{
-            display: 'flex', alignItems: 'center', gap: 16,
-            padding: '20px 22px',
+            position: 'relative',
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '18px 20px',
             marginBottom: 22,
-            color: 'var(--ink-hex)',
+            background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
+            color: '#FFF6E6',
             textDecoration: 'none',
+            borderRadius: 22,
+            border: '1.5px solid var(--cc-gold)',
+            boxShadow: '0 14px 32px -10px rgba(142, 42, 36, 0.5), inset 0 1px 0 rgba(255,255,255,0.18)',
+            overflow: 'hidden',
           }}
         >
+          <div aria-hidden style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(circle at 90% 50%, rgba(242,184,75,0.22), transparent 55%)',
+            pointerEvents: 'none',
+          }} />
           <div style={{
-            width: 60, height: 60, borderRadius: '50%',
-            background: 'var(--ink-hex)',
-            color: 'var(--honey-hex)',
+            width: 64, height: 64, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 70%, #D99422 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 32, flexShrink: 0,
-            border: '3px solid var(--ink-hex)',
-          }}>🐻</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 11, fontWeight: 900, letterSpacing: '0.16em', color: 'var(--ink-hex)', textTransform: 'uppercase', marginBottom: 4, opacity: 0.7 }}>
-              ★ Bear Mode ★
+            flexShrink: 0,
+            border: '2px solid var(--cc-cream)',
+            boxShadow: '0 4px 12px rgba(15, 36, 68, 0.25)',
+            position: 'relative', zIndex: 1,
+            overflow: 'hidden',
+          }}>
+            <Mascot pose="hi" size={56} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
+            <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.18em', color: 'var(--cc-gold)', textTransform: 'uppercase', marginBottom: 3 }}>
+              ★ BEAR MODE ★
             </p>
-            <p className="font-display" style={{ fontSize: 26, lineHeight: 1.02, color: 'var(--ink-hex)' }}>
+            <p style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, color: '#FFF6E6', letterSpacing: '-0.03em' }}>
               打開熊熊守護模式
             </p>
-            <p style={{ fontSize: 13, color: 'var(--ink-hex)', letterSpacing: '-0.005em', marginTop: 6, fontWeight: 500, opacity: 0.7, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'rgba(255, 246, 230, 0.82)', letterSpacing: '-0.005em', marginTop: 5, fontWeight: 500, lineHeight: 1.5 }}>
               人工精選頻道，平板丟給小孩也安心
             </p>
           </div>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--cc-gold)', position: 'relative', zIndex: 1 }}>
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </a>
@@ -372,18 +386,18 @@ export default function Home() {
                     </span>
                   </div>
 
-                  {/* Input + send — Busy Bee 粗邊黑底 pill */}
+                  {/* Input + send — CC Bear 海軍藍邊 pill */}
                   <div style={{
                     background: '#FFFFFF',
                     borderRadius: 9999,
-                    border: '2.5px solid var(--ink-hex)',
+                    border: '1.5px solid var(--cc-navy)',
                     padding: '4px 4px 4px 18px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 8,
                     boxShadow: error
-                      ? '0 0 0 3px rgba(194,65,59,0.18), 3px 3px 0 rgba(43,24,16,0.35)'
-                      : '3px 3px 0 rgba(43,24,16,0.35)',
+                      ? '0 0 0 3px rgba(194,65,59,0.18), 0 6px 18px -8px rgba(15, 36, 68, 0.35)'
+                      : '0 6px 18px -8px rgba(15, 36, 68, 0.25)',
                     transition: 'box-shadow 0.2s',
                   }}>
                     <input
@@ -415,14 +429,14 @@ export default function Home() {
                         width: 46, height: 46,
                         borderRadius: '50%',
                         border: 'none',
-                        background: canSubmit ? 'var(--honey-hex)' : 'var(--ink-10)',
-                        color: 'var(--ink-hex)',
+                        background: canSubmit ? 'var(--cc-red)' : 'var(--ink-10)',
+                        color: canSubmit ? '#FFF6E6' : 'var(--ink-hex)',
                         cursor: canSubmit ? 'pointer' : 'not-allowed',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'background 0.15s, transform 0.1s',
-                        boxShadow: canSubmit ? '0 3px 0 var(--ink-hex)' : 'none',
+                        boxShadow: canSubmit ? '0 4px 12px -4px var(--cc-red-deep)' : 'none',
                       }}
                     >
                       {loading ? (
