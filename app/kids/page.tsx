@@ -95,9 +95,17 @@ export default function KidsModePage() {
       const el = document.documentElement as HTMLElement & {
         webkitRequestFullscreen?: () => Promise<void>
       }
+      const ua = navigator.userAgent
+      const isiOS = /ipad|iphone|ipod/i.test(ua) || (ua.includes('Macintosh') && 'ontouchend' in document)
+      if (isiOS || (!el.requestFullscreen && !el.webkitRequestFullscreen)) {
+        setShowGuide(true)
+        return
+      }
       if (el.requestFullscreen) await el.requestFullscreen()
       else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen()
-    } catch {}
+    } catch {
+      setShowGuide(true)
+    }
   }
 
   useEffect(() => {

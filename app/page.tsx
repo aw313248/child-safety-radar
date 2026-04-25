@@ -61,7 +61,10 @@ export default function Home() {
     try {
       const params = new URLSearchParams(window.location.search)
       const u = params.get('u')
-      if (u) setUrl(u)
+      if (u) {
+        setUrl(u)
+        setStarted(true)  // 從歷史/最近標記點進來，直接展開掃描區
+      }
       if (params.get('unlock') === '1') {
         localStorage.setItem(STORAGE_KEY, 'true')
         setUnlocked(true)
@@ -207,26 +210,23 @@ export default function Home() {
           </span>
           <a
             href="/history"
+            aria-label="歷史紀錄"
+            title="歷史紀錄"
             style={{
               display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              padding: '6px 12px',
-              borderRadius: 9999,
+              alignItems: 'center', justifyContent: 'center',
+              width: 34, height: 34,
+              borderRadius: '50%',
               background: 'var(--cc-gold)',
               color: 'var(--ink-hex)',
-              fontSize: 12,
-              fontWeight: 800,
-              letterSpacing: '-0.01em',
               textDecoration: 'none',
               border: '1.5px solid var(--ink-hex)',
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="9" />
               <polyline points="12 7 12 12 15 14" />
             </svg>
-            歷史
           </a>
         </nav>
 
@@ -310,41 +310,92 @@ export default function Home() {
 
         {/* ═══ 主 CTA：開始檢查 — 只在尚未開始/沒結果/沒掃描時顯示 ═══ */}
         {!started && !result && !loading && (
-          <button
-            onClick={beginScan}
-            className="stagger-3"
-            style={{
-              position: 'relative',
-              width: '100%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-              padding: '22px 24px',
-              marginBottom: 28,
-              background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
-              color: '#FFF6E6',
-              fontFamily: 'inherit',
-              border: '1.5px solid #2B1810',
-              borderRadius: 22,
-              boxShadow: '0 14px 32px -10px rgba(142, 42, 36, 0.55), inset 0 1px 0 rgba(255,255,255,0.18)',
-              cursor: 'pointer',
-              overflow: 'hidden',
-            }}
-          >
-            <span aria-hidden style={{
-              position: 'absolute', inset: 0,
-              background: 'radial-gradient(circle at 88% 50%, rgba(255, 246, 230, 0.18), transparent 55%)',
-              pointerEvents: 'none',
-            }} />
-            <span style={{
-              fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em',
-              position: 'relative', zIndex: 1,
-            }}>
-              開始檢查一個頻道
-            </span>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'relative', zIndex: 1 }}>
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </button>
+          <>
+            <button
+              onClick={beginScan}
+              className="cta-pulse stagger-3"
+              style={{
+                position: 'relative',
+                width: '100%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                padding: '24px 24px',
+                marginBottom: 14,
+                background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
+                color: '#FFF6E6',
+                fontFamily: 'inherit',
+                border: '1.5px solid #2B1810',
+                borderRadius: 22,
+                boxShadow: '0 14px 32px -10px rgba(142, 42, 36, 0.55), inset 0 1px 0 rgba(255,255,255,0.18)',
+                cursor: 'pointer',
+                overflow: 'hidden',
+              }}
+            >
+              <span aria-hidden className="cta-shimmer" />
+              <span aria-hidden style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 88% 50%, rgba(255, 246, 230, 0.18), transparent 55%)',
+                pointerEvents: 'none',
+              }} />
+              <span style={{
+                fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em',
+                position: 'relative', zIndex: 1,
+              }}>
+                開始檢查一個頻道
+              </span>
+              <svg className="cta-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'relative', zIndex: 1 }}>
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+
+            {/* Bear mode CTA — 主頁三件事之一 */}
+            <a
+              href="/kids"
+              className="stagger-4"
+              style={{
+                position: 'relative',
+                display: 'flex', alignItems: 'center', gap: 14,
+                padding: '20px 22px',
+                marginBottom: 18,
+                background: 'linear-gradient(135deg, #F2B84B 0%, #FB8500 100%)',
+                color: 'var(--ink-hex)',
+                textDecoration: 'none',
+                borderRadius: 22,
+                border: '1.5px solid var(--ink-hex)',
+                boxShadow: '0 14px 32px -12px rgba(217, 148, 34, 0.55), inset 0 1px 0 rgba(255,255,255,0.32)',
+                overflow: 'hidden',
+              }}
+            >
+              <div aria-hidden style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 90% 50%, rgba(255, 246, 230, 0.32), transparent 55%)',
+                pointerEvents: 'none',
+              }} />
+              <div style={{
+                width: 60, height: 60, borderRadius: '50%',
+                background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 60%, #F3EEDD 100%)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+                border: '2px solid var(--ink-hex)',
+                boxShadow: '0 3px 10px rgba(43, 24, 16, 0.18)',
+                position: 'relative', zIndex: 1,
+                overflow: 'hidden',
+              }}>
+                <Mascot pose="hi" size={52} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
+                <p style={{ fontSize: 20, fontWeight: 900, lineHeight: 1.05, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
+                  打開熊熊守護模式
+                </p>
+                <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 4, fontWeight: 500, lineHeight: 1.5 }}>
+                  人工精選頻道，平板丟給小孩也安心
+                </p>
+              </div>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-hex)', position: 'relative', zIndex: 1 }}>
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </a>
+          </>
         )}
 
         {/* ═══ Segmented — 只在開始之後顯示 ═══ */}
@@ -527,8 +578,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* ═══ 永遠可見：怎麼用 + 最近標記 + Bear mode CTA — 一律 reveal-up 滾動淡入 ═══ */}
-        {tab === 'scan' && (
+        {/* ═══ 點開「開始檢查」之後才出現：怎麼用 + 最近標記 ═══ */}
+        {tab === 'scan' && (started || result || loading) && (
           <>
             <section className="reveal-up" style={{ marginBottom: 40 }}>
               <h2 style={{
@@ -612,25 +663,20 @@ export default function Home() {
                         </div>
                         <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.03em', lineHeight: 1.25 }}>{item.t}</div>
                         <div style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.005em', lineHeight: 1.6, fontWeight: 500, marginTop: 2 }}>{item.s}</div>
-                        <div style={{
-                          fontSize: 10,
-                          color: 'var(--ink-hex)',
-                          marginTop: 2,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 3,
-                          fontWeight: 800,
-                          letterSpacing: '0.02em',
-                          textTransform: 'uppercase',
+                        <span aria-label={isActive ? '收起' : '展開詳情'} style={{
+                          marginTop: 4,
+                          width: 22, height: 22,
+                          borderRadius: '50%',
+                          background: isActive ? 'var(--ink-hex)' : 'rgba(43,24,16,0.06)',
+                          color: isActive ? 'var(--honey-hex)' : 'var(--ink-hex)',
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'transform 0.3s var(--ease-out), background 0.2s',
+                          transform: isActive ? 'rotate(180deg)' : 'rotate(0)',
                         }}>
-                          {isActive ? '收起' : '詳情'}
-                          <span style={{
-                            display: 'inline-block',
-                            transition: 'transform 0.25s var(--ease-out)',
-                            transform: isActive ? 'rotate(180deg)' : 'rotate(0)',
-                            fontSize: 8,
-                          }}>▼</span>
-                        </div>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
+                        </span>
                       </button>
                     )
                   })}
@@ -686,61 +732,10 @@ export default function Home() {
 
             </section>
 
-            {/* 最近標記的 */}
+            {/* 最近標記的（高風險紀錄） */}
             <section className="reveal-up" style={{ marginBottom: 32 }}>
               <RecentHighRisk />
             </section>
-
-            {/* 主頁底部：打開熊熊守護模式 — 從首頁就能直達 /kids */}
-            <a
-              href="/kids"
-              className="reveal-up"
-              style={{
-                position: 'relative',
-                display: 'flex', alignItems: 'center', gap: 14,
-                padding: '20px 22px',
-                marginBottom: 24,
-                background: 'linear-gradient(135deg, #F2B84B 0%, #FB8500 100%)',
-                color: 'var(--ink-hex)',
-                textDecoration: 'none',
-                borderRadius: 22,
-                border: '1.5px solid var(--ink-hex)',
-                boxShadow: '0 14px 32px -12px rgba(217, 148, 34, 0.55), inset 0 1px 0 rgba(255,255,255,0.32)',
-                overflow: 'hidden',
-              }}
-            >
-              <div aria-hidden style={{
-                position: 'absolute', inset: 0,
-                background: 'radial-gradient(circle at 90% 50%, rgba(255, 246, 230, 0.32), transparent 55%)',
-                pointerEvents: 'none',
-              }} />
-              <div style={{
-                width: 64, height: 64, borderRadius: '50%',
-                background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 60%, #F3EEDD 100%)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
-                border: '2px solid var(--ink-hex)',
-                boxShadow: '0 3px 10px rgba(43, 24, 16, 0.18)',
-                position: 'relative', zIndex: 1,
-                overflow: 'hidden',
-              }}>
-                <Mascot pose="hi" size={56} />
-              </div>
-              <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
-                <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.18em', color: 'var(--ink-hex)', textTransform: 'uppercase', marginBottom: 3, opacity: 0.7 }}>
-                  ★ BEAR MODE ★
-                </p>
-                <p style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
-                  打開熊熊守護模式
-                </p>
-                <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 5, fontWeight: 500, lineHeight: 1.5 }}>
-                  人工精選頻道，平板丟給小孩也安心
-                </p>
-              </div>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-hex)', position: 'relative', zIndex: 1 }}>
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </a>
           </>
         )}
 
