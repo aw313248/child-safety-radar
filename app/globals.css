@@ -464,6 +464,41 @@ html { scroll-behavior: smooth; }
   .cta-pulse, .cta-arrow, .cta-shimmer { animation: none; }
 }
 
+/* Hero 整塊可點擊：hover 時微微浮起 + 金色光暈，告訴使用者這裡也能點 */
+.hero-clickable {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.hero-clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 48px -16px rgba(43, 24, 16, 0.28),
+              0 6px 16px rgba(43, 24, 16, 0.08),
+              0 0 0 3px rgba(242, 184, 75, 0.45);
+}
+.hero-clickable:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 22px -12px rgba(43, 24, 16, 0.22),
+              0 2px 6px rgba(43, 24, 16, 0.06);
+}
+.hero-clickable:focus-visible {
+  outline: none;
+  box-shadow: 0 14px 36px -16px rgba(43, 24, 16, 0.18),
+              0 0 0 4px rgba(242, 184, 75, 0.6);
+}
+@keyframes hero-hint-pulse {
+  0%, 100% { opacity: 0.55; transform: translateY(0); }
+  50%      { opacity: 1;    transform: translateY(-2px); }
+}
+.hero-hint {
+  animation: hero-hint-pulse 2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-hint { animation: none; }
+  .hero-clickable { transition: none; }
+}
+
 .scan-ring {
   position: absolute; inset: 0;
   border-radius: 50%;

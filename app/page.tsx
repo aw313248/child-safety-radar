@@ -230,14 +230,27 @@ export default function Home() {
           </a>
         </nav>
 
-        {/* ═══ Hero — CC Bear 英雄風：奶油底 + 海軍藍字 + 小析守護 ═══ */}
-        <section style={{
+        {/* ═══ Hero — CC Bear 英雄風：奶油底 + 海軍藍字 + 小析守護
+              整塊可點擊，點下去 = 開始檢查（透明 overlay 蓋上去） ═══ */}
+        <section
+          className={!started && !result && !loading ? 'hero-clickable' : ''}
+          onClick={!started && !result && !loading ? beginScan : undefined}
+          role={!started && !result && !loading ? 'button' : undefined}
+          tabIndex={!started && !result && !loading ? 0 : undefined}
+          onKeyDown={(e) => {
+            if (!started && !result && !loading && (e.key === 'Enter' || e.key === ' ')) {
+              e.preventDefault()
+              beginScan()
+            }
+          }}
+          style={{
           position: 'relative',
           marginBottom: 24,
           padding: '24px 20px 22px',
           background: '#FBF7EA',
           borderRadius: 28,
           overflow: 'hidden',
+          cursor: !started && !result && !loading ? 'pointer' : 'default',
           boxShadow: '0 14px 36px -16px rgba(43, 24, 16, 0.18), 0 3px 10px rgba(43, 24, 16, 0.05)',
           border: '1.5px solid rgba(168, 115, 81, 0.22)',
           display: 'grid',
@@ -306,6 +319,31 @@ export default function Home() {
           }}>
             <Mascot pose="guard" size={110} priority />
           </div>
+
+          {/* 點我提示 — 只在尚未開始時顯示 */}
+          {!started && !result && !loading && (
+            <div className="hero-hint" aria-hidden style={{
+              position: 'absolute',
+              right: 14, bottom: 12,
+              zIndex: 2,
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              padding: '5px 10px 5px 9px',
+              background: 'var(--ink-hex)',
+              color: 'var(--cc-gold)',
+              borderRadius: 9999,
+              fontSize: 10, fontWeight: 900,
+              letterSpacing: '0.12em',
+              border: '1.5px solid var(--cc-gold)',
+              boxShadow: '0 4px 12px -4px rgba(43,24,16,0.4)',
+              pointerEvents: 'none',
+            }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 11.24V7.5a2.5 2.5 0 015 0v3.74"/>
+                <path d="M14 9.5a2.5 2.5 0 015 0V14a7 7 0 01-7 7h-1a7 7 0 01-7-7v-2a2 2 0 014 0"/>
+              </svg>
+              TAP
+            </div>
+          )}
         </section>
 
         {/* ═══ 主 CTA：開始檢查 — 只在尚未開始/沒結果/沒掃描時顯示 ═══ */}

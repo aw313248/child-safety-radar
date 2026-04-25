@@ -221,60 +221,104 @@ function SetupScreen({
           </p>
         </div>
 
-        {/* Preset grid */}
+        {/* Preset grid — 「不設定」用差異化樣式：透明 + 虛線，明顯不是時間選項 */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 14 }}>
-          {PRESETS.map(p => (
-            <button
-              key={p.value}
-              onClick={() => onPick(p.value)}
-              className="bee-card-flat"
-              style={{
-                padding: '14px 8px',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                textAlign: 'center',
-                background: value === p.value ? 'var(--honey-hex)' : 'var(--card-hex)',
-              }}
-            >
-              <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.02em' }}>
-                {p.label}
-              </div>
-            </button>
-          ))}
+          {PRESETS.map(p => {
+            const isSkip = p.value === 0
+            const isActive = value === p.value
+            return (
+              <button
+                key={p.value}
+                onClick={() => onPick(p.value)}
+                className={isSkip ? '' : 'bee-card-flat'}
+                style={{
+                  padding: '14px 8px',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  textAlign: 'center',
+                  borderRadius: 14,
+                  background: isSkip
+                    ? 'transparent'
+                    : isActive ? 'var(--honey-hex)' : 'var(--card-hex)',
+                  border: isSkip
+                    ? '2px dashed rgba(255, 246, 230, 0.45)'
+                    : undefined,
+                  boxShadow: isSkip ? 'none' : undefined,
+                  transition: 'background 0.15s, border-color 0.15s, opacity 0.15s',
+                }}
+                onMouseEnter={e => {
+                  if (isSkip) {
+                    e.currentTarget.style.background = 'rgba(255,246,230,0.08)'
+                    e.currentTarget.style.borderColor = 'rgba(255, 246, 230, 0.75)'
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (isSkip) {
+                    e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.borderColor = 'rgba(255, 246, 230, 0.45)'
+                  }
+                }}
+              >
+                <div style={{
+                  fontSize: isSkip ? 13 : 16,
+                  fontWeight: isSkip ? 700 : 900,
+                  color: isSkip ? 'rgba(255, 246, 230, 0.7)' : 'var(--ink-hex)',
+                  letterSpacing: '-0.02em',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                }}>
+                  {isSkip && (
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.85 }}>
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  )}
+                  {isSkip ? '不限時' : p.label}
+                </div>
+              </button>
+            )
+          })}
         </div>
 
-        {/* 自訂 */}
+        {/* 自訂 — grid 確保不會擠出去 */}
         <div style={{
-          display: 'flex', gap: 10, alignItems: 'center', marginBottom: 14,
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr auto',
+          gap: 8, alignItems: 'center', marginBottom: 14,
           padding: '12px 14px',
           background: 'rgba(255, 246, 230, 0.10)',
           border: '1.5px solid rgba(242, 184, 75, 0.55)',
           borderRadius: 16,
+          width: '100%', boxSizing: 'border-box',
         }}>
-          <span style={{ fontSize: 14, fontWeight: 900, color: '#FFF6E6', letterSpacing: '-0.01em' }}>自訂</span>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={customMin}
-            onChange={e => setCustomMin(e.target.value.replace(/\D/g, '').slice(0, 3))}
-            placeholder="幾分鐘"
-            style={{
-              flex: 1,
-              border: 'none', outline: 'none',
-              background: 'transparent',
-              fontFamily: 'inherit',
-              fontSize: 18, fontWeight: 900,
-              color: '#FFF6E6',
-              textAlign: 'center',
-              letterSpacing: '-0.02em',
-            }}
-          />
-          <span style={{ fontSize: 14, fontWeight: 800, color: 'rgba(255,246,230,0.78)' }}>分鐘</span>
+          <span style={{ fontSize: 13, fontWeight: 900, color: '#FFF6E6', letterSpacing: '-0.01em' }}>自訂</span>
+          <div style={{
+            display: 'flex', alignItems: 'baseline', justifyContent: 'center',
+            gap: 4, minWidth: 0,
+          }}>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={customMin}
+              onChange={e => setCustomMin(e.target.value.replace(/\D/g, '').slice(0, 3))}
+              placeholder="幾分"
+              style={{
+                width: '100%', minWidth: 0, maxWidth: 90,
+                border: 'none', outline: 'none',
+                background: 'transparent',
+                fontFamily: 'inherit',
+                fontSize: 17, fontWeight: 900,
+                color: '#FFF6E6',
+                textAlign: 'right',
+                letterSpacing: '-0.02em',
+              }}
+            />
+            <span style={{ fontSize: 12, fontWeight: 800, color: 'rgba(255,246,230,0.78)', flexShrink: 0 }}>分鐘</span>
+          </div>
           <button
             onClick={handleCustom}
             disabled={!customMin || parseInt(customMin, 10) < 1}
             style={{
-              padding: '10px 18px',
+              padding: '8px 14px',
               borderRadius: 9999,
               background: customMin && parseInt(customMin, 10) >= 1
                 ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
@@ -286,6 +330,7 @@ function SetupScreen({
               fontFamily: 'inherit',
               fontSize: 13, fontWeight: 900,
               cursor: customMin ? 'pointer' : 'not-allowed',
+              whiteSpace: 'nowrap',
               boxShadow: customMin && parseInt(customMin, 10) >= 1
                 ? '0 6px 14px -6px rgba(242,184,75,0.5)' : 'none',
             }}
