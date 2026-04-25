@@ -130,6 +130,7 @@ export default function KidsTimer({ onTimeUp, onExit }: Props) {
     }
     setExtendInput('')
     setExtendMath(makeMath())
+    setWarn(null)               // ★ 關閉時間到畫面（不然會卡住跳下一題）
     startTimer(extraMin)
   }
 

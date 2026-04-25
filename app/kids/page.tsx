@@ -463,76 +463,102 @@ export default function KidsModePage() {
               </h1>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-            {!isFullscreen && (
-              <button
-                onClick={enterFullscreen}
-                aria-label="進入全螢幕鎖定"
-                title="進入全螢幕（把網址列也鎖掉）"
-                className="candy-chip"
-                style={{
-                  padding: '8px 12px',
-                  borderRadius: 9999,
-                  background: 'var(--ink-hex)', border: '1px solid var(--ink-hex)',
-                  color: '#fff',
-                  fontSize: 12, fontWeight: 800, letterSpacing: '-0.01em',
-                  cursor: 'pointer', fontFamily: 'inherit',
-                }}
-              >
-                🔳 全螢幕鎖
-              </button>
-            )}
-            <button
-              onClick={() => {
-                // 清掉 end_ts 讓 KidsTimer 重跳設定
-                localStorage.removeItem('peekkids_timer_end_ts')
-                window.location.reload()
-              }}
-              aria-label="重設時間"
-              title="重設時間"
-              className="candy-chip candy-chip--primary"
-              style={{
-                padding: '8px 12px',
-                borderRadius: 9999,
-                background: 'var(--honey-hex)', border: '2px solid var(--ink-hex)',
-                color: 'var(--ink-hex)',
-                fontSize: 12, fontWeight: 900, letterSpacing: '-0.01em',
-                cursor: 'pointer', fontFamily: 'inherit',
-              }}
-            >
-              ⏱️ 時間
-            </button>
-            <button
-              onClick={() => setShowGuide(true)}
-              aria-label="重看鎖螢幕教學"
-              title="重看鎖螢幕教學"
-              className="candy-chip"
-              style={{
-                padding: '8px 12px',
-                borderRadius: 9999,
-                background: 'transparent', border: '1px solid var(--border-soft)',
-                color: 'var(--text-secondary)',
-                fontSize: 12, fontWeight: 700, letterSpacing: '-0.01em',
-                cursor: 'pointer', fontFamily: 'inherit',
-              }}
-            >
-              🔒 鎖螢幕
-            </button>
-            <button
-              onClick={() => setShowExitConfirm(true)}
-              aria-label="找爸爸媽媽"
-              className="candy-chip"
-              style={{
-                padding: '8px 14px',
-                borderRadius: 9999,
-                background: 'var(--ink-05)', border: '1px solid var(--border-soft)',
-                color: 'var(--text-secondary)',
-                fontSize: 12, fontWeight: 700, letterSpacing: '-0.01em',
-                cursor: 'pointer', fontFamily: 'inherit',
-              }}
-            >
-              找爸爸媽媽
-            </button>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {/* 統一圓形圖標鈕 — 純視覺，hover 才顯示文字 */}
+            {(() => {
+              const iconBtn = (
+                onClick: () => void,
+                label: string,
+                ariaLabel: string,
+                children: React.ReactNode,
+                variant: 'default' | 'primary' | 'danger' = 'default',
+              ) => {
+                const bg = variant === 'primary'
+                  ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
+                  : variant === 'danger'
+                  ? 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)'
+                  : 'rgba(255,255,255,0.1)'
+                const border = variant === 'primary'
+                  ? '1.5px solid #F2B84B'
+                  : variant === 'danger'
+                  ? '1.5px solid rgba(242, 184, 75, 0.5)'
+                  : '1.5px solid rgba(255,255,255,0.28)'
+                const color = variant === 'primary' ? '#0F2444' : '#FFFFFF'
+                return (
+                  <button
+                    onClick={onClick}
+                    aria-label={ariaLabel}
+                    title={label}
+                    style={{
+                      width: 44, height: 44,
+                      borderRadius: '50%',
+                      background: bg,
+                      border,
+                      color,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'inherit',
+                      backdropFilter: variant === 'default' ? 'blur(12px)' : undefined,
+                      boxShadow: variant === 'primary'
+                        ? '0 6px 16px -6px rgba(242, 184, 75, 0.5)'
+                        : variant === 'danger'
+                        ? '0 6px 16px -6px rgba(142, 42, 36, 0.5)'
+                        : '0 4px 12px -4px rgba(0,0,0,0.3)',
+                      transition: 'transform 0.12s, box-shadow 0.15s',
+                    }}
+                  >
+                    {children}
+                  </button>
+                )
+              }
+              return (
+                <>
+                  {!isFullscreen && iconBtn(
+                    enterFullscreen,
+                    '全螢幕（把網址列也鎖掉）',
+                    '全螢幕鎖定',
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 9V5a1 1 0 011-1h4M20 9V5a1 1 0 00-1-1h-4M4 15v4a1 1 0 001 1h4M20 15v4a1 1 0 01-1 1h-4"/>
+                    </svg>,
+                  )}
+                  {iconBtn(
+                    () => {
+                      localStorage.removeItem('peekkids_timer_end_ts')
+                      window.location.reload()
+                    },
+                    '重新設定時間',
+                    '重新設定時間',
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="9"/>
+                      <polyline points="12 7 12 12 15 14"/>
+                    </svg>,
+                    'primary',
+                  )}
+                  {iconBtn(
+                    () => setShowGuide(true),
+                    '看鎖螢幕教學',
+                    '鎖螢幕教學',
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="4" y="11" width="16" height="10" rx="2"/>
+                      <path d="M8 11V7a4 4 0 018 0v4"/>
+                    </svg>,
+                  )}
+                  {iconBtn(
+                    () => setShowExitConfirm(true),
+                    '離開（找爸爸媽媽）',
+                    '離開',
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                      <polyline points="16 17 21 12 16 7"/>
+                      <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>,
+                    'danger',
+                  )}
+                </>
+              )
+            })()}
           </div>
         </div>
 
@@ -618,11 +644,12 @@ export default function KidsModePage() {
               <div style={{
                 marginTop: 10,
                 display: 'inline-block',
-                padding: '3px 10px',
+                padding: '4px 12px',
                 borderRadius: 9999,
-                background: 'var(--ink-hex)',
+                background: 'rgba(242, 184, 75, 0.22)',
+                border: '1px solid rgba(242, 184, 75, 0.55)',
                 fontSize: 10, fontWeight: 900, letterSpacing: '0.04em',
-                color: 'var(--honey-hex)',
+                color: '#F2B84B',
               }}>
                 {ch.ageGroups.join(' · ')} 歲
               </div>
@@ -756,43 +783,71 @@ export default function KidsModePage() {
         </p>
       </div>
 
-      {/* 找爸爸媽媽對話 — 需要大人解簡單算式才能離開（小孩沒那麼快） */}
+      {/* 找爸爸媽媽對話 — 大人解簡單算式才能離開（深底硬編色，不被 candy 主題覆蓋） */}
       {showExitConfirm && (
         <div
           onClick={() => { setShowExitConfirm(false); setExitInput(''); setExitError(false) }}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(10,10,10,0.6)', backdropFilter: 'blur(8px)',
+            background: 'rgba(15, 36, 68, 0.78)', backdropFilter: 'blur(12px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: '#FFFFFF', borderRadius: 24, padding: 28, maxWidth: 360, width: '100%',
-              textAlign: 'center', boxShadow: '0 28px 56px rgba(0,0,0,0.24)',
+              background: 'linear-gradient(160deg, #1E3A5F 0%, #0F2444 100%)',
+              borderRadius: 28, padding: '28px 24px',
+              maxWidth: 380, width: '100%',
+              textAlign: 'center',
+              boxShadow: '0 28px 56px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.12)',
+              border: '1.5px solid rgba(242, 184, 75, 0.4)',
             }}
           >
-            <div style={{ fontSize: 42, marginBottom: 10 }}>👋</div>
-            <h3 style={{ fontSize: 19, fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)', marginBottom: 6 }}>
+            {/* 警示頭 */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '5px 12px', borderRadius: 9999,
+              background: 'rgba(194, 65, 59, 0.22)',
+              border: '1px solid rgba(194, 65, 59, 0.55)',
+              fontSize: 10, fontWeight: 900, letterSpacing: '0.18em',
+              color: '#FFB1AB', textTransform: 'uppercase',
+              marginBottom: 14,
+            }}>
+              ⚠ PARENT ONLY
+            </div>
+            <h3 style={{
+              fontSize: 26, fontWeight: 900, letterSpacing: '-0.03em',
+              color: '#FFFFFF', marginBottom: 6,
+              textShadow: '0 2px 12px rgba(0,0,0,0.4)',
+            }}>
               大人才能離開
             </h3>
-            <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5, marginBottom: 16 }}>
-              算一下下面這題，答對就回首頁
+            <p style={{
+              fontSize: 13, color: 'rgba(255, 246, 230, 0.82)',
+              letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 20,
+            }}>
+              小朋友請去找爸爸媽媽<br />答對下面這題就會回首頁
             </p>
 
-            {/* 算式 */}
+            {/* 算式 — 大字、清晰 */}
             <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              gap: 10, marginBottom: 14,
-              padding: '14px 18px',
-              background: 'var(--paper-hex)',
-              border: '1px solid var(--border-soft)',
-              borderRadius: 16,
+              padding: '20px 16px 18px',
+              marginBottom: exitError ? 8 : 16,
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1.5px solid rgba(242, 184, 75, 0.42)',
+              borderRadius: 20,
             }}>
-              <span style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.04em', color: 'var(--text-primary)', fontFamily: 'ui-monospace, "SF Mono", monospace' }}>
-                {exitMath.a} + {exitMath.b} =
-              </span>
+              <div style={{
+                fontSize: 40, fontWeight: 900,
+                color: '#F2B84B',
+                fontFamily: 'ui-monospace, "SF Mono", monospace',
+                letterSpacing: '0.02em',
+                marginBottom: 12,
+                textShadow: '0 2px 16px rgba(242, 184, 75, 0.3)',
+              }}>
+                {exitMath.a} + {exitMath.b} = ?
+              </div>
               <input
                 type="number"
                 inputMode="numeric"
@@ -800,38 +855,45 @@ export default function KidsModePage() {
                 value={exitInput}
                 onChange={e => { setExitInput(e.target.value); setExitError(false) }}
                 onKeyDown={e => e.key === 'Enter' && tryExit()}
-                placeholder="?"
+                placeholder="輸入答案"
                 style={{
-                  width: 70, padding: '8px 0',
-                  fontSize: 26, fontWeight: 900, letterSpacing: '-0.04em',
+                  width: '100%', padding: '14px 16px',
+                  fontSize: 28, fontWeight: 900,
                   textAlign: 'center',
-                  border: `2px solid ${exitError ? 'var(--risk-red)' : 'var(--border-soft)'}`,
-                  borderRadius: 12,
-                  background: '#fff',
+                  border: `2px solid ${exitError ? '#FF6B5C' : '#F2B84B'}`,
+                  borderRadius: 14,
+                  background: '#FFFFFF',
+                  color: '#0F2444',
                   fontFamily: 'ui-monospace, "SF Mono", monospace',
-                  color: 'var(--text-primary)',
+                  letterSpacing: '0.04em',
                   outline: 'none',
-                  transition: 'border-color 0.15s',
+                  WebkitAppearance: 'none',
+                  MozAppearance: 'textfield',
                 }}
               />
             </div>
 
             {exitError && (
-              <p style={{ fontSize: 12, color: 'var(--risk-red)', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 10 }}>
-                答錯了，再試一次
+              <p style={{
+                fontSize: 13, color: '#FFB1AB',
+                fontWeight: 800, letterSpacing: '-0.01em',
+                marginBottom: 14,
+              }}>
+                ✗ 答錯了，再算一次
               </p>
             )}
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 10 }}>
               <button
                 onClick={() => { setShowExitConfirm(false); setExitInput(''); setExitError(false) }}
                 style={{
-                  flex: 1, padding: 12,
-                  borderRadius: 'var(--radius-lg)',
-                  background: 'var(--ink-05)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--border-soft)', cursor: 'pointer',
-                  fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
+                  flex: 1, padding: '14px 8px',
+                  borderRadius: 16,
+                  background: 'rgba(255,255,255,0.1)',
+                  color: '#FFFFFF',
+                  border: '1.5px solid rgba(255,255,255,0.25)',
+                  cursor: 'pointer',
+                  fontSize: 14, fontWeight: 800, letterSpacing: '-0.01em',
                   fontFamily: 'inherit',
                 }}
               >
@@ -841,24 +903,22 @@ export default function KidsModePage() {
                 onClick={tryExit}
                 disabled={!exitInput}
                 style={{
-                  flex: 1, padding: 12,
-                  borderRadius: 'var(--radius-lg)',
-                  background: exitInput ? 'var(--ink-hex)' : 'var(--ink-20)',
-                  color: '#fff',
-                  border: 'none',
+                  flex: 1, padding: '14px 8px',
+                  borderRadius: 16,
+                  background: exitInput
+                    ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
+                    : 'rgba(255,255,255,0.08)',
+                  color: exitInput ? '#0F2444' : 'rgba(255,255,255,0.38)',
+                  border: '1.5px solid ' + (exitInput ? '#F2B84B' : 'rgba(255,255,255,0.15)'),
                   cursor: exitInput ? 'pointer' : 'not-allowed',
-                  fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
+                  fontSize: 14, fontWeight: 900, letterSpacing: '-0.01em',
                   fontFamily: 'inherit',
+                  boxShadow: exitInput ? '0 6px 18px -6px rgba(242, 184, 75, 0.5)' : 'none',
                 }}
               >
                 離開安心模式
               </button>
             </div>
-
-            <p style={{ marginTop: 14, fontSize: 10, color: 'var(--text-tertiary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
-              若已用引導使用模式 / 螢幕釘選鎖住畫面，<br />
-              離開還需要輸入平板密碼或同時按返回+概覽鍵
-            </p>
           </div>
         </div>
       )}
