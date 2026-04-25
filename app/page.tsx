@@ -27,16 +27,8 @@ export default function Home() {
   const [showUnlock, setShowUnlock] = useState(false)
   const [tab, setTab] = useState<'scan' | 'cases'>('scan')
   const [activeStep, setActiveStep] = useState<string | null>(null)
-  const [started, setStarted] = useState(false)  // 點開「開始檢查」才展開掃描區
-
-  // 點 CTA → 展開 + 平滑捲到掃描輸入
-  const beginScan = () => {
-    setStarted(true)
-    setTimeout(() => {
-      document.getElementById('scan-area')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      document.querySelector<HTMLInputElement>('#scan-area input[type="text"]')?.focus()
-    }, 80)
-  }
+  // 輸入框是首頁最重要的東西，預設就展開
+  const [started, setStarted] = useState(true)
 
   // 蘋果風滾輪淡入：對所有 .reveal-up 觀察
   useEffect(() => {
@@ -222,27 +214,14 @@ export default function Home() {
           </a>
         </nav>
 
-        {/* ═══ Hero — CC Bear 英雄風：奶油底 + 海軍藍字 + 小析守護
-              整塊可點擊，點下去 = 開始檢查（透明 overlay 蓋上去） ═══ */}
-        <section
-          className={!started && !result && !loading ? 'hero-clickable' : ''}
-          onClick={!started && !result && !loading ? beginScan : undefined}
-          role={!started && !result && !loading ? 'button' : undefined}
-          tabIndex={!started && !result && !loading ? 0 : undefined}
-          onKeyDown={(e) => {
-            if (!started && !result && !loading && (e.key === 'Enter' || e.key === ' ')) {
-              e.preventDefault()
-              beginScan()
-            }
-          }}
-          style={{
+        {/* ═══ Hero — CC Bear 英雄風：奶油底 + 海軍藍字 + 小析守護 ═══ */}
+        <section style={{
           position: 'relative',
-          marginBottom: 24,
+          marginBottom: 18,
           padding: '24px 20px 22px',
           background: '#FBF7EA',
           borderRadius: 28,
           overflow: 'hidden',
-          cursor: !started && !result && !loading ? 'pointer' : 'default',
           boxShadow: '0 14px 36px -16px rgba(43, 24, 16, 0.18), 0 3px 10px rgba(43, 24, 16, 0.05)',
           border: '1.5px solid rgba(168, 115, 81, 0.22)',
           display: 'grid',
@@ -312,121 +291,55 @@ export default function Home() {
             <Mascot pose="guard" size={110} priority />
           </div>
 
-          {/* 點我提示 — 只在尚未開始時顯示 */}
-          {!started && !result && !loading && (
-            <div className="hero-hint" aria-hidden style={{
-              position: 'absolute',
-              right: 14, bottom: 12,
-              zIndex: 2,
-              display: 'inline-flex', alignItems: 'center', gap: 5,
-              padding: '5px 10px 5px 9px',
-              background: 'var(--ink-hex)',
-              color: 'var(--cc-gold)',
-              borderRadius: 9999,
-              fontSize: 10, fontWeight: 900,
-              letterSpacing: '0.12em',
-              border: '1.5px solid var(--cc-gold)',
-              boxShadow: '0 4px 12px -4px rgba(43,24,16,0.4)',
-              pointerEvents: 'none',
-            }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 11.24V7.5a2.5 2.5 0 015 0v3.74"/>
-                <path d="M14 9.5a2.5 2.5 0 015 0V14a7 7 0 01-7 7h-1a7 7 0 01-7-7v-2a2 2 0 014 0"/>
-              </svg>
-              TAP
-            </div>
-          )}
         </section>
 
-        {/* ═══ 主 CTA：開始檢查 — 只在尚未開始/沒結果/沒掃描時顯示 ═══ */}
-        {!started && !result && !loading && (
-          <>
-            <button
-              onClick={beginScan}
-              className="cta-pulse stagger-3"
-              style={{
-                position: 'relative',
-                width: '100%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-                padding: '24px 24px',
-                marginBottom: 14,
-                background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
-                color: '#FFF6E6',
-                fontFamily: 'inherit',
-                border: '1.5px solid #2B1810',
-                borderRadius: 22,
-                boxShadow: '0 14px 32px -10px rgba(142, 42, 36, 0.55), inset 0 1px 0 rgba(255,255,255,0.18)',
-                cursor: 'pointer',
-                overflow: 'hidden',
-              }}
-            >
-              <span aria-hidden className="cta-shimmer" />
-              <span aria-hidden style={{
-                position: 'absolute', inset: 0,
-                background: 'radial-gradient(circle at 88% 50%, rgba(255, 246, 230, 0.18), transparent 55%)',
-                pointerEvents: 'none',
-              }} />
-              <span style={{
-                fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em',
-                position: 'relative', zIndex: 1,
-              }}>
-                開始檢查一個頻道
-              </span>
-              <svg className="cta-arrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'relative', zIndex: 1 }}>
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </button>
-
-            {/* Bear mode CTA — 主頁三件事之一 */}
-            <a
-              href="/kids"
-              className="stagger-4"
-              style={{
-                position: 'relative',
-                display: 'flex', alignItems: 'center', gap: 14,
-                padding: '20px 22px',
-                marginBottom: 18,
-                background: 'linear-gradient(135deg, #F2B84B 0%, #FB8500 100%)',
-                color: 'var(--ink-hex)',
-                textDecoration: 'none',
-                borderRadius: 22,
-                border: '1.5px solid var(--ink-hex)',
-                boxShadow: '0 14px 32px -12px rgba(217, 148, 34, 0.55), inset 0 1px 0 rgba(255,255,255,0.32)',
-                overflow: 'hidden',
-              }}
-            >
-              <div aria-hidden style={{
-                position: 'absolute', inset: 0,
-                background: 'radial-gradient(circle at 90% 50%, rgba(255, 246, 230, 0.32), transparent 55%)',
-                pointerEvents: 'none',
-              }} />
-              <div style={{
-                width: 60, height: 60, borderRadius: '50%',
-                background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 60%, #F3EEDD 100%)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
-                border: '2px solid var(--ink-hex)',
-                boxShadow: '0 3px 10px rgba(43, 24, 16, 0.18)',
-                position: 'relative', zIndex: 1,
-                overflow: 'hidden',
-              }}>
-                <Mascot pose="hi" size={52} />
-              </div>
-              <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
-                <p style={{ fontSize: 20, fontWeight: 900, lineHeight: 1.05, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
-                  打開熊熊守護模式
-                </p>
-                <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 4, fontWeight: 500, lineHeight: 1.5 }}>
-                  人工精選頻道，平板丟給小孩也安心
-                </p>
-              </div>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-hex)', position: 'relative', zIndex: 1 }}>
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </a>
-          </>
-        )}
+        {/* Bear mode CTA — 永遠顯示，是首頁第二個重要動作 */}
+        <a
+          href="/kids"
+          className="stagger-3"
+          style={{
+            position: 'relative',
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '20px 22px',
+            marginBottom: 18,
+            background: 'linear-gradient(135deg, #F2B84B 0%, #FB8500 100%)',
+            color: 'var(--ink-hex)',
+            textDecoration: 'none',
+            borderRadius: 22,
+            border: '1.5px solid var(--ink-hex)',
+            boxShadow: '0 14px 32px -12px rgba(217, 148, 34, 0.55), inset 0 1px 0 rgba(255,255,255,0.32)',
+            overflow: 'hidden',
+          }}
+        >
+          <div aria-hidden style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(circle at 90% 50%, rgba(255, 246, 230, 0.32), transparent 55%)',
+            pointerEvents: 'none',
+          }} />
+          <div style={{
+            width: 60, height: 60, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 60%, #F3EEDD 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+            border: '2px solid var(--ink-hex)',
+            boxShadow: '0 3px 10px rgba(43, 24, 16, 0.18)',
+            position: 'relative', zIndex: 1,
+            overflow: 'hidden',
+          }}>
+            <Mascot pose="hi" size={52} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
+            <p style={{ fontSize: 20, fontWeight: 900, lineHeight: 1.05, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
+              打開熊熊守護模式
+            </p>
+            <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 4, fontWeight: 500, lineHeight: 1.5 }}>
+              人工精選頻道，平板丟給小孩也安心
+            </p>
+          </div>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-hex)', position: 'relative', zIndex: 1 }}>
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </a>
 
         {/* ═══ Segmented — 只在開始之後顯示 ═══ */}
         {(started || result || loading) && (
