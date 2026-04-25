@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import ResultCard from '@/components/ResultCard'
 import UnlockModal from '@/components/UnlockModal'
 import Mascot from '@/components/Mascot'
+import MascotParade from '@/components/MascotParade'
 import CaseLibrary from '@/components/CaseLibrary'
 import ScanningStages from '@/components/ScanningStages'
 import RecentHighRisk from '@/components/RecentHighRisk'
@@ -281,6 +282,25 @@ export default function Home() {
             <Mascot pose="guard" size={110} priority />
           </div>
         </section>
+
+        {/* ═══ 小析家族滑動隊伍 ═══ */}
+        <div className="mascot-parade-wrap" style={{
+          marginBottom: 22,
+          padding: '14px 0 12px',
+          background: 'linear-gradient(180deg, rgba(242,184,75,0.12) 0%, rgba(242,184,75,0.04) 100%)',
+          borderRadius: 20,
+          border: '1px solid rgba(242, 184, 75, 0.32)',
+          overflow: 'hidden',
+        }}>
+          <p style={{
+            fontSize: 10, fontWeight: 800, letterSpacing: '0.18em',
+            color: 'var(--ink-hex)', textTransform: 'uppercase',
+            textAlign: 'center', marginBottom: 8, opacity: 0.7,
+          }}>
+            ★ 小析家族 · CC BEAR ★
+          </p>
+          <MascotParade size={72} speed={26} />
+        </div>
 
         {/* ═══ 一鍵開啟兒童模式 — CC Bear 披風紅 CTA ═══ */}
         <a
