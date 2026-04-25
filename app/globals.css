@@ -529,12 +529,12 @@ html.candy .sticker-icon-btn {
   backdrop-filter: blur(10px);
 }
 .sticker-icon-btn:hover {
-  transform: translate(-1px, -2px) rotate(-3deg);
+  transform: translate(-1px, -2px);
   box-shadow: 5px 5px 0 var(--ink-hex);
 }
 html.candy .sticker-icon-btn:hover { box-shadow: 5px 5px 0 rgba(0,0,0,0.6); }
 .sticker-icon-btn:active {
-  transform: translate(2px, 2px) rotate(2deg);
+  transform: translate(2px, 2px);
   box-shadow: 1px 1px 0 var(--ink-hex);
 }
 .sticker-icon-btn--gold {
@@ -586,10 +586,8 @@ html.candy .sticker-tab {
   box-shadow: 3px 3px 0 rgba(0,0,0,0.55);
   backdrop-filter: blur(10px);
 }
-.sticker-tab:nth-child(odd)  { transform: rotate(-1.2deg); }
-.sticker-tab:nth-child(even) { transform: rotate(1.2deg); }
 .sticker-tab:hover {
-  transform: translate(-1px, -2px) rotate(0deg);
+  transform: translate(-1px, -2px);
   box-shadow: 5px 5px 0 var(--ink-hex);
 }
 html.candy .sticker-tab:hover { box-shadow: 5px 5px 0 rgba(0,0,0,0.6); }
@@ -598,7 +596,7 @@ html.candy .sticker-tab:hover { box-shadow: 5px 5px 0 rgba(0,0,0,0.6); }
   color: #2B1810;
   border-color: #2B1810;
   box-shadow: 4px 4px 0 #2B1810;
-  transform: rotate(0deg) translateY(-1px);
+  transform: translateY(-1px);
 }
 html.candy .sticker-tab.is-active {
   background: linear-gradient(135deg, #F2B84B 0%, #D99422 100%);
@@ -619,16 +617,16 @@ html.candy .sticker-tab.is-active {
               box-shadow 0.25s var(--ease-spring);
 }
 .sticker-wobble:hover {
-  transform: translate(-2px, -3px) rotate(-1.5deg);
+  transform: translate(-2px, -3px);
 }
 .sticker-wobble:active {
-  transform: translate(1px, 1px) rotate(0.5deg);
+  transform: translate(1px, 1px);
 }
 
 /* 入場交錯：給 sticker-tab / 貼紙圖示鈕的列表一個漂亮的進場 */
 @keyframes sticker-pop-in {
-  0%   { opacity: 0; transform: translateY(8px) rotate(-6deg) scale(0.9); }
-  100% { opacity: 1; transform: translateY(0) rotate(var(--rot, 0deg)) scale(1); }
+  0%   { opacity: 0; transform: translateY(8px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 .sticker-pop {
   animation: sticker-pop-in 0.5s var(--ease-spring) backwards;
@@ -637,9 +635,8 @@ html.candy .sticker-tab.is-active {
 @media (prefers-reduced-motion: reduce) {
   .sticker-icon-btn, .sticker-tab, .sticker-wobble { transition: none; }
   .sticker-pop { animation: none; }
-  .sticker-tab:nth-child(odd),
-  .sticker-tab:nth-child(even) { transform: none; }
 }
+
 
 .scan-ring {
   position: absolute; inset: 0;

@@ -214,14 +214,30 @@ export default function Home() {
           </a>
         </nav>
 
-        {/* ═══ Hero — CC Bear 英雄風：奶油底 + 海軍藍字 + 小析守護 ═══ */}
-        <section style={{
+        {/* ═══ Hero — 整塊可點，跳到輸入框 focus ═══ */}
+        <section
+          className="hero-clickable"
+          onClick={() => {
+            document.getElementById('scan-area')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            document.querySelector<HTMLInputElement>('#scan-area input[type="text"]')?.focus()
+          }}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              document.getElementById('scan-area')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              document.querySelector<HTMLInputElement>('#scan-area input[type="text"]')?.focus()
+            }
+          }}
+          style={{
           position: 'relative',
           marginBottom: 18,
           padding: '24px 20px 22px',
           background: '#FBF7EA',
           borderRadius: 28,
           overflow: 'hidden',
+          cursor: 'pointer',
           boxShadow: '0 14px 36px -16px rgba(43, 24, 16, 0.18), 0 3px 10px rgba(43, 24, 16, 0.05)',
           border: '1.5px solid rgba(168, 115, 81, 0.22)',
           display: 'grid',
@@ -291,6 +307,29 @@ export default function Home() {
             <Mascot pose="guard" size={110} priority />
           </div>
 
+          {/* 點擊提示：放大鏡 + 「點這裡搜尋」，告訴使用者 hero 也能點 */}
+          <div aria-hidden style={{
+            position: 'absolute',
+            right: 12, bottom: 10,
+            zIndex: 2,
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '6px 12px 6px 9px',
+            background: 'var(--ink-hex)',
+            color: 'var(--cc-gold)',
+            borderRadius: 9999,
+            fontSize: 11, fontWeight: 900,
+            letterSpacing: '0.04em',
+            border: '1.5px solid var(--cc-gold)',
+            boxShadow: '0 4px 12px -4px rgba(43,24,16,0.4)',
+            pointerEvents: 'none',
+            animation: 'hero-hint-pulse 2.2s ease-in-out infinite',
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="7"/>
+              <line x1="21" y1="21" x2="16.5" y2="16.5"/>
+            </svg>
+            點這裡搜尋
+          </div>
         </section>
 
         {/* Bear mode CTA — 永遠顯示，是首頁第二個重要動作 */}

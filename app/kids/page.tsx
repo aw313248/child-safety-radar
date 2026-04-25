@@ -523,15 +523,14 @@ export default function KidsModePage() {
             </button>
             <button
               onClick={() => setShowExitConfirm(true)}
-              aria-label="離開"
-              title="離開（找爸爸媽媽）"
+              aria-label="回首頁"
+              title="回首頁（需要爸媽算數學）"
               className="sticker-icon-btn sticker-icon-btn--danger sticker-pop"
               style={{ animationDelay: '0.26s' }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
+                <path d="M3 12l9-9 9 9"/>
+                <path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/>
               </svg>
             </button>
           </div>
