@@ -146,7 +146,7 @@ export default function Home() {
       t: '貼上頻道網址',
       s: 'youtube.com/@xxx',
       icon: 'link',
-      detail: '打開 YouTube 找到你想檢查的頻道，複製網址列的內容。不管是 @handle、channel 連結，或單一支影片的網址都能用',
+      detail: '打開 YouTube 複製網址，@handle、頻道連結、單支影片都行',
       action: {
         label: '試貼一個示範頻道',
         onClick: () => {
@@ -160,14 +160,14 @@ export default function Home() {
       t: 'AI 掃描內容',
       s: '讀標題 · 看影片 · 翻留言',
       icon: 'brain',
-      detail: 'AI 會抓頻道最近的影片標題、縮圖風格、留言區警示訊號，綜合判斷是否有偽裝成兒童內容的暴力/恐怖/成人梗',
+      detail: '抓最近影片的標題、縮圖、留言警訊，看有沒有偷渡暴力、恐怖、成人梗給小孩',
     },
     {
       n: '03',
       t: '秒看風險燈號',
       s: '紅橘綠 + 摘要建議',
       icon: 'shield',
-      detail: '紅燈（70+）不建議觀看、橘燈（40-69）陪同觀看、綠燈（0-39）相對安全。每個分數都會附 AI 摘要和具體建議',
+      detail: '紅燈別給看（70+）、橘燈陪著看（40-69）、綠燈安心看（0-39），每個分數都附摘要跟建議',
       action: {
         label: '看真實案例',
         onClick: () => document.getElementById('case-library')?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
@@ -197,7 +197,7 @@ export default function Home() {
             alignItems: 'center',
             gap: 8,
             fontSize: 14,
-            fontWeight: 800,
+            fontWeight: 700,
             letterSpacing: '-0.02em',
             color: 'var(--ink-hex)',
           }}>
@@ -206,7 +206,7 @@ export default function Home() {
               background: 'var(--cc-gold)',
               border: '1.5px solid var(--ink-hex)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 11, fontWeight: 900, color: 'var(--ink-hex)',
+              fontSize: 11, fontWeight: 800, color: 'var(--ink-hex)',
             }}>CC</span>
             CareCub Kids
           </span>
@@ -268,7 +268,7 @@ export default function Home() {
             <p className="stagger-1" style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               fontSize: 10,
-              fontWeight: 800,
+              fontWeight: 700,
               letterSpacing: '0.18em',
               color: 'var(--ink-hex)',
               textTransform: 'uppercase',
@@ -292,7 +292,7 @@ export default function Home() {
             }}>
               這個<span style={{ color: 'var(--cc-red-deep)' }}>卡通</span><br />
               安全嗎？<br />
-              <span style={{ fontSize: '0.62em', fontWeight: 800, letterSpacing: '-0.02em' }}>20 秒掃給你看</span>
+              <span style={{ fontSize: '0.6em', fontWeight: 600, letterSpacing: '-0.02em', color: 'rgba(43,24,16,0.78)' }}>20 秒掃給你看</span>
             </h1>
 
             <p className="stagger-3" style={{
@@ -302,7 +302,7 @@ export default function Home() {
               color: 'rgba(43, 24, 16, 0.7)',
               lineHeight: 1.6,
             }}>
-              貼上 YouTube 頻道，AI 翻遍影片跟留言，紅橘綠燈秒判斷能不能給小孩看
+              貼網址、按掃描，AI 看完影片跟留言，告訴你能不能給小孩看
             </p>
           </div>
 
@@ -327,7 +327,7 @@ export default function Home() {
             background: 'var(--ink-hex)',
             color: 'var(--cc-gold)',
             borderRadius: 9999,
-            fontSize: 11, fontWeight: 900,
+            fontSize: 11, fontWeight: 700,
             letterSpacing: '0.04em',
             border: '1.5px solid var(--cc-gold)',
             boxShadow: '0 4px 12px -4px rgba(43,24,16,0.4)',
@@ -434,7 +434,7 @@ export default function Home() {
                         gap: 6,
                         fontFamily: 'inherit',
                         fontSize: 14,
-                        fontWeight: 900,
+                        fontWeight: 800,
                         letterSpacing: '-0.01em',
                         whiteSpace: 'nowrap',
                         transition: 'background 0.15s, transform 0.1s, box-shadow 0.15s',
@@ -502,11 +502,11 @@ export default function Home() {
                   }}>
                     <Mascot pose="think" size={64} alt="小析在想哪裡出錯" />
                     <div style={{ flex: 1 }}>
-                      <p style={{ color: 'var(--terra-hex)', fontSize: 14, letterSpacing: '-0.02em', fontWeight: 900 }}>
+                      <p style={{ color: 'var(--terra-hex)', fontSize: 14, letterSpacing: '-0.02em', fontWeight: 800 }}>
                         {error}
                       </p>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: 12, marginTop: 4, letterSpacing: '-0.01em', fontWeight: 600 }}>
-                        確認網址格式，或直接貼瀏覽器網址列
+                      <p style={{ color: 'var(--text-secondary)', fontSize: 12, marginTop: 4, letterSpacing: '-0.01em', fontWeight: 500 }}>
+                        試試直接從瀏覽器網址列複製貼上
                       </p>
                     </div>
                   </div>
@@ -528,22 +528,22 @@ export default function Home() {
             borderRadius: 18,
           }}>
             <span style={{
-              fontSize: 10, fontWeight: 900, color: 'var(--ink-hex)',
+              fontSize: 10, fontWeight: 700, color: 'var(--ink-hex)',
               letterSpacing: '0.1em', textTransform: 'uppercase',
               opacity: 0.7, flexShrink: 0,
             }}>
-              結果長這樣
+              掃完會看到
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, color: 'var(--ink-hex)' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--ink-hex)' }}>
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#7AB87E', border: '1.5px solid var(--ink-hex)' }} />
                 可以看
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, color: 'var(--ink-hex)' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--ink-hex)' }}>
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F2B84B', border: '1.5px solid var(--ink-hex)' }} />
                 留意
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, color: 'var(--ink-hex)' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--ink-hex)' }}>
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#C2413B', border: '1.5px solid var(--ink-hex)' }} />
                 別給看
               </span>
@@ -587,7 +587,7 @@ export default function Home() {
             <Mascot pose="hi" size={46} />
           </div>
           <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
-            <p style={{ fontSize: 16, fontWeight: 900, lineHeight: 1.1, color: 'var(--ink-hex)', letterSpacing: '-0.025em' }}>
+            <p style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.1, color: 'var(--ink-hex)', letterSpacing: '-0.025em' }}>
               不想自己掃？直接用熊熊精選
             </p>
             <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 3, fontWeight: 500, lineHeight: 1.5 }}>
@@ -604,9 +604,9 @@ export default function Home() {
           <>
             <section className="reveal-up" style={{ marginBottom: 40 }}>
               <h2 style={{
-                  fontSize: 32,
-                  fontWeight: 900,
-                  letterSpacing: '-0.055em',
+                  fontSize: 28,
+                  fontWeight: 800,
+                  letterSpacing: '-0.045em',
                   color: 'var(--ink-hex)',
                   margin: '8px 0 16px',
                   paddingLeft: 4,
@@ -675,14 +675,14 @@ export default function Home() {
                             color: 'var(--honey-hex)',
                             fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
                             fontSize: 11,
-                            fontWeight: 900,
+                            fontWeight: 700,
                             display: 'inline-flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             border: '2px solid var(--card-hex)',
                           }}>{item.n}</span>
                         </div>
-                        <div style={{ fontSize: 15, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.03em', lineHeight: 1.25 }}>{item.t}</div>
+                        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.03em', lineHeight: 1.25 }}>{item.t}</div>
                         <div style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.005em', lineHeight: 1.6, fontWeight: 500, marginTop: 2 }}>{item.s}</div>
                         <span aria-label={isActive ? '收起' : '展開詳情'} style={{
                           marginTop: 4,
@@ -719,7 +719,7 @@ export default function Home() {
                         <span style={{
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
                           fontSize: 11,
-                          fontWeight: 900,
+                          fontWeight: 700,
                           padding: '3px 10px',
                           borderRadius: 9999,
                           background: 'var(--honey-hex)',
@@ -727,7 +727,7 @@ export default function Home() {
                           border: '2px solid var(--ink-hex)',
                           letterSpacing: '0.02em',
                         }}>STEP {item.n}</span>
-                        <span style={{ fontSize: 16, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
+                        <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
                           {item.t}
                         </span>
                       </div>
@@ -771,7 +771,7 @@ export default function Home() {
           fontSize: 12,
           color: 'var(--ink-hex)',
           letterSpacing: '0.08em',
-          fontWeight: 800,
+          fontWeight: 600,
           textTransform: 'uppercase',
           opacity: 0.55,
         }}>
