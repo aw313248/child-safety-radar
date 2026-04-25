@@ -156,10 +156,10 @@ export default function Home() {
           alignItems: 'center',
           marginBottom: 20,
           padding: '10px 14px',
-          background: '#FFFFFF',
+          background: '#FBF7EA',
           borderRadius: 9999,
-          border: '1.5px solid var(--cc-navy)',
-          boxShadow: '0 4px 14px rgba(15, 36, 68, 0.12)',
+          border: '1.5px solid rgba(168, 115, 81, 0.32)',
+          boxShadow: '0 3px 10px rgba(43, 24, 16, 0.08)',
         }}>
           <span style={{
             display: 'inline-flex',
@@ -168,14 +168,14 @@ export default function Home() {
             fontSize: 14,
             fontWeight: 800,
             letterSpacing: '-0.02em',
-            color: 'var(--cc-navy-deep)',
+            color: 'var(--ink-hex)',
           }}>
             <span style={{
               width: 22, height: 22, borderRadius: '50%',
               background: 'var(--cc-gold)',
-              border: '1.5px solid var(--cc-navy-deep)',
+              border: '1.5px solid var(--ink-hex)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 11, fontWeight: 900, color: 'var(--cc-navy-deep)',
+              fontSize: 11, fontWeight: 900, color: 'var(--ink-hex)',
             }}>CC</span>
             CareCub Kids
           </span>
@@ -187,13 +187,13 @@ export default function Home() {
               gap: 5,
               padding: '6px 12px',
               borderRadius: 9999,
-              background: 'var(--cc-navy-deep)',
-              color: '#FFFFFF',
+              background: 'var(--cc-gold)',
+              color: 'var(--ink-hex)',
               fontSize: 12,
               fontWeight: 800,
               letterSpacing: '-0.01em',
               textDecoration: 'none',
-              border: '1.5px solid var(--cc-navy-deep)',
+              border: '1.5px solid var(--ink-hex)',
             }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
@@ -209,11 +209,11 @@ export default function Home() {
           position: 'relative',
           marginBottom: 24,
           padding: '24px 20px 22px',
-          background: '#FFFFFF',
+          background: '#FBF7EA',
           borderRadius: 28,
           overflow: 'hidden',
-          boxShadow: '0 18px 44px -16px rgba(15, 36, 68, 0.22), 0 4px 14px rgba(15, 36, 68, 0.06)',
-          border: '1.5px solid rgba(30, 58, 95, 0.14)',
+          boxShadow: '0 14px 36px -16px rgba(43, 24, 16, 0.18), 0 3px 10px rgba(43, 24, 16, 0.05)',
+          border: '1.5px solid rgba(168, 115, 81, 0.22)',
           display: 'grid',
           gridTemplateColumns: '1fr 110px',
           gap: 14,
@@ -223,7 +223,7 @@ export default function Home() {
           <div aria-hidden style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(circle at 88% 20%, rgba(242,184,75,0.18), transparent 55%), radial-gradient(circle at 0% 100%, rgba(142,202,230,0.16), transparent 50%)',
+            background: 'radial-gradient(circle at 88% 20%, rgba(242,184,75,0.22), transparent 55%), radial-gradient(circle at 0% 100%, rgba(210,221,194,0.28), transparent 50%)',
             pointerEvents: 'none',
           }} />
 
@@ -234,15 +234,15 @@ export default function Home() {
               fontSize: 10,
               fontWeight: 800,
               letterSpacing: '0.18em',
-              color: 'var(--cc-red)',
+              color: 'var(--ink-hex)',
               textTransform: 'uppercase',
               marginBottom: 10,
               padding: '4px 9px',
-              background: 'rgba(194, 65, 59, 0.08)',
+              background: 'rgba(242, 184, 75, 0.28)',
               borderRadius: 9999,
-              border: '1px solid rgba(194, 65, 59, 0.22)',
+              border: '1px solid rgba(217, 148, 34, 0.42)',
             }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--cc-red)' }} />
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--cc-gold-deep)' }} />
               小析守護中
             </p>
 
@@ -250,12 +250,12 @@ export default function Home() {
               fontSize: 'clamp(36px, 9.5vw, 52px)',
               fontWeight: 900,
               letterSpacing: '-0.045em',
-              color: 'var(--cc-navy-deep)',
+              color: 'var(--ink-hex)',
               marginBottom: 12,
               lineHeight: 1.02,
             }}>
               20 秒<br />
-              看穿<span style={{ color: 'var(--cc-red)' }}>卡通</span><br />
+              看穿<span style={{ color: 'var(--cc-red-deep)' }}>卡通</span><br />
               藏什麼
             </h1>
 
@@ -263,7 +263,7 @@ export default function Home() {
               fontSize: 13,
               fontWeight: 500,
               letterSpacing: '-0.005em',
-              color: 'rgba(15, 36, 68, 0.72)',
+              color: 'rgba(43, 24, 16, 0.7)',
               lineHeight: 1.6,
             }}>
               貼上 YouTube 頻道，AI 翻遍影片跟留言，紅橘綠燈秒判斷能不能給小孩看
@@ -290,44 +290,44 @@ export default function Home() {
             display: 'flex', alignItems: 'center', gap: 14,
             padding: '18px 20px',
             marginBottom: 22,
-            background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
-            color: '#FFF6E6',
+            background: 'linear-gradient(135deg, #F2B84B 0%, #FB8500 100%)',
+            color: 'var(--ink-hex)',
             textDecoration: 'none',
             borderRadius: 22,
-            border: '1.5px solid var(--cc-gold)',
-            boxShadow: '0 14px 32px -10px rgba(142, 42, 36, 0.5), inset 0 1px 0 rgba(255,255,255,0.18)',
+            border: '1.5px solid var(--ink-hex)',
+            boxShadow: '0 10px 24px -10px rgba(217, 148, 34, 0.55), inset 0 1px 0 rgba(255,255,255,0.32)',
             overflow: 'hidden',
           }}
         >
           <div aria-hidden style={{
             position: 'absolute', inset: 0,
-            background: 'radial-gradient(circle at 90% 50%, rgba(242,184,75,0.22), transparent 55%)',
+            background: 'radial-gradient(circle at 90% 50%, rgba(255, 246, 230, 0.32), transparent 55%)',
             pointerEvents: 'none',
           }} />
           <div style={{
             width: 64, height: 64, borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 70%, #D99422 100%)',
+            background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 60%, #F3EEDD 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
-            border: '2px solid var(--cc-cream)',
-            boxShadow: '0 4px 12px rgba(15, 36, 68, 0.25)',
+            border: '2px solid var(--ink-hex)',
+            boxShadow: '0 3px 10px rgba(43, 24, 16, 0.18)',
             position: 'relative', zIndex: 1,
             overflow: 'hidden',
           }}>
             <Mascot pose="hi" size={56} />
           </div>
           <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
-            <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.18em', color: 'var(--cc-gold)', textTransform: 'uppercase', marginBottom: 3 }}>
+            <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.18em', color: 'var(--ink-hex)', textTransform: 'uppercase', marginBottom: 3, opacity: 0.7 }}>
               ★ BEAR MODE ★
             </p>
-            <p style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, color: '#FFF6E6', letterSpacing: '-0.03em' }}>
+            <p style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
               打開熊熊守護模式
             </p>
-            <p style={{ fontSize: 12, color: 'rgba(255, 246, 230, 0.82)', letterSpacing: '-0.005em', marginTop: 5, fontWeight: 500, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 5, fontWeight: 500, lineHeight: 1.5 }}>
               人工精選頻道，平板丟給小孩也安心
             </p>
           </div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--cc-gold)', position: 'relative', zIndex: 1 }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-hex)', position: 'relative', zIndex: 1 }}>
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </a>
@@ -388,16 +388,16 @@ export default function Home() {
 
                   {/* Input + send — CC Bear 海軍藍邊 pill */}
                   <div style={{
-                    background: '#FFFFFF',
+                    background: '#FBF7EA',
                     borderRadius: 9999,
-                    border: '1.5px solid var(--cc-navy)',
+                    border: '1.5px solid var(--ink-hex)',
                     padding: '4px 4px 4px 18px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 8,
                     boxShadow: error
-                      ? '0 0 0 3px rgba(194,65,59,0.18), 0 6px 18px -8px rgba(15, 36, 68, 0.35)'
-                      : '0 6px 18px -8px rgba(15, 36, 68, 0.25)',
+                      ? '0 0 0 3px rgba(194,65,59,0.18), 0 4px 14px rgba(43, 24, 16, 0.12)'
+                      : '0 4px 14px rgba(43, 24, 16, 0.08)',
                     transition: 'box-shadow 0.2s',
                   }}>
                     <input
@@ -429,14 +429,14 @@ export default function Home() {
                         width: 46, height: 46,
                         borderRadius: '50%',
                         border: 'none',
-                        background: canSubmit ? 'var(--cc-red)' : 'var(--ink-10)',
-                        color: canSubmit ? '#FFF6E6' : 'var(--ink-hex)',
+                        background: canSubmit ? 'var(--honey-hex)' : 'var(--ink-10)',
+                        color: 'var(--ink-hex)',
                         cursor: canSubmit ? 'pointer' : 'not-allowed',
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'background 0.15s, transform 0.1s',
-                        boxShadow: canSubmit ? '0 4px 12px -4px var(--cc-red-deep)' : 'none',
+                        boxShadow: canSubmit ? '0 3px 0 var(--ink-hex)' : 'none',
                       }}
                     >
                       {loading ? (
