@@ -1,11 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { CuratedChannel, AgeGroup, filterChannelsByAge } from '@/lib/curated-channels'
 import { getUserChannels, removeUserChannel, UserChannel } from '@/lib/user-channels'
-import LockScreenGuide from '@/components/LockScreenGuide'
 import KidsTimer from '@/components/KidsTimer'
 import Mascot, { MascotPose } from '@/components/Mascot'
+
+// 鎖螢幕教學只在首次進入或點教學鈕才顯示，dynamic 載入省 initial bundle
+const LockScreenGuide = dynamic(() => import('@/components/LockScreenGuide'), { ssr: false })
 
 // 依 channelId 穩定挑一個熊熊姿勢（同一頻道永遠同一隻熊）
 const CHANNEL_POSES: MascotPose[] = ['hi', 'thumbs-up', 'fly', 'search', 'guard', 'think']

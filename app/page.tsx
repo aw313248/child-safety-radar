@@ -1,13 +1,33 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import ResultCard from '@/components/ResultCard'
-import UnlockModal from '@/components/UnlockModal'
 import Mascot from '@/components/Mascot'
-import CaseLibrary from '@/components/CaseLibrary'
 import ScanningStages from '@/components/ScanningStages'
 import RecentHighRisk from '@/components/RecentHighRisk'
 import { AnalysisResult } from '@/types/analysis'
+
+// 只在需要時載入：付費牆很少觸發、案例庫只在切 tab 時看
+const UnlockModal = dynamic(() => import('@/components/UnlockModal'), { ssr: false })
+const CaseLibrary = dynamic(() => import('@/components/CaseLibrary'), {
+  ssr: false,
+  loading: () => <div style={{ padding: 24, textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 13 }}>載入案例…</div>,
+})
+
+// 步驟卡 SVG 圖示，提到 module level 避免每次 render 重建
+function StepIcon({ name }: { name: 'link' | 'brain' | 'shield' }) {
+  const common = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  if (name === 'link') return (
+    <svg {...common}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+  )
+  if (name === 'brain') return (
+    <svg {...common}><path d="M9.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 11-5 0V17a3 3 0 01-3-3 3 3 0 01.5-5 3 3 0 013-3 2.5 2.5 0 012-4z"/><path d="M14.5 2A2.5 2.5 0 0012 4.5v15a2.5 2.5 0 105 0V17a3 3 0 003-3 3 3 0 00-.5-5 3 3 0 00-3-3 2.5 2.5 0 00-2-4z"/></svg>
+  )
+  return (
+    <svg {...common}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+  )
+}
 
 const FREE_SCANS = 2
 const STORAGE_KEY = 'child_radar_unlocked'
@@ -153,18 +173,6 @@ export default function Home() {
     },
   ]
 
-  const StepIcon = ({ name }: { name: 'link' | 'brain' | 'shield' }) => {
-    const common = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
-    if (name === 'link') return (
-      <svg {...common}><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-    )
-    if (name === 'brain') return (
-      <svg {...common}><path d="M9.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 11-5 0V17a3 3 0 01-3-3 3 3 0 01.5-5 3 3 0 013-3 2.5 2.5 0 012-4z"/><path d="M14.5 2A2.5 2.5 0 0012 4.5v15a2.5 2.5 0 105 0V17a3 3 0 003-3 3 3 0 00-.5-5 3 3 0 00-3-3 2.5 2.5 0 00-2-4z"/></svg>
-    )
-    return (
-      <svg {...common}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-    )
-  }
 
   return (
     <main style={{ minHeight: '100vh', padding: '24px 20px 56px' }}>
