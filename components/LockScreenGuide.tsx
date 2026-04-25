@@ -17,7 +17,7 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
   // ★ 真實測試：要求家長按 Home / 滑出，5 秒內畫面若被切走 = 沒鎖成功
   useEffect(() => {
     if (phase !== 'running') return
-    setCount(5)
+    setCount(3)
     let leftScreen = false
     const onVis = () => { if (document.hidden) leftScreen = true }
     document.addEventListener('visibilitychange', onVis)

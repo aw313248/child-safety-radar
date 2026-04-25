@@ -615,7 +615,7 @@ export default function KidsModePage() {
           gap: 14,
           marginBottom: curated.length > 0 ? 32 : 0,
         }}>
-          {curated.map(ch => (
+          {curated.map((ch, idx) => (
             <button
               key={ch.channelId}
               onClick={() => openChannel(ch)}
@@ -636,7 +636,7 @@ export default function KidsModePage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 overflow: 'hidden',
               }}>
-                <Mascot pose={mascotForChannel(ch.channelId)} size={64} />
+                <Mascot pose={CHANNEL_POSES[idx % CHANNEL_POSES.length]} size={64} />
               </div>
               <p style={{
                 fontSize: 14, fontWeight: 900,

@@ -27,6 +27,32 @@ export default function Home() {
   const [showUnlock, setShowUnlock] = useState(false)
   const [tab, setTab] = useState<'scan' | 'cases'>('scan')
   const [activeStep, setActiveStep] = useState<string | null>(null)
+  const [started, setStarted] = useState(false)  // 點開「開始檢查」才展開掃描區
+
+  // 點 CTA → 展開 + 平滑捲到掃描輸入
+  const beginScan = () => {
+    setStarted(true)
+    setTimeout(() => {
+      document.getElementById('scan-area')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      document.querySelector<HTMLInputElement>('#scan-area input[type="text"]')?.focus()
+    }, 80)
+  }
+
+  // 蘋果風滾輪淡入：對所有 .reveal-up 觀察
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>('.reveal-up')
+    if (!els.length) return
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible')
+          io.unobserve(e.target)
+        }
+      })
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' })
+    els.forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [tab, started, result, loading])
 
   useEffect(() => {
     setUnlocked(localStorage.getItem(STORAGE_KEY) === 'true')
@@ -282,84 +308,76 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ═══ 一鍵開啟兒童模式 — CC Bear 披風紅 CTA ═══ */}
-        <a
-          href="/kids"
-          style={{
-            position: 'relative',
-            display: 'flex', alignItems: 'center', gap: 14,
-            padding: '18px 20px',
-            marginBottom: 22,
-            background: 'linear-gradient(135deg, #F2B84B 0%, #FB8500 100%)',
-            color: 'var(--ink-hex)',
-            textDecoration: 'none',
-            borderRadius: 22,
-            border: '1.5px solid var(--ink-hex)',
-            boxShadow: '0 10px 24px -10px rgba(217, 148, 34, 0.55), inset 0 1px 0 rgba(255,255,255,0.32)',
-            overflow: 'hidden',
-          }}
-        >
-          <div aria-hidden style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(circle at 90% 50%, rgba(255, 246, 230, 0.32), transparent 55%)',
-            pointerEvents: 'none',
-          }} />
-          <div style={{
-            width: 64, height: 64, borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 60%, #F3EEDD 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-            border: '2px solid var(--ink-hex)',
-            boxShadow: '0 3px 10px rgba(43, 24, 16, 0.18)',
-            position: 'relative', zIndex: 1,
-            overflow: 'hidden',
-          }}>
-            <Mascot pose="hi" size={56} />
-          </div>
-          <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
-            <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.18em', color: 'var(--ink-hex)', textTransform: 'uppercase', marginBottom: 3, opacity: 0.7 }}>
-              ★ BEAR MODE ★
-            </p>
-            <p style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
-              打開熊熊守護模式
-            </p>
-            <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 5, fontWeight: 500, lineHeight: 1.5 }}>
-              人工精選頻道，平板丟給小孩也安心
-            </p>
-          </div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-hex)', position: 'relative', zIndex: 1 }}>
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </a>
+        {/* ═══ 主 CTA：開始檢查 — 只在尚未開始/沒結果/沒掃描時顯示 ═══ */}
+        {!started && !result && !loading && (
+          <button
+            onClick={beginScan}
+            className="stagger-3"
+            style={{
+              position: 'relative',
+              width: '100%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+              padding: '22px 24px',
+              marginBottom: 28,
+              background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
+              color: '#FFF6E6',
+              fontFamily: 'inherit',
+              border: '1.5px solid #2B1810',
+              borderRadius: 22,
+              boxShadow: '0 14px 32px -10px rgba(142, 42, 36, 0.55), inset 0 1px 0 rgba(255,255,255,0.18)',
+              cursor: 'pointer',
+              overflow: 'hidden',
+            }}
+          >
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0,
+              background: 'radial-gradient(circle at 88% 50%, rgba(255, 246, 230, 0.18), transparent 55%)',
+              pointerEvents: 'none',
+            }} />
+            <span style={{
+              fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em',
+              position: 'relative', zIndex: 1,
+            }}>
+              開始檢查一個頻道
+            </span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'relative', zIndex: 1 }}>
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        )}
 
-        {/* ═══ Segmented control — Busy Bee pill ═══ */}
-        <div className="bee-segmented" style={{ marginBottom: 24 }}>
-          {(['scan', 'cases'] as const).map(t => {
-            const active = tab === t
-            return (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`bee-segmented__item${active ? ' bee-segmented__item--active' : ''}`}
-              >
-                {t === 'scan' ? '頻道掃描' : '真實案例'}
-              </button>
-            )
-          })}
-        </div>
+        {/* ═══ Segmented — 只在開始之後顯示 ═══ */}
+        {(started || result || loading) && (
+          <div className="bee-segmented" style={{ marginBottom: 24 }}>
+            {(['scan', 'cases'] as const).map(t => {
+              const active = tab === t
+              return (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`bee-segmented__item${active ? ' bee-segmented__item--active' : ''}`}
+                >
+                  {t === 'scan' ? '頻道掃描' : '真實案例'}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
-        {tab === 'scan' && (
-          <>
+        {tab === 'scan' && (started || result || loading) && (
+          <div id="scan-area" className={`collapse-area${(started || result || loading) ? ' is-open' : ''}`}>
+           <div>
             {result && !loading && (
               <div className="animate-slide-up" style={{ marginBottom: 28 }}>
-                <ResultCard result={result} onReset={() => { setResult(null); setUrl('') }} />
+                <ResultCard result={result} onReset={() => { setResult(null); setUrl(''); setStarted(true) }} />
               </div>
             )}
 
             {!result && (
               <>
                 {/* Hero input card — Busy Bee 奶油底 + 深咖啡邊 */}
-                <div className="bee-card" style={{
+                <div className="bee-card animate-slide-up" style={{
                   padding: '22px 22px 20px',
                   marginBottom: 28,
                 }}>
@@ -503,9 +521,17 @@ export default function Home() {
                     </div>
                   </div>
                 )}
+              </>
+            )}
+           </div>
+          </div>
+        )}
 
-                {/* 怎麼用 section — 黑體大字 + 蜂蜜底線 */}
-                <h2 style={{
+        {/* ═══ 永遠可見：怎麼用 + 最近標記 + Bear mode CTA — 一律 reveal-up 滾動淡入 ═══ */}
+        {tab === 'scan' && (
+          <>
+            <section className="reveal-up" style={{ marginBottom: 40 }}>
+              <h2 style={{
                   fontSize: 32,
                   fontWeight: 900,
                   letterSpacing: '-0.055em',
@@ -658,20 +684,73 @@ export default function Home() {
                   )
                 })()}
 
-                {/* 最近標記的（只有在有歷史紀錄時才顯示） */}
-                <RecentHighRisk />
-              </>
-            )}
+            </section>
+
+            {/* 最近標記的 */}
+            <section className="reveal-up" style={{ marginBottom: 32 }}>
+              <RecentHighRisk />
+            </section>
+
+            {/* 主頁底部：打開熊熊守護模式 — 從首頁就能直達 /kids */}
+            <a
+              href="/kids"
+              className="reveal-up"
+              style={{
+                position: 'relative',
+                display: 'flex', alignItems: 'center', gap: 14,
+                padding: '20px 22px',
+                marginBottom: 24,
+                background: 'linear-gradient(135deg, #F2B84B 0%, #FB8500 100%)',
+                color: 'var(--ink-hex)',
+                textDecoration: 'none',
+                borderRadius: 22,
+                border: '1.5px solid var(--ink-hex)',
+                boxShadow: '0 14px 32px -12px rgba(217, 148, 34, 0.55), inset 0 1px 0 rgba(255,255,255,0.32)',
+                overflow: 'hidden',
+              }}
+            >
+              <div aria-hidden style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 90% 50%, rgba(255, 246, 230, 0.32), transparent 55%)',
+                pointerEvents: 'none',
+              }} />
+              <div style={{
+                width: 64, height: 64, borderRadius: '50%',
+                background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 60%, #F3EEDD 100%)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+                border: '2px solid var(--ink-hex)',
+                boxShadow: '0 3px 10px rgba(43, 24, 16, 0.18)',
+                position: 'relative', zIndex: 1,
+                overflow: 'hidden',
+              }}>
+                <Mascot pose="hi" size={56} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
+                <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.18em', color: 'var(--ink-hex)', textTransform: 'uppercase', marginBottom: 3, opacity: 0.7 }}>
+                  ★ BEAR MODE ★
+                </p>
+                <p style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.05, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
+                  打開熊熊守護模式
+                </p>
+                <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 5, fontWeight: 500, lineHeight: 1.5 }}>
+                  人工精選頻道，平板丟給小孩也安心
+                </p>
+              </div>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-hex)', position: 'relative', zIndex: 1 }}>
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </a>
           </>
         )}
 
         {tab === 'cases' && (
-          <div className="animate-fade-scale-in">
+          <div className="animate-fade-scale-in reveal-up">
             <CaseLibrary />
           </div>
         )}
 
-        <p style={{
+        <p className="reveal-up" style={{
           marginTop: 48,
           textAlign: 'center',
           fontSize: 12,

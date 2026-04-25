@@ -245,46 +245,49 @@ function SetupScreen({
 
         {/* 自訂 */}
         <div style={{
-          display: 'flex', gap: 8, alignItems: 'center', marginBottom: 14,
-          padding: '10px 12px',
-          background: 'var(--card-hex)',
-          border: '2px solid var(--ink-hex)',
+          display: 'flex', gap: 10, alignItems: 'center', marginBottom: 14,
+          padding: '12px 14px',
+          background: 'rgba(255, 246, 230, 0.10)',
+          border: '1.5px solid rgba(242, 184, 75, 0.55)',
           borderRadius: 16,
         }}>
-          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.01em' }}>自訂</span>
+          <span style={{ fontSize: 14, fontWeight: 900, color: '#FFF6E6', letterSpacing: '-0.01em' }}>自訂</span>
           <input
-            type="number"
+            type="text"
             inputMode="numeric"
-            min={1}
-            max={120}
             value={customMin}
             onChange={e => setCustomMin(e.target.value.replace(/\D/g, '').slice(0, 3))}
-            placeholder="例：7"
+            placeholder="幾分鐘"
             style={{
               flex: 1,
               border: 'none', outline: 'none',
               background: 'transparent',
               fontFamily: 'inherit',
-              fontSize: 15, fontWeight: 700,
-              color: 'var(--ink-hex)',
+              fontSize: 18, fontWeight: 900,
+              color: '#FFF6E6',
               textAlign: 'center',
               letterSpacing: '-0.02em',
             }}
           />
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)' }}>分鐘</span>
+          <span style={{ fontSize: 14, fontWeight: 800, color: 'rgba(255,246,230,0.78)' }}>分鐘</span>
           <button
             onClick={handleCustom}
             disabled={!customMin || parseInt(customMin, 10) < 1}
             style={{
-              padding: '8px 14px',
+              padding: '10px 18px',
               borderRadius: 9999,
-              background: 'var(--ink-hex)',
-              color: 'var(--honey-hex)',
-              border: 'none',
+              background: customMin && parseInt(customMin, 10) >= 1
+                ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
+                : 'rgba(255,255,255,0.12)',
+              color: customMin && parseInt(customMin, 10) >= 1 ? '#0F2444' : 'rgba(255,246,230,0.5)',
+              border: customMin && parseInt(customMin, 10) >= 1
+                ? '1.5px solid #FFF6E6'
+                : '1.5px solid rgba(255,255,255,0.2)',
               fontFamily: 'inherit',
-              fontSize: 12, fontWeight: 900,
+              fontSize: 13, fontWeight: 900,
               cursor: customMin ? 'pointer' : 'not-allowed',
-              opacity: customMin && parseInt(customMin, 10) >= 1 ? 1 : 0.4,
+              boxShadow: customMin && parseInt(customMin, 10) >= 1
+                ? '0 6px 14px -6px rgba(242,184,75,0.5)' : 'none',
             }}
           >
             開始
@@ -308,11 +311,15 @@ function SetupScreen({
         </button>
 
         <p style={{
-          textAlign: 'center', marginTop: 10,
-          fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em',
-          fontWeight: 500, lineHeight: 1.5,
+          textAlign: 'center', marginTop: 14,
+          padding: '10px 14px',
+          background: 'rgba(242, 184, 75, 0.14)',
+          border: '1px solid rgba(242, 184, 75, 0.4)',
+          borderRadius: 12,
+          fontSize: 13, color: '#FFF6E6', letterSpacing: '-0.01em',
+          fontWeight: 700, lineHeight: 1.5,
         }}>
-          3–6 歲醫學建議：單次 ≤ 20 分鐘，一天 ≤ 1 小時
+          3–6 歲醫學建議：單次 ≤ <strong style={{ color: '#F2B84B', fontWeight: 900 }}>20 分鐘</strong>，一天 ≤ <strong style={{ color: '#F2B84B', fontWeight: 900 }}>1 小時</strong>
         </p>
       </div>
     </div>
