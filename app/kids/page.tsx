@@ -5,7 +5,15 @@ import { CuratedChannel, AgeGroup, filterChannelsByAge } from '@/lib/curated-cha
 import { getUserChannels, removeUserChannel, UserChannel } from '@/lib/user-channels'
 import LockScreenGuide from '@/components/LockScreenGuide'
 import KidsTimer from '@/components/KidsTimer'
-import Mascot from '@/components/Mascot'
+import Mascot, { MascotPose } from '@/components/Mascot'
+
+// 依 channelId 穩定挑一個熊熊姿勢（同一頻道永遠同一隻熊）
+const CHANNEL_POSES: MascotPose[] = ['hi', 'thumbs-up', 'fly', 'search', 'guard', 'think']
+function mascotForChannel(id: string): MascotPose {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0
+  return CHANNEL_POSES[h % CHANNEL_POSES.length]
+}
 
 // 統一顯示用
 type DisplayChannel = {
@@ -619,14 +627,17 @@ export default function KidsModePage() {
                 textAlign: 'center',
               }}
             >
-              <div className="candy-bear" style={{
-                width: 72, height: 72, margin: '0 auto 12px',
+              <div style={{
+                width: 76, height: 76, margin: '0 auto 12px',
                 borderRadius: '50%',
-                background: 'var(--honey-hex)',
-                border: '2.5px solid var(--ink-hex)',
+                background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
+                border: '2.5px solid #2B1810',
+                boxShadow: '0 8px 18px -8px rgba(43, 24, 16, 0.45)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 34,
-              }}>{ch.emoji}</div>
+                overflow: 'hidden',
+              }}>
+                <Mascot pose={mascotForChannel(ch.channelId)} size={64} />
+              </div>
               <p style={{
                 fontSize: 14, fontWeight: 900,
                 color: 'var(--ink-hex)', letterSpacing: '-0.03em',
@@ -710,13 +721,16 @@ export default function KidsModePage() {
                     }}
                   >
                     <div style={{
-                      width: 72, height: 72, margin: '0 auto 12px',
+                      width: 76, height: 76, margin: '0 auto 12px',
                       borderRadius: '50%',
-                      background: 'var(--honey-hex)',
-                      border: '2.5px solid var(--ink-hex)',
+                      background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
+                      border: '2.5px solid #2B1810',
+                      boxShadow: '0 8px 18px -8px rgba(43, 24, 16, 0.45)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 34,
-                    }}>{ch.emoji}</div>
+                      overflow: 'hidden',
+                    }}>
+                      <Mascot pose={mascotForChannel(ch.channelId)} size={64} />
+                    </div>
                     <p style={{
                       fontSize: 14, fontWeight: 900,
                       color: 'var(--ink-hex)', letterSpacing: '-0.03em',
@@ -735,9 +749,10 @@ export default function KidsModePage() {
                       display: 'inline-block',
                       padding: '3px 10px',
                       borderRadius: 9999,
-                      background: 'var(--ink-hex)',
+                      background: 'rgba(242, 184, 75, 0.22)',
+                      border: '1px solid rgba(242, 184, 75, 0.55)',
                       fontSize: 10, fontWeight: 900, letterSpacing: '0.04em',
-                      color: 'var(--honey-hex)',
+                      color: '#F2B84B',
                     }}>
                       {ch.ageGroups.join(' · ')} 歲
                     </div>

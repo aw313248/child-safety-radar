@@ -6,9 +6,38 @@ import Mascot from './Mascot'
 // iOS：Apple 從 iOS 11 起擋掉 prefs: / App-prefs: 深連結
 //      → 最佳方案是「複製關鍵字到剪貼簿 + 顯示清楚步驟」讓爸媽進設定後貼上搜尋
 // Android：Chrome 吃 intent:// 可以真的跳到輔助使用設定
+type TestPhase = 'idle' | 'running' | 'pass' | 'fail'
+
 export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
   const [platform, setPlatform] = useState<'ios' | 'android' | 'other'>('other')
   const [copied, setCopied] = useState(false)
+  const [phase, setPhase] = useState<TestPhase>('idle')
+  const [count, setCount] = useState(5)
+
+  // ★ 真實測試：要求家長按 Home / 滑出，5 秒內畫面若被切走 = 沒鎖成功
+  useEffect(() => {
+    if (phase !== 'running') return
+    setCount(5)
+    let leftScreen = false
+    const onVis = () => { if (document.hidden) leftScreen = true }
+    document.addEventListener('visibilitychange', onVis)
+
+    const tick = setInterval(() => {
+      setCount(c => {
+        if (c <= 1) {
+          clearInterval(tick)
+          document.removeEventListener('visibilitychange', onVis)
+          setPhase(leftScreen ? 'fail' : 'pass')
+          return 0
+        }
+        return c - 1
+      })
+    }, 1000)
+    return () => {
+      clearInterval(tick)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [phase])
 
   useEffect(() => {
     if (typeof navigator === 'undefined') return
@@ -268,7 +297,7 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
             先跳過
           </button>
           <button
-            onClick={onDone}
+            onClick={() => setPhase('running')}
             style={{
               flex: 1.4, padding: 14,
               borderRadius: 14,
@@ -281,9 +310,123 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
               boxShadow: '0 8px 20px -8px rgba(242,184,75,0.5)',
             }}
           >
-            ✓ 我設定好了
+            ✓ 我設定好了，來測試
           </button>
         </div>
+
+        {/* ── 真實測試覆蓋層 ── */}
+        {phase !== 'idle' && (
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: 'absolute', inset: 0, borderRadius: 28,
+              background: `linear-gradient(160deg, ${NAVY_2} 0%, ${NAVY} 100%)`,
+              padding: '28px 22px',
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              textAlign: 'center', gap: 14,
+            }}
+          >
+            {phase === 'running' && (
+              <>
+                <div style={{ fontSize: 56, lineHeight: 1, color: GOLD, fontWeight: 900 }}>{count}</div>
+                <h3 style={{ fontSize: 22, fontWeight: 900, color: CREAM, letterSpacing: '-0.03em' }}>
+                  現在按 Home 鍵 / 往上滑
+                </h3>
+                <p style={{ fontSize: 13, color: 'rgba(255,246,230,0.85)', lineHeight: 1.6, fontWeight: 600, maxWidth: 320 }}>
+                  如果跳不出去 → 設定成功<br/>
+                  如果跳出去了 → 還沒鎖好
+                </p>
+                <button
+                  onClick={() => setPhase('idle')}
+                  style={{
+                    marginTop: 8, padding: '10px 20px',
+                    borderRadius: 12, background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.3)', color: CREAM,
+                    fontFamily: 'inherit', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                  }}
+                >
+                  取消測試
+                </button>
+              </>
+            )}
+            {phase === 'pass' && (
+              <>
+                <div style={{
+                  width: 88, height: 88, borderRadius: '50%',
+                  background: `linear-gradient(135deg, #4A8A5C 0%, #2F6740 100%)`,
+                  border: `3px solid ${CREAM}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 48, color: CREAM, fontWeight: 900,
+                  boxShadow: '0 12px 28px -8px rgba(74,138,92,0.55)',
+                }}>✓</div>
+                <h3 style={{ fontSize: 24, fontWeight: 900, color: CREAM, letterSpacing: '-0.03em' }}>
+                  鎖定成功
+                </h3>
+                <p style={{ fontSize: 13, color: 'rgba(255,246,230,0.85)', lineHeight: 1.6, fontWeight: 600 }}>
+                  小孩跳不出去了，可以放心
+                </p>
+                <button
+                  onClick={onDone}
+                  style={{
+                    marginTop: 6, padding: '14px 28px',
+                    borderRadius: 14,
+                    background: `linear-gradient(135deg, ${GOLD} 0%, ${GOLD_DEEP} 100%)`,
+                    color: NAVY, border: `1.5px solid ${CREAM}`,
+                    fontFamily: 'inherit', fontSize: 14, fontWeight: 900,
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 20px -8px rgba(242,184,75,0.5)',
+                  }}
+                >
+                  開始給小孩看 →
+                </button>
+              </>
+            )}
+            {phase === 'fail' && (
+              <>
+                <div style={{
+                  width: 88, height: 88, borderRadius: '50%',
+                  background: `linear-gradient(135deg, ${RED} 0%, #8E2A24 100%)`,
+                  border: `3px solid ${CREAM}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 48, color: CREAM, fontWeight: 900,
+                  boxShadow: '0 12px 28px -8px rgba(194,65,59,0.55)',
+                }}>✕</div>
+                <h3 style={{ fontSize: 22, fontWeight: 900, color: CREAM, letterSpacing: '-0.03em' }}>
+                  還沒鎖好
+                </h3>
+                <p style={{ fontSize: 13, color: 'rgba(255,246,230,0.85)', lineHeight: 1.6, fontWeight: 600, maxWidth: 320 }}>
+                  剛才畫面被切出去了，請依上面步驟再試一次
+                </p>
+                <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
+                  <button
+                    onClick={() => setPhase('idle')}
+                    style={{
+                      flex: 1, padding: '12px 18px',
+                      borderRadius: 12, background: 'rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(255,255,255,0.3)', color: CREAM,
+                      fontFamily: 'inherit', fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                    }}
+                  >
+                    回去看步驟
+                  </button>
+                  <button
+                    onClick={() => setPhase('running')}
+                    style={{
+                      flex: 1, padding: '12px 18px',
+                      borderRadius: 12,
+                      background: `linear-gradient(135deg, ${GOLD} 0%, ${GOLD_DEEP} 100%)`,
+                      color: NAVY, border: `1.5px solid ${CREAM}`,
+                      fontFamily: 'inherit', fontSize: 13, fontWeight: 900, cursor: 'pointer',
+                    }}
+                  >
+                    再測一次
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

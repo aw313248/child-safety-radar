@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import ResultCard from '@/components/ResultCard'
 import UnlockModal from '@/components/UnlockModal'
 import Mascot from '@/components/Mascot'
-import MascotParade from '@/components/MascotParade'
 import CaseLibrary from '@/components/CaseLibrary'
 import ScanningStages from '@/components/ScanningStages'
 import RecentHighRisk from '@/components/RecentHighRisk'
@@ -283,25 +282,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ═══ 小析家族滑動隊伍 ═══ */}
-        <div className="mascot-parade-wrap" style={{
-          marginBottom: 22,
-          padding: '14px 0 12px',
-          background: 'linear-gradient(180deg, rgba(242,184,75,0.12) 0%, rgba(242,184,75,0.04) 100%)',
-          borderRadius: 20,
-          border: '1px solid rgba(242, 184, 75, 0.32)',
-          overflow: 'hidden',
-        }}>
-          <p style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: '0.18em',
-            color: 'var(--ink-hex)', textTransform: 'uppercase',
-            textAlign: 'center', marginBottom: 8, opacity: 0.7,
-          }}>
-            ★ 小析家族 · CC BEAR ★
-          </p>
-          <MascotParade size={72} speed={26} />
-        </div>
-
         {/* ═══ 一鍵開啟兒童模式 — CC Bear 披風紅 CTA ═══ */}
         <a
           href="/kids"
@@ -481,6 +461,22 @@ export default function Home() {
                       <div style={{ marginTop: 14, background: 'var(--ink-08)', borderRadius: 99, height: 3, overflow: 'hidden' }}>
                         <div className="progress-shimmer" style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }} />
                       </div>
+                      <div style={{
+                        display: 'flex', alignItems: 'center', gap: 12,
+                        marginTop: 14, padding: '10px 14px',
+                        background: 'rgba(242, 184, 75, 0.10)',
+                        border: '1px solid rgba(242, 184, 75, 0.32)',
+                        borderRadius: 14,
+                      }}>
+                        <Mascot pose="search" size={56} alt="小析正在查資料" />
+                        <p style={{
+                          flex: 1, fontSize: 13, fontWeight: 700,
+                          color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.45,
+                        }}>
+                          小析正在翻影片<br/>
+                          <span style={{ fontSize: 11, opacity: 0.7, fontWeight: 600 }}>{progressText || '稍等一下下'}</span>
+                        </p>
+                      </div>
                       <ScanningStages progress={progress} />
                     </>
                   )}
@@ -494,13 +490,17 @@ export default function Home() {
                     border: '2.5px solid var(--terra-hex)',
                     borderRadius: 20,
                     boxShadow: '4px 4px 0 var(--terra-hex)',
+                    display: 'flex', alignItems: 'center', gap: 14,
                   }}>
-                    <p style={{ color: 'var(--terra-hex)', fontSize: 14, letterSpacing: '-0.02em', fontWeight: 900 }}>
-                      {error}
-                    </p>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: 12, marginTop: 4, letterSpacing: '-0.01em', fontWeight: 600 }}>
-                      確認網址格式，或直接貼瀏覽器網址列
-                    </p>
+                    <Mascot pose="think" size={64} alt="小析在想哪裡出錯" />
+                    <div style={{ flex: 1 }}>
+                      <p style={{ color: 'var(--terra-hex)', fontSize: 14, letterSpacing: '-0.02em', fontWeight: 900 }}>
+                        {error}
+                      </p>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: 12, marginTop: 4, letterSpacing: '-0.01em', fontWeight: 600 }}>
+                        確認網址格式，或直接貼瀏覽器網址列
+                      </p>
+                    </div>
                   </div>
                 )}
 
