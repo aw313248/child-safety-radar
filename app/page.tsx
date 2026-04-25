@@ -45,7 +45,6 @@ export default function Home() {
   const [unlocked, setUnlocked] = useState(false)
   const [scanCount, setScanCount] = useState(0)
   const [showUnlock, setShowUnlock] = useState(false)
-  const [tab, setTab] = useState<'scan' | 'cases'>('scan')
   const [activeStep, setActiveStep] = useState<string | null>(null)
   // 輸入框是首頁最重要的東西，預設就展開
   const [started, setStarted] = useState(true)
@@ -64,7 +63,7 @@ export default function Home() {
     }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' })
     els.forEach(el => io.observe(el))
     return () => io.disconnect()
-  }, [tab, started, result, loading])
+  }, [started, result, loading])
 
   useEffect(() => {
     setUnlocked(localStorage.getItem(STORAGE_KEY) === 'true')
@@ -169,7 +168,10 @@ export default function Home() {
       s: '紅橘綠 + 摘要建議',
       icon: 'shield',
       detail: '紅燈（70+）不建議觀看、橘燈（40-69）陪同觀看、綠燈（0-39）相對安全。每個分數都會附 AI 摘要和具體建議',
-      action: { label: '看真實案例', onClick: () => setTab('cases') },
+      action: {
+        label: '看真實案例',
+        onClick: () => document.getElementById('case-library')?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      },
     },
   ]
 
@@ -288,9 +290,9 @@ export default function Home() {
               marginBottom: 12,
               lineHeight: 1.02,
             }}>
-              20 秒<br />
-              看穿<span style={{ color: 'var(--cc-red-deep)' }}>卡通</span><br />
-              藏什麼
+              這個<span style={{ color: 'var(--cc-red-deep)' }}>卡通</span><br />
+              安全嗎？<br />
+              <span style={{ fontSize: '0.62em', fontWeight: 800, letterSpacing: '-0.02em' }}>20 秒掃給你看</span>
             </h1>
 
             <p className="stagger-3" style={{
@@ -340,73 +342,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Bear mode CTA — 永遠顯示，是首頁第二個重要動作 */}
-        <a
-          href="/kids"
-          className="stagger-3"
-          style={{
-            position: 'relative',
-            display: 'flex', alignItems: 'center', gap: 14,
-            padding: '20px 22px',
-            marginBottom: 18,
-            background: 'linear-gradient(135deg, #F2B84B 0%, #FB8500 100%)',
-            color: 'var(--ink-hex)',
-            textDecoration: 'none',
-            borderRadius: 22,
-            border: '1.5px solid var(--ink-hex)',
-            boxShadow: '0 14px 32px -12px rgba(217, 148, 34, 0.55), inset 0 1px 0 rgba(255,255,255,0.32)',
-            overflow: 'hidden',
-          }}
-        >
-          <div aria-hidden style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(circle at 90% 50%, rgba(255, 246, 230, 0.32), transparent 55%)',
-            pointerEvents: 'none',
-          }} />
-          <div style={{
-            width: 60, height: 60, borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 60%, #F3EEDD 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-            border: '2px solid var(--ink-hex)',
-            boxShadow: '0 3px 10px rgba(43, 24, 16, 0.18)',
-            position: 'relative', zIndex: 1,
-            overflow: 'hidden',
-          }}>
-            <Mascot pose="hi" size={52} />
-          </div>
-          <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
-            <p style={{ fontSize: 20, fontWeight: 900, lineHeight: 1.05, color: 'var(--ink-hex)', letterSpacing: '-0.03em' }}>
-              打開熊熊守護模式
-            </p>
-            <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 4, fontWeight: 500, lineHeight: 1.5 }}>
-              人工精選頻道，平板丟給小孩也安心
-            </p>
-          </div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-hex)', position: 'relative', zIndex: 1 }}>
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </a>
 
-        {/* ═══ Segmented — 只在開始之後顯示 ═══ */}
         {(started || result || loading) && (
-          <div className="bee-segmented" style={{ marginBottom: 24 }}>
-            {(['scan', 'cases'] as const).map(t => {
-              const active = tab === t
-              return (
-                <button
-                  key={t}
-                  onClick={() => setTab(t)}
-                  className={`bee-segmented__item${active ? ' bee-segmented__item--active' : ''}`}
-                >
-                  {t === 'scan' ? '頻道掃描' : '真實案例'}
-                </button>
-              )
-            })}
-          </div>
-        )}
-
-        {tab === 'scan' && (started || result || loading) && (
           <div id="scan-area" className={`collapse-area${(started || result || loading) ? ' is-open' : ''}`}>
            <div>
             {result && !loading && (
@@ -482,35 +419,47 @@ export default function Home() {
                     <button
                       onClick={handleAnalyze}
                       disabled={!canSubmit}
-                      aria-label="開始掃描"
+                      aria-label="掃這個頻道"
                       style={{
                         flex: '0 0 auto',
-                        width: 46, height: 46,
-                        borderRadius: '50%',
+                        height: 46,
+                        padding: '0 16px 0 18px',
+                        borderRadius: 9999,
                         border: 'none',
                         background: canSubmit ? 'var(--honey-hex)' : 'var(--ink-10)',
                         color: 'var(--ink-hex)',
                         cursor: canSubmit ? 'pointer' : 'not-allowed',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'background 0.15s, transform 0.1s',
+                        gap: 6,
+                        fontFamily: 'inherit',
+                        fontSize: 14,
+                        fontWeight: 900,
+                        letterSpacing: '-0.01em',
+                        whiteSpace: 'nowrap',
+                        transition: 'background 0.15s, transform 0.1s, box-shadow 0.15s',
                         boxShadow: canSubmit ? '0 3px 0 var(--ink-hex)' : 'none',
                       }}
                     >
                       {loading ? (
-                        <span style={{
-                          width: 16, height: 16,
-                          border: '2.5px solid rgba(43,24,16,0.3)',
-                          borderTopColor: 'var(--ink-hex)',
-                          borderRadius: '50%',
-                          animation: 'peekkids-spin 0.8s linear infinite',
-                        }} />
+                        <>
+                          <span style={{
+                            width: 14, height: 14,
+                            border: '2.5px solid rgba(43,24,16,0.3)',
+                            borderTopColor: 'var(--ink-hex)',
+                            borderRadius: '50%',
+                            animation: 'peekkids-spin 0.8s linear infinite',
+                          }} />
+                          掃描中
+                        </>
                       ) : (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                          <polyline points="12 5 19 12 12 19" />
-                        </svg>
+                        <>
+                          掃這個頻道
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                          </svg>
+                        </>
                       )}
                     </button>
                   </div>
@@ -568,8 +517,90 @@ export default function Home() {
           </div>
         )}
 
-        {/* ═══ 點開「開始檢查」之後才出現：怎麼用 + 最近標記 ═══ */}
-        {tab === 'scan' && (started || result || loading) && (
+        {/* 結果長這樣 — 三色燈號預覽，告訴使用者掃完會拿到什麼 */}
+        {!result && !loading && (
+          <div className="reveal-up" style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '12px 16px',
+            marginBottom: 14,
+            background: 'rgba(255, 246, 230, 0.6)',
+            border: '1.5px dashed rgba(43, 24, 16, 0.22)',
+            borderRadius: 18,
+          }}>
+            <span style={{
+              fontSize: 10, fontWeight: 900, color: 'var(--ink-hex)',
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              opacity: 0.7, flexShrink: 0,
+            }}>
+              結果長這樣
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, color: 'var(--ink-hex)' }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#7AB87E', border: '1.5px solid var(--ink-hex)' }} />
+                可以看
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, color: 'var(--ink-hex)' }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#F2B84B', border: '1.5px solid var(--ink-hex)' }} />
+                留意
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, color: 'var(--ink-hex)' }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#C2413B', border: '1.5px solid var(--ink-hex)' }} />
+                別給看
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Bear mode CTA — 移到輸入框「下方」當備案路徑，避免搶主要掃描的視線 */}
+        <a
+          href="/kids"
+          className="reveal-up"
+          style={{
+            position: 'relative',
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '18px 20px',
+            marginBottom: 18,
+            background: 'linear-gradient(135deg, #F2B84B 0%, #FB8500 100%)',
+            color: 'var(--ink-hex)',
+            textDecoration: 'none',
+            borderRadius: 22,
+            border: '1.5px solid var(--ink-hex)',
+            boxShadow: '0 14px 32px -12px rgba(217, 148, 34, 0.55), inset 0 1px 0 rgba(255,255,255,0.32)',
+            overflow: 'hidden',
+          }}
+        >
+          <div aria-hidden style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(circle at 90% 50%, rgba(255, 246, 230, 0.32), transparent 55%)',
+            pointerEvents: 'none',
+          }} />
+          <div style={{
+            width: 52, height: 52, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 60%, #F3EEDD 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+            border: '2px solid var(--ink-hex)',
+            boxShadow: '0 3px 10px rgba(43, 24, 16, 0.18)',
+            position: 'relative', zIndex: 1,
+            overflow: 'hidden',
+          }}>
+            <Mascot pose="hi" size={46} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
+            <p style={{ fontSize: 16, fontWeight: 900, lineHeight: 1.1, color: 'var(--ink-hex)', letterSpacing: '-0.025em' }}>
+              不想自己掃？直接用熊熊精選
+            </p>
+            <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.7)', letterSpacing: '-0.005em', marginTop: 3, fontWeight: 500, lineHeight: 1.5 }}>
+              人工驗證頻道，平板丟給小孩也安心
+            </p>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--ink-hex)', position: 'relative', zIndex: 1 }}>
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </a>
+
+        {/* ═══ 怎麼用 + 最近標記 — 常駐 ═══ */}
+        {(started || result || loading) && (
           <>
             <section className="reveal-up" style={{ marginBottom: 40 }}>
               <h2 style={{
@@ -729,11 +760,10 @@ export default function Home() {
           </>
         )}
 
-        {tab === 'cases' && (
-          <div className="animate-fade-scale-in reveal-up">
-            <CaseLibrary />
-          </div>
-        )}
+        {/* 真實案例 — 不藏在 tab 後面，直接秀在首頁，是最強的信任建立 */}
+        <div id="case-library" className="reveal-up">
+          <CaseLibrary />
+        </div>
 
         <p className="reveal-up" style={{
           marginTop: 48,
