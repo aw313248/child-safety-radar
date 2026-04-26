@@ -19,36 +19,19 @@ const CaseLibrary = dynamic(() => import('@/components/CaseLibrary'), {
 })
 
 const FREE_SCANS = 2
-const STORAGE_KEY = 'child_radar_unlocked'
+const STORAGE_KEY  = 'child_radar_unlocked'
 const SCAN_COUNT_KEY = 'child_radar_scan_count'
-const HISTORY_KEY = 'child_radar_history'
-const MAX_HISTORY = 30
-
-/* ── 毛玻璃 token（全頁共用） ── */
-const glass = {
-  background: 'rgba(255, 255, 255, 0.58)',
-  backdropFilter: 'blur(24px) saturate(160%)',
-  WebkitBackdropFilter: 'blur(24px) saturate(160%)',
-  border: '1px solid rgba(255, 255, 255, 0.82)',
-  boxShadow: '0 8px 32px rgba(43, 24, 16, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95)',
-} as const
-
-const glassNav = {
-  background: 'rgba(255, 255, 255, 0.60)',
-  backdropFilter: 'blur(20px) saturate(150%)',
-  WebkitBackdropFilter: 'blur(20px) saturate(150%)',
-  border: '1px solid rgba(255, 255, 255, 0.80)',
-  boxShadow: '0 4px 20px rgba(43, 24, 16, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95)',
-} as const
+const HISTORY_KEY  = 'child_radar_history'
+const MAX_HISTORY  = 30
 
 export default function Home() {
-  const [url, setUrl] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [progress, setProgress] = useState(0)
+  const [url, setUrl]             = useState('')
+  const [loading, setLoading]     = useState(false)
+  const [progress, setProgress]   = useState(0)
   const [progressText, setProgressText] = useState('')
-  const [result, setResult] = useState<AnalysisResult | null>(null)
-  const [error, setError] = useState('')
-  const [unlocked, setUnlocked] = useState(false)
+  const [result, setResult]       = useState<AnalysisResult | null>(null)
+  const [error, setError]         = useState('')
+  const [unlocked, setUnlocked]   = useState(false)
   const [scanCount, setScanCount] = useState(0)
   const [showUnlock, setShowUnlock] = useState(false)
 
@@ -135,37 +118,21 @@ export default function Home() {
   const canSubmit = url.trim().length > 0 && !loading
 
   return (
-    <main style={{ minHeight: '100vh', padding: '24px 20px 64px', position: 'relative' }}>
+    <main className="page-main">
 
-      {/* ── 背景裝飾吉祥物（FocusPomo 那種大水印感） ── */}
-      <div aria-hidden style={{
-        position: 'fixed', right: -60, top: 60,
-        opacity: 0.07, pointerEvents: 'none', zIndex: 0,
-        transform: 'rotate(8deg)',
-      }}>
+      {/* 背景裝飾吉祥物 */}
+      <div aria-hidden style={{ position: 'fixed', right: -60, top: 60, opacity: 0.07, pointerEvents: 'none', zIndex: 0, transform: 'rotate(8deg)' }}>
         <Mascot pose="guard" size={320} priority />
       </div>
-      <div aria-hidden style={{
-        position: 'fixed', left: -50, bottom: 80,
-        opacity: 0.05, pointerEvents: 'none', zIndex: 0,
-        transform: 'rotate(-12deg)',
-      }}>
+      <div aria-hidden style={{ position: 'fixed', left: -50, bottom: 80, opacity: 0.05, pointerEvents: 'none', zIndex: 0, transform: 'rotate(-12deg)' }}>
         <Mascot pose="hi" size={220} />
       </div>
 
-      <div style={{ width: '100%', maxWidth: 440, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      <div className="page-wrapper">
 
-        {/* ── Nav 毛玻璃 ── */}
-        <nav style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          marginBottom: 32, padding: '10px 16px',
-          borderRadius: 9999,
-          ...glassNav,
-        }}>
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            fontSize: 14, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--ink-hex)',
-          }}>
+        {/* ── Nav ── */}
+        <nav className="glass-nav">
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--ink-hex)' }}>
             <span style={{
               width: 22, height: 22, borderRadius: '50%',
               background: 'var(--cc-gold)', border: '1.5px solid var(--ink-hex)',
@@ -174,13 +141,9 @@ export default function Home() {
             }}>CC</span>
             CareCub Kids
           </span>
-          <a
-            href="/history"
-            aria-label="歷史紀錄"
-            title="歷史紀錄"
+          <a href="/history" aria-label="歷史紀錄" title="歷史紀錄"
             className="sticker-icon-btn sticker-icon-btn--gold"
-            style={{ width: 38, height: 38, textDecoration: 'none' }}
-          >
+            style={{ width: 38, height: 38, textDecoration: 'none' }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" />
             </svg>
@@ -194,84 +157,41 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── Hero 標題（FocusPomo 風：直接放在背景上，無卡片） ── */}
+        {/* ── Hero 標題（無卡片，浮在背景上） ── */}
         {!result && (
           <div className="stagger-1" style={{ marginBottom: 24, paddingLeft: 2 }}>
-            <p style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontSize: 10, fontWeight: 700, letterSpacing: '0.18em',
-              color: 'var(--ink-hex)', textTransform: 'uppercase',
-              marginBottom: 14, padding: '5px 11px',
-              background: 'rgba(255, 183, 3, 0.30)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              borderRadius: 9999,
-              border: '1px solid rgba(255, 218, 80, 0.55)',
-            }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--cc-gold-deep)' }} />
+            <p className="glass-badge">
+              <span className="glass-badge__dot" />
               小析守護中
             </p>
-
             <h1 style={{
               fontSize: 'clamp(44px, 12vw, 68px)',
-              fontWeight: 900,
-              letterSpacing: '-0.05em',
-              color: 'var(--ink-hex)',
-              lineHeight: 0.98,
-              marginBottom: 14,
+              fontWeight: 900, letterSpacing: '-0.05em',
+              color: 'var(--ink-hex)', lineHeight: 0.98, marginBottom: 14,
             }}>
               這個<span style={{ color: 'var(--cc-red-deep)' }}>卡通</span><br />
               安全嗎？
             </h1>
-
-            <p style={{
-              fontSize: 14, fontWeight: 500,
-              color: 'rgba(43, 24, 16, 0.60)', lineHeight: 1.6,
-            }}>
+            <p style={{ fontSize: 14, fontWeight: 500, color: 'rgba(43,24,16,0.60)', lineHeight: 1.6 }}>
               貼頻道網址，AI 20 秒告訴你<br />能不能給小孩看
             </p>
           </div>
         )}
 
-        {/* ── 輸入卡（毛玻璃，頁面唯一視覺主角） ── */}
+        {/* ── 輸入卡（毛玻璃，唯一視覺主角） ── */}
         {!result && (
-          <div
-            className="stagger-2"
-            style={{
-              ...glass,
-              borderRadius: 32,
-              padding: '20px 20px 18px',
-              marginBottom: 14,
-            }}
-          >
-            {/* 吉祥物 + 提示文字 */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16,
-            }}>
+          <div className="glass-card stagger-2" style={{ padding: '20px 20px 18px', marginBottom: 14 }}>
+
+            {/* 吉祥物 + 提示 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
               <Mascot pose="guard" size={48} priority />
-              <p style={{
-                fontSize: 12, fontWeight: 600,
-                color: 'var(--text-secondary)', lineHeight: 1.55,
-                letterSpacing: '-0.01em',
-              }}>
+              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', lineHeight: 1.55, letterSpacing: '-0.01em' }}>
                 貼上 YouTube 頻道網址<br />小析幫你翻影片 + 留言
               </p>
             </div>
 
             {/* 輸入框 */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.70)',
-              borderRadius: 9999,
-              border: error
-                ? '1.5px solid rgba(194,65,59,0.55)'
-                : '1px solid rgba(255, 255, 255, 0.90)',
-              padding: '4px 4px 4px 18px',
-              display: 'flex', alignItems: 'center', gap: 8,
-              boxShadow: error
-                ? '0 0 0 3px rgba(194,65,59,0.12)'
-                : '0 2px 12px rgba(43, 24, 16, 0.06), inset 0 1px 0 rgba(255,255,255,0.95)',
-              transition: 'box-shadow 0.2s, border-color 0.2s',
-            }}>
+            <div className={`glass-input-wrap${error ? ' glass-input-wrap--error' : ''}`}>
               <input
                 type="text"
                 value={url}
@@ -287,33 +207,17 @@ export default function Home() {
                 }}
               />
               <button
+                className="glass-btn-honey"
                 onClick={handleAnalyze}
                 disabled={!canSubmit}
                 aria-label="掃這個頻道"
-                style={{
-                  flex: '0 0 auto', height: 46, padding: '0 18px',
-                  borderRadius: 9999, border: 'none',
-                  background: canSubmit
-                    ? 'var(--honey-hex)'
-                    : 'rgba(43,24,16,0.08)',
-                  color: 'var(--ink-hex)',
-                  cursor: canSubmit ? 'pointer' : 'not-allowed',
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  fontFamily: 'inherit', fontSize: 14, fontWeight: 800,
-                  letterSpacing: '-0.01em', whiteSpace: 'nowrap',
-                  boxShadow: canSubmit
-                    ? '0 4px 16px rgba(255,183,3,0.40)'
-                    : 'none',
-                  transition: 'background 0.15s, box-shadow 0.15s',
-                }}
               >
                 {loading ? (
                   <>
                     <span style={{
                       width: 14, height: 14,
                       border: '2.5px solid rgba(43,24,16,0.25)',
-                      borderTopColor: 'var(--ink-hex)',
-                      borderRadius: '50%',
+                      borderTopColor: 'var(--ink-hex)', borderRadius: '50%',
                       animation: 'peekkids-spin 0.8s linear infinite',
                     }} />
                     掃描中
@@ -323,10 +227,7 @@ export default function Home() {
             </div>
 
             {/* 狀態列 */}
-            <div style={{
-              display: 'flex', justifyContent: 'space-between',
-              marginTop: 10, padding: '0 4px',
-            }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, padding: '0 4px' }}>
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)' }}>
                 {loading ? '掃描中'
                   : unlocked ? '✓ 已解鎖 · 無限'
@@ -342,17 +243,13 @@ export default function Home() {
             {loading && (
               <>
                 <div style={{ marginTop: 14, background: 'rgba(43,24,16,0.06)', borderRadius: 99, height: 3, overflow: 'hidden' }}>
-                  <div
-                    className="progress-shimmer"
-                    style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }}
-                  />
+                  <div className="progress-shimmer" style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }} />
                 </div>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 12,
                   marginTop: 12, padding: '10px 14px',
-                  background: 'rgba(255, 183, 3, 0.10)',
-                  border: '1px solid rgba(255, 183, 3, 0.28)',
-                  borderRadius: 16,
+                  background: 'rgba(255,183,3,0.10)',
+                  border: '1px solid rgba(255,183,3,0.28)', borderRadius: 16,
                 }}>
                   <Mascot pose="search" size={46} alt="小析正在查資料" />
                   <p style={{ flex: 1, fontSize: 13, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.45 }}>
@@ -368,15 +265,7 @@ export default function Home() {
 
         {/* ── 錯誤 ── */}
         {error && !loading && (
-          <div style={{
-            ...glass,
-            borderRadius: 24,
-            padding: '16px 18px',
-            marginBottom: 14,
-            display: 'flex', alignItems: 'center', gap: 14,
-            borderColor: 'rgba(194, 65, 59, 0.35)',
-            boxShadow: '0 4px 20px rgba(194,65,59,0.10), inset 0 1px 0 rgba(255,255,255,0.95)',
-          }}>
+          <div className="glass-error" style={{ marginBottom: 14 }}>
             <Mascot pose="think" size={50} alt="小析在想哪裡出錯" />
             <div style={{ flex: 1 }}>
               <p style={{ color: 'var(--terra-hex)', fontSize: 14, fontWeight: 800, letterSpacing: '-0.02em' }}>{error}</p>
@@ -389,19 +278,10 @@ export default function Home() {
 
         {/* ── 燈號預覽 ── */}
         {!result && !loading && (
-          <div className="reveal-up" style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            padding: '9px 16px', marginBottom: 14,
-            background: 'rgba(255, 255, 255, 0.38)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255, 255, 255, 0.65)',
-            borderRadius: 14,
-          }}>
-            <span style={{
-              fontSize: 10, fontWeight: 600, color: 'var(--text-tertiary)',
-              letterSpacing: '0.08em', textTransform: 'uppercase', flexShrink: 0,
-            }}>掃完會看到</span>
+          <div className="glass-subtle reveal-up" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 16px', marginBottom: 14 }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', textTransform: 'uppercase', flexShrink: 0 }}>
+              掃完會看到
+            </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'flex-end' }}>
               {([['#7AB87E', '可以看'], ['#F2B84B', '留意'], ['#C2413B', '別給看']] as const).map(([color, label]) => (
                 <span key={label} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--ink-hex)' }}>
@@ -413,40 +293,16 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── 熊熊精選 CTA（毛玻璃蜂蜜色） ── */}
-        <a
-          href="/kids"
-          className="reveal-up"
-          style={{
-            display: 'flex', alignItems: 'center', gap: 14,
-            padding: '18px 20px', marginBottom: 44,
-            background: 'rgba(255, 183, 3, 0.78)',
-            backdropFilter: 'blur(20px) saturate(160%)',
-            WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-            border: '1px solid rgba(255, 218, 80, 0.85)',
-            borderRadius: 28,
-            boxShadow: '0 8px 32px rgba(255, 183, 3, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.55)',
-            color: 'var(--ink-hex)', textDecoration: 'none',
-            transition: 'transform 0.2s var(--ease-spring), box-shadow 0.2s',
-          }}
-        >
-          <div style={{
-            width: 46, height: 46, borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.55)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.85)',
-            flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(43,24,16,0.10)',
-          }}>
+        {/* ── 熊熊精選 CTA ── */}
+        <a href="/kids" className="glass-card-honey reveal-up" style={{ marginBottom: 44 }}>
+          <div className="glass-avatar" style={{ width: 46, height: 46 }}>
             <Mascot pose="hi" size={36} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontSize: 15, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.025em' }}>
               不想自己掃？直接用熊熊精選
             </p>
-            <p style={{ fontSize: 12, color: 'rgba(43, 24, 16, 0.65)', marginTop: 2, fontWeight: 500, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.65)', marginTop: 2, fontWeight: 500, lineHeight: 1.5 }}>
               人工驗證頻道，平板丟給小孩也安心
             </p>
           </div>

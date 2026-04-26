@@ -40,31 +40,12 @@ export default function HistoryPage() {
   if (!mounted) return null
 
   return (
-    <main style={{ minHeight: '100vh', padding: '24px 20px 56px' }}>
-      <div style={{ width: '100%', maxWidth: 440, margin: '0 auto' }}>
+    <main className="page-main">
+      <div className="page-wrapper">
 
-        {/* ═══ Top bar — 返回 ═══ */}
-        <nav style={{ marginBottom: 24 }}>
-          <a
-            href="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 16px',
-              borderRadius: 9999,
-              background: 'rgba(255,255,255,0.60)',
-              backdropFilter: 'blur(20px) saturate(150%)',
-              WebkitBackdropFilter: 'blur(20px) saturate(150%)',
-              border: '1px solid rgba(255,255,255,0.80)',
-              boxShadow: '0 4px 16px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.95)',
-              color: 'var(--text-primary)',
-              fontSize: 13,
-              fontWeight: 600,
-              letterSpacing: '-0.01em',
-              textDecoration: 'none',
-            }}
-          >
+        {/* ── Nav ── */}
+        <nav style={{ marginBottom: 28 }}>
+          <a href="/" className="glass-back-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
             </svg>
@@ -72,239 +53,100 @@ export default function HistoryPage() {
           </a>
         </nav>
 
-        {/* ═══ Hero title ═══ */}
-        <header style={{ marginBottom: 28 }}>
+        {/* ── Header ── */}
+        <header style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 16 }}>
             <div>
-              <h1 style={{
-                fontSize: 42,
-                fontWeight: 900,
-                letterSpacing: '-0.055em',
-                color: 'var(--text-primary)',
-                lineHeight: 0.95,
-                marginBottom: 10,
-              }}>
+              <h1 style={{ fontSize: 42, fontWeight: 900, letterSpacing: '-0.055em', color: 'var(--text-primary)', lineHeight: 0.95, marginBottom: 10 }}>
                 掃描歷史
               </h1>
-              <p style={{
-                fontSize: 14,
-                color: 'var(--text-secondary)',
-                letterSpacing: '-0.01em',
-                fontWeight: 500,
-              }}>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', letterSpacing: '-0.01em', fontWeight: 500 }}>
                 共 {history.length} 筆 · 僅存於此裝置
               </p>
             </div>
             {history.length > 0 && (
-              <button
-                onClick={clearHistory}
-                style={{
-                  flex: '0 0 auto',
-                  padding: '8px 16px',
-                  borderRadius: 9999,
-                  background: 'rgba(255,255,255,0.55)',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)',
-                  border: '1px solid rgba(255,255,255,0.78)',
-                  boxShadow: '0 2px 10px rgba(43,24,16,0.05)',
-                  color: 'var(--text-secondary)',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  letterSpacing: '-0.01em',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                }}
-              >
+              <button onClick={clearHistory} className="glass-back-btn" style={{ color: 'var(--text-secondary)' }}>
                 清空
               </button>
             )}
           </div>
         </header>
 
-        {/* Empty state */}
+        {/* ── Empty state ── */}
         {history.length === 0 && (
-          <div className="animate-fade-scale-in" style={{
-            padding: '56px 24px',
-            textAlign: 'center',
-            background: 'rgba(255,255,255,0.52)',
-            backdropFilter: 'blur(24px) saturate(160%)',
-            WebkitBackdropFilter: 'blur(24px) saturate(160%)',
-            border: '1px solid rgba(255,255,255,0.82)',
-            borderRadius: 32,
-            boxShadow: '0 8px 32px rgba(43,24,16,0.07), inset 0 1px 0 rgba(255,255,255,0.95)',
-          }}>
-            <div style={{
-              width: 56, height: 56,
-              margin: '0 auto 14px',
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.6)',
-              border: '1px solid rgba(255,255,255,0.8)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 26,
-            }}>🦉</div>
-            <p style={{
-              fontSize: 15,
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
-              marginBottom: 6,
-            }}>
+          <div className="glass-card animate-fade-scale-in" style={{ padding: '56px 24px', textAlign: 'center' }}>
+            <div className="glass-avatar" style={{ width: 56, height: 56, margin: '0 auto 14px', fontSize: 26 }}>
+              🦉
+            </div>
+            <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', marginBottom: 6 }}>
               還沒有紀錄
             </p>
-            <p style={{
-              fontSize: 13,
-              color: 'var(--text-secondary)',
-              letterSpacing: '-0.01em',
-              lineHeight: 1.55,
-            }}>
-              回首頁掃第一個頻道，<br />
-              結果會自動存在這邊
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.55 }}>
+              回首頁掃第一個頻道，<br />結果會自動存在這邊
             </p>
-            <a
-              href="/"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginTop: 18,
-                padding: '11px 22px',
-                borderRadius: 9999,
-                background: 'var(--ink-hex)',
-                color: '#fff',
-                fontSize: 13,
-                fontWeight: 600,
-                letterSpacing: '-0.01em',
-                textDecoration: 'none',
-              }}
-            >
+            <a href="/" className="glass-btn-honey" style={{ marginTop: 20, padding: '0 24px', textDecoration: 'none' }}>
               回首頁開始掃描
             </a>
           </div>
         )}
 
-        {/* History list */}
+        {/* ── History list ── */}
         {history.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {history.map((item, i) => {
               const style = RISK_STYLE[item.riskLevel]
               return (
-                <div
-                  key={item.channelUrl + i}
-                  className={`stagger-${Math.min(i + 1, 4)}`}
-                  style={{
-                    padding: '14px 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 14,
-                    background: 'rgba(255,255,255,0.55)',
-                    backdropFilter: 'blur(20px) saturate(150%)',
-                    WebkitBackdropFilter: 'blur(20px) saturate(150%)',
-                    border: '1px solid rgba(255,255,255,0.80)',
-                    borderRadius: 20,
-                    boxShadow: '0 4px 20px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.95)',
-                  }}
-                >
+                <div key={item.channelUrl + i} className={`glass-list-item stagger-${Math.min(i + 1, 4)}`}>
+
+                  {/* 頻道頭像 */}
                   {item.channelThumbnail ? (
                     <Image
                       src={item.channelThumbnail}
                       alt={item.channelName}
-                      width={48}
-                      height={48}
+                      width={48} height={48}
                       style={{ borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
                     />
                   ) : (
-                    <div style={{
-                      width: 48, height: 48, borderRadius: '50%',
-                      background: 'var(--ink-05)', flexShrink: 0,
-                    }} />
+                    <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--ink-05)', flexShrink: 0 }} />
                   )}
 
+                  {/* 內容 */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{
-                        fontSize: 18,
-                        fontWeight: 800,
-                        color: style.color,
-                        letterSpacing: '-0.03em',
-                        lineHeight: 1,
-                      }}>
+                      <span style={{ fontSize: 18, fontWeight: 800, color: style.color, letterSpacing: '-0.03em', lineHeight: 1 }}>
                         {item.riskScore}
                       </span>
                       <span style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: 9999,
-                        background: 'var(--ink-05)',
-                        color: 'var(--text-secondary)',
-                        letterSpacing: '-0.01em',
+                        fontSize: 10, fontWeight: 700, padding: '2px 8px',
+                        borderRadius: 9999, background: 'rgba(255,255,255,0.55)',
+                        border: '1px solid rgba(255,255,255,0.80)',
+                        color: 'var(--text-secondary)', letterSpacing: '-0.01em',
                       }}>
                         {style.label}
                       </span>
                     </div>
-                    <p style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      color: 'var(--text-primary)',
-                      letterSpacing: '-0.02em',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      marginBottom: 2,
-                    }}>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 2 }}>
                       {item.channelName}
                     </p>
-                    <p style={{
-                      fontSize: 11,
-                      color: 'var(--text-tertiary)',
-                      letterSpacing: '-0.01em',
-                    }}>
+                    <p style={{ fontSize: 11, color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
                       {new Date(item.checkedAt).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
                       {' · '}
                       {new Date(item.checkedAt).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
 
+                  {/* 操作按鈕 */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
-                    <a
-                      href={item.channelUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="前往頻道"
-                      style={{
-                        width: 32, height: 32,
-                        borderRadius: '50%',
-                        background: 'var(--ink-05)',
-                        border: '1px solid var(--border-soft)',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'var(--text-primary)',
-                        textDecoration: 'none',
-                      }}
-                    >
+                    <a href={item.channelUrl} target="_blank" rel="noopener noreferrer" aria-label="前往頻道"
+                      className="glass-avatar"
+                      style={{ width: 32, height: 32, color: 'var(--text-primary)', textDecoration: 'none' }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M7 17L17 7" />
-                        <polyline points="7 7 17 7 17 17" />
+                        <path d="M7 17L17 7" /><polyline points="7 7 17 7 17 17" />
                       </svg>
                     </a>
-                    <button
-                      onClick={() => removeItem(item.channelUrl)}
-                      aria-label="移除"
-                      style={{
-                        width: 32, height: 32,
-                        borderRadius: '50%',
-                        background: 'transparent',
-                        border: '1px solid var(--border-soft)',
-                        color: 'var(--text-tertiary)',
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
+                    <button onClick={() => removeItem(item.channelUrl)} aria-label="移除"
+                      className="glass-avatar"
+                      style={{ width: 32, height: 32, cursor: 'pointer', border: 'none', color: 'var(--text-tertiary)', fontFamily: 'inherit' }}>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="5" y1="12" x2="19" y2="12" />
                       </svg>
