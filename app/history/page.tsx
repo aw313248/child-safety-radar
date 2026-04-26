@@ -51,10 +51,13 @@ export default function HistoryPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              padding: '8px 14px',
+              padding: '8px 16px',
               borderRadius: 9999,
-              background: 'var(--ink-05)',
-              border: '1px solid var(--border-soft)',
+              background: 'rgba(255,255,255,0.60)',
+              backdropFilter: 'blur(20px) saturate(150%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(150%)',
+              border: '1px solid rgba(255,255,255,0.80)',
+              boxShadow: '0 4px 16px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.95)',
               color: 'var(--text-primary)',
               fontSize: 13,
               fontWeight: 600,
@@ -97,15 +100,19 @@ export default function HistoryPage() {
                 onClick={clearHistory}
                 style={{
                   flex: '0 0 auto',
-                  padding: '8px 14px',
+                  padding: '8px 16px',
                   borderRadius: 9999,
-                  background: 'transparent',
-                  border: '1px solid var(--border-soft)',
+                  background: 'rgba(255,255,255,0.55)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255,255,255,0.78)',
+                  boxShadow: '0 2px 10px rgba(43,24,16,0.05)',
                   color: 'var(--text-secondary)',
                   fontSize: 12,
                   fontWeight: 600,
                   letterSpacing: '-0.01em',
                   cursor: 'pointer',
+                  fontFamily: 'inherit',
                 }}
               >
                 清空
@@ -116,9 +123,15 @@ export default function HistoryPage() {
 
         {/* Empty state */}
         {history.length === 0 && (
-          <div className="surface-stone animate-fade-scale-in" style={{
+          <div className="animate-fade-scale-in" style={{
             padding: '56px 24px',
             textAlign: 'center',
+            background: 'rgba(255,255,255,0.52)',
+            backdropFilter: 'blur(24px) saturate(160%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+            border: '1px solid rgba(255,255,255,0.82)',
+            borderRadius: 32,
+            boxShadow: '0 8px 32px rgba(43,24,16,0.07), inset 0 1px 0 rgba(255,255,255,0.95)',
           }}>
             <div style={{
               width: 56, height: 56,
@@ -179,12 +192,18 @@ export default function HistoryPage() {
               return (
                 <div
                   key={item.channelUrl + i}
-                  className={`surface-white stagger-${Math.min(i + 1, 4)}`}
+                  className={`stagger-${Math.min(i + 1, 4)}`}
                   style={{
                     padding: '14px 16px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 14,
+                    background: 'rgba(255,255,255,0.55)',
+                    backdropFilter: 'blur(20px) saturate(150%)',
+                    WebkitBackdropFilter: 'blur(20px) saturate(150%)',
+                    border: '1px solid rgba(255,255,255,0.80)',
+                    borderRadius: 20,
+                    boxShadow: '0 4px 20px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.95)',
                   }}
                 >
                   {item.channelThumbnail ? (

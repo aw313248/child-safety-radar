@@ -108,11 +108,13 @@ body {
   font-weight: 400;
   line-height: 1.65;
 
-  /* 護眼底：奶油米 + 蜂蜜黃微光（Busy Bee 調性） */
+  /* 護眼底：加強漸層讓毛玻璃有東西可以折射 */
   background-color: var(--paper-hex);
   background-image:
-    radial-gradient(ellipse 60% 45% at 15% 5%,   rgba(var(--honey), 0.22), transparent 60%),
-    radial-gradient(ellipse 55% 40% at 88% 95%,  rgba(var(--stone), 0.25), transparent 60%);
+    radial-gradient(ellipse 75% 60% at 8%  5%,  rgba(var(--honey), 0.42), transparent 55%),
+    radial-gradient(ellipse 65% 55% at 92% 92%, rgba(var(--stone), 0.35), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 90% 8%,  rgba(194, 65, 59, 0.12), transparent 58%),
+    radial-gradient(ellipse 48% 40% at 10% 88%, rgba(var(--honey), 0.22), transparent 52%);
   background-attachment: fixed;
 }
 
@@ -150,36 +152,51 @@ body {
    所有 section、card、panel 都用這個
    ══════════════════════════════════════════════════ */
 .bee-card {
-  background: var(--card-hex);
-  border: 2.5px solid var(--ink-hex);
-  border-radius: 24px;
-  box-shadow: 6px 6px 0 rgba(43, 24, 16, 0.92);
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 28px;
+  box-shadow:
+    0 8px 32px rgba(43, 24, 16, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
 }
 .bee-card-honey {
-  background: var(--honey-hex);
-  border: 2.5px solid var(--ink-hex);
-  border-radius: 24px;
-  box-shadow: 6px 6px 0 rgba(43, 24, 16, 0.92);
+  background: rgba(255, 183, 3, 0.82);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 218, 80, 0.88);
+  border-radius: 28px;
+  box-shadow:
+    0 8px 32px rgba(255, 183, 3, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 .bee-card-flat {
-  background: var(--card-hex);
-  border: 2px solid var(--ink-hex);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(43, 24, 16, 0.05);
 }
 button.bee-card:hover,
 a.bee-card:hover,
 button.bee-card-honey:hover,
 a.bee-card-honey:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 8px 8px 0 rgba(43, 24, 16, 0.92);
+  transform: translateY(-3px);
+  box-shadow:
+    0 20px 56px rgba(43, 24, 16, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 button.bee-card:active,
 a.bee-card:active,
 button.bee-card-honey:active,
 a.bee-card-honey:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 rgba(43, 24, 16, 0.92);
+  transform: translateY(0);
+  box-shadow:
+    0 4px 16px rgba(43, 24, 16, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
 }
 
 /* Segmented control — pill 版本 Busy Bee 風 */
@@ -513,12 +530,14 @@ html { scroll-behavior: smooth; }
   justify-content: center;
   width: 42px; height: 42px;
   border-radius: 50%;
-  border: 2px solid var(--ink-hex);
-  background: var(--card-hex);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
   color: var(--ink-hex);
   cursor: pointer;
   font-family: inherit;
-  box-shadow: 3px 3px 0 var(--ink-hex);
+  box-shadow: 0 4px 16px rgba(43, 24, 16, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transition: transform 0.18s var(--ease-spring),
               box-shadow 0.18s var(--ease-spring),
               background 0.18s;
@@ -529,32 +548,29 @@ html.candy .sticker-icon-btn {
   backdrop-filter: blur(10px);
 }
 .sticker-icon-btn:hover {
-  transform: translate(-1px, -2px);
-  box-shadow: 5px 5px 0 var(--ink-hex);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(43, 24, 16, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
-html.candy .sticker-icon-btn:hover { box-shadow: 5px 5px 0 rgba(0,0,0,0.6); }
 .sticker-icon-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 var(--ink-hex);
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(43, 24, 16, 0.06);
 }
 .sticker-icon-btn--gold {
-  background: var(--cc-gold);
+  background: rgba(255, 183, 3, 0.85);
   color: #2B1810;
-  border-color: #2B1810;
-  box-shadow: 3px 3px 0 #2B1810;
+  border: 1px solid rgba(255, 218, 80, 0.90);
+  box-shadow: 0 4px 16px rgba(255, 183, 3, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
-html.candy .sticker-icon-btn--gold { box-shadow: 3px 3px 0 #2B1810; backdrop-filter: none; }
-.sticker-icon-btn--gold:hover { box-shadow: 5px 5px 0 #2B1810; }
-.sticker-icon-btn--gold:active { box-shadow: 1px 1px 0 #2B1810; }
+.sticker-icon-btn--gold:hover { box-shadow: 0 8px 24px rgba(255, 183, 3, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.55); }
+.sticker-icon-btn--gold:active { box-shadow: 0 2px 8px rgba(255, 183, 3, 0.20); }
 .sticker-icon-btn--danger {
-  background: linear-gradient(135deg, #C2413B 0%, #8E2A24 100%);
+  background: rgba(194, 65, 59, 0.85);
   color: #FFF6E6;
-  border-color: #2B1810;
-  box-shadow: 3px 3px 0 #2B1810;
+  border: 1px solid rgba(220, 100, 95, 0.70);
+  box-shadow: 0 4px 16px rgba(194, 65, 59, 0.25);
 }
-html.candy .sticker-icon-btn--danger { box-shadow: 3px 3px 0 #2B1810; backdrop-filter: none; }
-.sticker-icon-btn--danger:hover { box-shadow: 5px 5px 0 #2B1810; }
-.sticker-icon-btn--danger:active { box-shadow: 1px 1px 0 #2B1810; }
+.sticker-icon-btn--danger:hover { box-shadow: 0 8px 24px rgba(194, 65, 59, 0.35); }
+.sticker-icon-btn--danger:active { box-shadow: 0 2px 8px rgba(194, 65, 59, 0.15); }
 
 /* 貼紙分頁 — 一排靠著的歪斜小貼紙，作為 segmented 的替代 */
 .sticker-tabs {
