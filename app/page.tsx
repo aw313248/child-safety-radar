@@ -173,7 +173,7 @@ export default function Home() {
               安全嗎？
             </h1>
             <p style={{ fontSize: 14, fontWeight: 500, color: 'rgba(43,24,16,0.60)', lineHeight: 1.6 }}>
-              貼頻道網址，AI 20 秒告訴你<br />能不能給小孩看
+              讓小析去查，你去泡咖啡
             </p>
           </div>
         )}
@@ -181,14 +181,6 @@ export default function Home() {
         {/* ── 輸入卡（毛玻璃，唯一視覺主角） ── */}
         {!result && (
           <div className="glass-card stagger-2" style={{ padding: '20px 20px 18px', marginBottom: 14 }}>
-
-            {/* 吉祥物 + 提示 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-              <Mascot pose="guard" size={48} priority />
-              <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', lineHeight: 1.55, letterSpacing: '-0.01em' }}>
-                貼上 YouTube 頻道網址<br />小析幫你翻影片 + 留言
-              </p>
-            </div>
 
             {/* 輸入框 */}
             <div className={`glass-input-wrap${error ? ' glass-input-wrap--error' : ''}`}>
@@ -229,13 +221,13 @@ export default function Home() {
             {/* 狀態列 */}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, padding: '0 4px' }}>
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)' }}>
-                {loading ? '掃描中'
-                  : unlocked ? '✓ 已解鎖 · 無限'
-                  : remainingFree > 0 ? `剩 ${remainingFree} 次免費`
+                {loading ? progressText || '分析中…'
+                  : unlocked ? '✓ 無限'
+                  : remainingFree > 0 ? `免費剩 ${remainingFree} 次`
                   : '免費已用完'}
               </span>
               <span style={{ fontSize: 11, color: 'var(--text-tertiary)', fontWeight: 500 }}>
-                {loading ? progressText || '分析中…' : '約 20–40 秒'}
+                {loading ? '' : '≈ 20 秒'}
               </span>
             </div>
 
@@ -253,8 +245,9 @@ export default function Home() {
                 }}>
                   <Mascot pose="search" size={46} alt="小析正在查資料" />
                   <p style={{ flex: 1, fontSize: 13, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.45 }}>
-                    小析正在翻影片<br />
-                    <span style={{ fontSize: 11, opacity: 0.65, fontWeight: 600 }}>{progressText || '稍等一下下'}</span>
+                    {progressText || '小析正在查'}
+                    <br />
+                    <span style={{ fontSize: 11, opacity: 0.55, fontWeight: 500 }}>你先去倒水，快好了</span>
                   </p>
                 </div>
                 <ScanningStages progress={progress} />
@@ -276,23 +269,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── 燈號預覽 ── */}
-        {!result && !loading && (
-          <div className="glass-subtle reveal-up" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 16px', marginBottom: 14 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', textTransform: 'uppercase', flexShrink: 0 }}>
-              掃完會看到
-            </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'flex-end' }}>
-              {([['#7AB87E', '可以看'], ['#F2B84B', '留意'], ['#C2413B', '別給看']] as const).map(([color, label]) => (
-                <span key={label} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--ink-hex)' }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
-                  {label}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* ── 熊熊精選 CTA ── */}
         <a href="/kids" className="glass-card-honey reveal-up" style={{ marginBottom: 44 }}>
           <div className="glass-avatar" style={{ width: 46, height: 46 }}>
@@ -300,10 +276,10 @@ export default function Home() {
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontSize: 15, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.025em' }}>
-              不想自己掃？直接用熊熊精選
+              丟平板前，先讓熊熊看過
             </p>
             <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.65)', marginTop: 2, fontWeight: 500, lineHeight: 1.5 }}>
-              人工驗證頻道，平板丟給小孩也安心
+              人工精選，直接給小孩看
             </p>
           </div>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
