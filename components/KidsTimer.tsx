@@ -501,7 +501,8 @@ function TimeUpScreen({
   return (
     <div className="kids-timer-timeup" style={{
       position: 'fixed', inset: 0, zIndex: 9900,
-      background: 'var(--honey-hex)',
+      // 改回首頁同款 cc-gold（#F2B84B），不是過飽和的 honey-hex（#FFB703）
+      background: 'radial-gradient(ellipse 80% 60% at 30% 20%, #F8C566 0%, #F2B84B 55%, #E0A832 100%)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: 20, overflowY: 'auto',
       animation: 'fade-scale-in 0.4s var(--ease-out)',
@@ -519,22 +520,23 @@ function TimeUpScreen({
           <Mascot pose="sleep" size={220} />
         </div>
 
+        {/* 文字改 ink 深可可 — 在 cc-gold 底上對比清楚（vs 原本白字 textShadow） */}
         <h1 className="font-display" style={{
           fontSize: 'clamp(32px, 9vw, 48px)',
-          color: '#fff',
+          color: 'var(--ink-hex)',
           marginBottom: 14,
           lineHeight: 1,
-          textShadow: '0 6px 30px rgba(0,0,0,0.45)',
+          letterSpacing: '-0.045em',
         }}>
           小朋友時間到囉
         </h1>
         <p style={{
-          fontSize: 17, color: 'rgba(255,255,255,0.92)',
+          fontSize: 17, color: 'rgba(43,24,16,0.78)',
           fontWeight: 500, letterSpacing: '-0.01em',
           lineHeight: 1.6,
           marginBottom: 28,
         }}>
-          下次再一起探索新世界吧！<br />
+          下次再一起探索新世界吧<br />
           現在先讓眼睛休息一下
         </p>
         <style>{`
@@ -544,26 +546,41 @@ function TimeUpScreen({
           }
         `}</style>
 
-        {/* 爸媽延長區 */}
-        <div className="bee-card" style={{
+        {/* 爸媽延長區 — liquid glass 暖奶油，跟其他 modal 同套 */}
+        <div style={{
           padding: '20px 20px 18px',
           marginBottom: 14,
           textAlign: 'left',
+          background: 'rgba(255, 246, 230, 0.72)',
+          backdropFilter: 'blur(40px) saturate(160%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(160%)',
+          border: '1px solid rgba(255, 255, 255, 0.6)',
+          borderRadius: 22,
+          boxShadow:
+            'inset 0 1px 0 rgba(255,255,255,0.7),' +
+            ' inset 0 -1px 0 rgba(43,24,16,0.06),' +
+            ' 0 18px 36px -16px rgba(43,24,16,0.22)',
         }}>
           <p style={{
-            fontSize: 11, fontWeight: 900, color: 'var(--ink-hex)',
+            fontSize: 11, fontWeight: 800, color: 'var(--ink-hex)',
             letterSpacing: '0.14em', textTransform: 'uppercase',
-            opacity: 0.7, marginBottom: 8, textAlign: 'center',
+            opacity: 0.75, marginBottom: 8, textAlign: 'center',
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            width: '100%', justifyContent: 'center',
           }}>
-            ⚠️ 爸媽區 · 小孩請勿動
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            爸媽區 · 小孩請勿動
           </p>
           <p style={{
             fontSize: 14, color: 'var(--ink-hex)',
-            fontWeight: 700, letterSpacing: '-0.01em',
+            fontWeight: 600, letterSpacing: '-0.01em',
             textAlign: 'center', marginBottom: 12, lineHeight: 1.5,
           }}>
             要延長時間，請先算：<br />
-            <span style={{ fontSize: 24, fontWeight: 900, letterSpacing: '0.02em' }}>
+            <span style={{ fontSize: 24, fontWeight: 800, letterSpacing: '0.02em', fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace' }}>
               {math.a} + {math.b} = ?
             </span>
           </p>
@@ -574,17 +591,17 @@ function TimeUpScreen({
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="答案"
-            className={error ? 'shake' : ''}
+            className={`strong-placeholder${error ? ' shake' : ''}`}
             style={{
               width: '100%',
               padding: '12px 14px',
-              fontSize: 18, fontWeight: 900,
+              fontSize: 18, fontWeight: 800,
               textAlign: 'center',
               letterSpacing: '0.04em',
-              background: error ? '#FFE8E0' : 'var(--card-hex)',
-              border: `2.5px solid ${error ? 'var(--terra-hex)' : 'var(--ink-hex)'}`,
+              background: error ? 'rgba(194, 65, 59, 0.08)' : 'rgba(255, 255, 255, 0.85)',
+              border: `1.5px solid ${error ? 'var(--terra-hex)' : 'rgba(43, 24, 16, 0.22)'}`,
               borderRadius: 14,
-              fontFamily: 'inherit',
+              fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
               color: 'var(--ink-hex)',
               marginBottom: 12,
               outline: 'none',
@@ -596,15 +613,20 @@ function TimeUpScreen({
               <button
                 key={m}
                 onClick={() => onExtend(m)}
-                className="bee-card-flat"
                 style={{
                   padding: '10px 4px',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
-                  fontSize: 13, fontWeight: 900,
+                  fontSize: 13, fontWeight: 800,
                   color: 'var(--ink-hex)',
                   letterSpacing: '-0.02em',
-                  background: 'var(--honey-hex)',
+                  background: 'rgba(255, 255, 255, 0.55)',
+                  backdropFilter: 'blur(14px)',
+                  WebkitBackdropFilter: 'blur(14px)',
+                  border: '1px solid rgba(43, 24, 16, 0.22)',
+                  borderRadius: 12,
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.55)',
+                  transition: 'background 0.15s, transform 0.12s',
                 }}
               >
                 +{m} 分鐘
@@ -624,8 +646,19 @@ function TimeUpScreen({
 
         <button
           onClick={onExit}
-          className="btn-pill"
-          style={{ width: '100%' }}
+          style={{
+            width: '100%',
+            padding: '14px 20px',
+            background: 'var(--ink-hex)',
+            color: '#FFF6E6',
+            border: 'none',
+            borderRadius: 9999,
+            fontFamily: 'inherit',
+            fontSize: 14, fontWeight: 700,
+            letterSpacing: '-0.01em',
+            cursor: 'pointer',
+            boxShadow: '0 8px 22px -8px rgba(43, 24, 16, 0.42)',
+          }}
         >
           好，今天先到這裡
         </button>

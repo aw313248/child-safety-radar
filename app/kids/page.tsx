@@ -594,53 +594,67 @@ export default function KidsModePage() {
         </p>
       </div>
 
-      {/* ── 退出確認：深色 = 刻意，大人專區對比 ── */}
+      {/* ── 退出確認 — 改回 storybook 暖色 + Apple liquid glass，跟 KidsTimer 同套 ── */}
       {showExitConfirm && (
         <div
           onClick={() => { setShowExitConfirm(false); setExitInput(''); setExitError(false) }}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(15, 36, 68, 0.78)', backdropFilter: 'blur(12px)',
+            background: 'rgba(43, 24, 16, 0.45)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: 'linear-gradient(160deg, #1E3A5F 0%, #0F2444 100%)',
+              background: 'rgba(255, 246, 230, 0.72)',
+              backdropFilter: 'blur(40px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(40px) saturate(160%)',
+              border: '1px solid rgba(255, 255, 255, 0.55)',
               borderRadius: 28, padding: '28px 24px',
               maxWidth: 380, width: '100%',
               textAlign: 'center',
-              boxShadow: '0 28px 56px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.12)',
-              border: '1.5px solid rgba(242, 184, 75, 0.4)',
+              boxShadow:
+                'inset 0 1px 0 rgba(255,255,255,0.7),' +
+                ' inset 0 -1px 0 rgba(43,24,16,0.06),' +
+                ' 0 30px 60px -20px rgba(43,24,16,0.30)',
             }}
           >
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '5px 12px', borderRadius: 9999,
-              background: 'rgba(194, 65, 59, 0.22)', border: '1px solid rgba(194, 65, 59, 0.55)',
-              fontSize: 10, fontWeight: 900, letterSpacing: '0.18em',
-              color: '#FFB1AB', textTransform: 'uppercase', marginBottom: 14,
+              background: 'rgba(194, 65, 59, 0.14)', border: '1px solid rgba(194, 65, 59, 0.42)',
+              fontSize: 10, fontWeight: 800, letterSpacing: '0.18em',
+              color: 'var(--cc-red-deep)', textTransform: 'uppercase', marginBottom: 14,
             }}>
-              ⚠ PARENT ONLY
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              PARENT ONLY
             </div>
-            <h3 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-0.03em', color: '#FFFFFF', marginBottom: 6, textShadow: '0 2px 12px rgba(0,0,0,0.4)' }}>
+            <h3 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--ink-hex)', marginBottom: 6 }}>
               大人才能離開
             </h3>
-            <p style={{ fontSize: 13, color: 'rgba(255, 246, 230, 0.82)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 20 }}>
+            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.66)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 20, fontWeight: 500 }}>
               小朋友請去找爸爸媽媽<br />答對下面這題就會回首頁
             </p>
 
             <div style={{
-              padding: '20px 16px 18px', marginBottom: exitError ? 8 : 16,
-              background: 'rgba(255, 255, 255, 0.08)',
-              border: '1.5px solid rgba(242, 184, 75, 0.42)', borderRadius: 20,
+              padding: '20px 16px 16px', marginBottom: exitError ? 8 : 16,
+              background: 'rgba(255, 255, 255, 0.45)',
+              backdropFilter: 'blur(18px) saturate(150%)',
+              WebkitBackdropFilter: 'blur(18px) saturate(150%)',
+              border: '1px solid rgba(255, 255, 255, 0.55)',
+              borderRadius: 20,
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.65)',
             }}>
               <div style={{
-                fontSize: 40, fontWeight: 900, color: '#F2B84B',
+                fontSize: 36, fontWeight: 800, color: 'var(--ink-hex)',
                 fontFamily: 'ui-monospace, "SF Mono", monospace',
                 letterSpacing: '0.02em', marginBottom: 12,
-                textShadow: '0 2px 16px rgba(242, 184, 75, 0.3)',
               }}>
                 {exitMath.a} + {exitMath.b} = ?
               </div>
@@ -650,11 +664,14 @@ export default function KidsModePage() {
                 onChange={e => { setExitInput(e.target.value); setExitError(false) }}
                 onKeyDown={e => e.key === 'Enter' && tryExit()}
                 placeholder="輸入答案"
+                className="strong-placeholder"
                 style={{
                   width: '100%', padding: '14px 16px',
-                  fontSize: 28, fontWeight: 900, textAlign: 'center',
-                  border: `2px solid ${exitError ? '#FF6B5C' : '#F2B84B'}`,
-                  borderRadius: 14, background: '#FFFFFF', color: '#0F2444',
+                  fontSize: 26, fontWeight: 800, textAlign: 'center',
+                  border: `2px solid ${exitError ? 'var(--terra-hex)' : 'var(--cc-gold-deep)'}`,
+                  borderRadius: 14,
+                  background: 'rgba(255, 255, 255, 0.85)',
+                  color: 'var(--ink-hex)',
                   fontFamily: 'ui-monospace, "SF Mono", monospace',
                   letterSpacing: '0.04em', outline: 'none',
                   WebkitAppearance: 'none', MozAppearance: 'textfield',
@@ -663,8 +680,11 @@ export default function KidsModePage() {
             </div>
 
             {exitError && (
-              <p style={{ fontSize: 13, color: '#FFB1AB', fontWeight: 800, letterSpacing: '-0.01em', marginBottom: 14 }}>
-                ✗ 答錯了，再算一次
+              <p style={{ fontSize: 13, color: 'var(--terra-hex)', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 14, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                答錯了，再算一次
               </p>
             )}
 
@@ -672,10 +692,13 @@ export default function KidsModePage() {
               <button
                 onClick={() => { setShowExitConfirm(false); setExitInput(''); setExitError(false) }}
                 style={{
-                  flex: 1, padding: '14px 8px', borderRadius: 16,
-                  background: 'rgba(255,255,255,0.1)', color: '#FFFFFF',
-                  border: '1.5px solid rgba(255,255,255,0.25)',
-                  cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.01em', fontFamily: 'inherit',
+                  flex: 1, padding: '14px 8px', borderRadius: 14,
+                  background: 'rgba(255,255,255,0.55)',
+                  backdropFilter: 'blur(14px)',
+                  WebkitBackdropFilter: 'blur(14px)',
+                  color: 'var(--ink-hex)',
+                  border: '1px solid rgba(43,24,16,0.18)',
+                  cursor: 'pointer', fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em', fontFamily: 'inherit',
                 }}
               >
                 繼續看影片
@@ -684,13 +707,15 @@ export default function KidsModePage() {
                 onClick={tryExit}
                 disabled={!exitInput}
                 style={{
-                  flex: 1, padding: '14px 8px', borderRadius: 16,
-                  background: exitInput ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)' : 'rgba(255,255,255,0.08)',
-                  color: exitInput ? '#0F2444' : 'rgba(255,255,255,0.38)',
-                  border: '1.5px solid ' + (exitInput ? '#F2B84B' : 'rgba(255,255,255,0.15)'),
+                  flex: 1, padding: '14px 8px', borderRadius: 14,
+                  background: exitInput
+                    ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
+                    : 'rgba(43,24,16,0.06)',
+                  color: exitInput ? 'var(--ink-hex)' : 'rgba(43,24,16,0.38)',
+                  border: exitInput ? '1px solid var(--cc-gold-deep)' : '1px solid rgba(43,24,16,0.12)',
                   cursor: exitInput ? 'pointer' : 'not-allowed',
-                  fontSize: 14, fontWeight: 900, letterSpacing: '-0.01em', fontFamily: 'inherit',
-                  boxShadow: exitInput ? '0 6px 18px -6px rgba(242, 184, 75, 0.5)' : 'none',
+                  fontSize: 13, fontWeight: 800, letterSpacing: '-0.01em', fontFamily: 'inherit',
+                  boxShadow: exitInput ? 'inset 0 1px 0 rgba(255,255,255,0.55), 0 4px 14px rgba(242,184,75,0.35)' : 'none',
                 }}
               >
                 離開安心模式
