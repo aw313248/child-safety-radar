@@ -1,105 +1,175 @@
 import { ImageResponse } from 'next/og'
 
-// OG 分享圖 — 貼在 Threads / Line / FB 會顯示的預覽卡
-// 尺寸 1200x630 是各大社群的標準
+// OG 分享圖 — 貼在 Threads / Line / FB / iMessage 會顯示的預覽卡
+// 1200×630 標準尺寸，CareCub Hearth 暖色家族
 export const runtime = 'edge'
-export const alt = 'CareCub Kids — 給家有「皮」小孩的爸媽用'
+export const alt = 'CareCub Kids — 這個卡通安全嗎？20 秒掃給你看'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function Image() {
-  // 嘗試載入繁中字體（若失敗就 fallback 英文為主）
-  let fontData: ArrayBuffer | null = null
-  try {
-    const res = await fetch(
-      'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-tc@5.0.5/files/noto-sans-tc-chinese-traditional-700-normal.woff'
-    )
-    if (res.ok) fontData = await res.arrayBuffer()
-  } catch {}
+  // 載入 Noto Sans TC 兩個字重（標題 900 / 副標 500）
+  const [bold, regular] = await Promise.all([
+    fetch('https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-tc@5.0.5/files/noto-sans-tc-chinese-traditional-900-normal.woff')
+      .then(r => r.ok ? r.arrayBuffer() : null).catch(() => null),
+    fetch('https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-tc@5.0.5/files/noto-sans-tc-chinese-traditional-500-normal.woff')
+      .then(r => r.ok ? r.arrayBuffer() : null).catch(() => null),
+  ])
+
+  const fonts: Array<{ name: string; data: ArrayBuffer; weight: 500 | 900; style: 'normal' }> = []
+  if (bold) fonts.push({ name: 'NotoSansTC', data: bold, weight: 900, style: 'normal' })
+  if (regular) fonts.push({ name: 'NotoSansTC', data: regular, weight: 500, style: 'normal' })
 
   return new ImageResponse(
     (
       <div
         style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(180deg, #F2F2F7 0%, #E5F0E3 100%)',
-          padding: '80px',
+          width: '100%', height: '100%',
+          display: 'flex', flexDirection: 'column',
+          padding: '64px 72px',
+          // 暖奶油底 + 蜂蜜金 / 披風紅光暈（跟首頁背景一致）
+          background:
+            'radial-gradient(ellipse 60% 50% at 12% 8%, #FFE8B0 0%, transparent 55%),' +
+            ' radial-gradient(ellipse 55% 45% at 92% 92%, #FFCDC8 0%, transparent 55%),' +
+            ' radial-gradient(ellipse 50% 40% at 88% 12%, #C2413B33 0%, transparent 60%),' +
+            ' #FBF7EA',
           position: 'relative',
         }}
       >
-        {/* 裝飾圓點 */}
-        <div style={{ position: 'absolute', top: 60, left: 80, width: 12, height: 12, borderRadius: '50%', background: '#34C759' }} />
-        <div style={{ position: 'absolute', top: 60, right: 80, fontSize: 20, color: '#6C6C70', letterSpacing: '-0.01em' }}>peekkids.tw</div>
-
-        {/* 貓頭鷹 */}
-        <div style={{ fontSize: 88, marginBottom: 24, display: 'flex' }}>🦉</div>
-
-        {/* 問題陳述：主文案（最大） */}
-        <div
-          style={{
-            fontSize: 64,
-            fontWeight: 800,
-            color: '#1C1C1E',
-            letterSpacing: '-0.03em',
-            lineHeight: 1.15,
-            display: 'flex',
-            textAlign: 'center',
-          }}
-        >
-          可愛卡通下可能藏著「艾莎門」
-        </div>
-
-        <div
-          style={{
-            fontSize: 36,
-            fontWeight: 500,
-            marginTop: 18,
-            color: '#6C6C70',
-            letterSpacing: '-0.02em',
-            display: 'flex',
-          }}
-        >
-          暴力、恐怖、成人梗偽裝成兒童影片
-        </div>
-
-        {/* 分隔線 */}
+        {/* 頂部 nav 區 — CC 圓徽章 + 品牌名 + 右上 URL */}
         <div style={{
-          width: 120,
-          height: 2,
-          background: '#2D5F3F',
-          marginTop: 40,
-          marginBottom: 28,
-          display: 'flex',
-        }} />
-
-        {/* 解法：品牌 + 功能 */}
-        <div
-          style={{
-            fontSize: 44,
-            fontWeight: 700,
-            color: '#1C1C1E',
-            letterSpacing: '-0.02em',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          marginBottom: 48,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{
+              width: 48, height: 48, borderRadius: '50%',
+              background: '#F2B84B',
+              border: '2.5px solid #2B1810',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 18, fontWeight: 900, color: '#2B1810',
+              letterSpacing: '-0.02em',
+              boxShadow: '4px 4px 0 #2B1810',
+            }}>CC</div>
+            <span style={{
+              fontSize: 28, fontWeight: 900, color: '#2B1810',
+              letterSpacing: '-0.025em',
+            }}>CareCub Kids</span>
+          </div>
+          <div style={{
+            fontSize: 18, fontWeight: 500,
+            color: '#2B181099',
+            letterSpacing: '0.04em',
             display: 'flex',
-            alignItems: 'center',
-            gap: 16,
-          }}
-        >
-          <span>Peek<span style={{ color: '#2D5F3F' }}>Kids</span></span>
-          <span style={{ color: '#6C6C70', fontWeight: 500, fontSize: 32 }}>·</span>
-          <span style={{ fontWeight: 500, fontSize: 32 }}>20 秒 AI 看穿 YouTube 頻道</span>
+          }}>
+            child-safety-radar.vercel.app
+          </div>
+        </div>
+
+        {/* 主標 — 跟首頁同款疑問句 */}
+        <div style={{
+          display: 'flex', flexDirection: 'column',
+          flex: 1, justifyContent: 'center',
+          marginTop: -20,
+        }}>
+          <div style={{
+            display: 'inline-flex',
+            padding: '6px 14px',
+            background: '#2B1810',
+            color: '#F2B84B',
+            borderRadius: 9999,
+            fontSize: 18, fontWeight: 900,
+            letterSpacing: '0.16em',
+            alignSelf: 'flex-start',
+            marginBottom: 24,
+          }}>
+            ★ 小析守護中
+          </div>
+
+          <div style={{
+            display: 'flex',
+            fontSize: 132,
+            fontWeight: 900,
+            color: '#2B1810',
+            letterSpacing: '-0.05em',
+            lineHeight: 0.95,
+          }}>
+            這個<span style={{ color: '#8E2A24' }}>卡通</span>安全嗎？
+          </div>
+
+          <div style={{
+            display: 'flex',
+            fontSize: 56,
+            fontWeight: 900,
+            color: '#2B1810CC',
+            letterSpacing: '-0.04em',
+            marginTop: 16,
+          }}>
+            20 秒掃給你看
+          </div>
+
+          <div style={{
+            display: 'flex',
+            fontSize: 26,
+            fontWeight: 500,
+            color: '#2B181099',
+            letterSpacing: '-0.01em',
+            marginTop: 20,
+          }}>
+            貼網址、按掃描，AI 看完影片跟留言，告訴你能不能給小孩看
+          </div>
+        </div>
+
+        {/* 三色燈 + 行動提示 */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          marginTop: 32,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            {[
+              { c: '#7AB87E', t: '可以看' },
+              { c: '#F2B84B', t: '留意' },
+              { c: '#C2413B', t: '別給看' },
+            ].map((d) => (
+              <div key={d.t} style={{
+                display: 'flex', alignItems: 'center', gap: 7,
+                padding: '8px 14px',
+                background: '#FBF7EA',
+                border: '2px solid #2B1810',
+                borderRadius: 9999,
+                fontSize: 18, fontWeight: 900,
+                color: '#2B1810',
+                letterSpacing: '-0.01em',
+                boxShadow: '2px 2px 0 #2B1810',
+              }}>
+                <span style={{
+                  width: 12, height: 12, borderRadius: '50%',
+                  background: d.c,
+                  border: '1.5px solid #2B1810',
+                }} />
+                {d.t}
+              </div>
+            ))}
+          </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '12px 20px',
+            background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
+            color: '#FFF6E6',
+            border: '2.5px solid #2B1810',
+            borderRadius: 9999,
+            fontSize: 22, fontWeight: 900,
+            letterSpacing: '-0.01em',
+            boxShadow: '4px 4px 0 #2B1810',
+          }}>
+            免費掃 →
+          </div>
         </div>
       </div>
     ),
     {
       ...size,
-      fonts: fontData
-        ? [{ name: 'NotoSansTC', data: fontData, style: 'normal', weight: 700 }]
-        : undefined,
+      fonts: fonts.length ? fonts : undefined,
     }
   )
 }

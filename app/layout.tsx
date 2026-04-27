@@ -33,8 +33,8 @@ export const metadata: Metadata = {
   creator: 'CareCub Kids',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'CareCub Kids — 可愛卡通下可能藏著「艾莎門」',
-    description: '暴力、恐怖、成人梗偽裝成兒童影片，20 秒 AI 看穿 YouTube 頻道安不安全',
+    title: 'CareCub Kids — 這個卡通安全嗎？20 秒掃給你看',
+    description: '貼上 YouTube 網址，AI 看完影片跟留言，紅橘綠燈告訴你能不能給小孩看',
     type: 'website',
     locale: 'zh_TW',
     url: SITE_URL,

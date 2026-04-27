@@ -7,6 +7,7 @@ import Mascot from '@/components/Mascot'
 import ScanningStages from '@/components/ScanningStages'
 import RecentHighRisk from '@/components/RecentHighRisk'
 import SocialProof from '@/components/SocialProof'
+import LoadingFacts from '@/components/LoadingFacts'
 import { AnalysisResult } from '@/types/analysis'
 
 const UnlockModal = dynamic(() => import('@/components/UnlockModal'), { ssr: false })
@@ -422,7 +423,7 @@ export default function Home() {
                   <span className="cinematic-progress__pulse" style={{ left: `${Math.max(progress - 1, 0)}%` }} />
                 </div>
 
-                {/* Overdrive 掃描卡 — 放大鏡掃光、文字流動、留言飄過 */}
+                {/* Overdrive 掃描卡 — 放大鏡掃光 + 進度文案 */}
                 <div className="cinematic-scan" style={{ marginTop: 12 }}>
                   <div className="cinematic-scan__sweep" aria-hidden />
                   <div className="cinematic-scan__mascot">
@@ -433,13 +434,15 @@ export default function Home() {
                     <br />
                     <span style={{ fontSize: 11, opacity: 0.55, fontWeight: 500 }}>你先去倒水，快好了</span>
                   </p>
-                  {/* 飄過的詞彙片段 — 模擬「正在讀」 */}
-                  <div className="cinematic-scan__ticker" aria-hidden>
-                    {['影片', '留言', '標題', '縮圖', '訂閱數', '頻道介紹'].map((w, i) => (
-                      <span key={i} style={{ animationDelay: `${i * 0.6}s` }}>{w}</span>
-                    ))}
-                  </div>
                 </div>
+
+                {/*
+                  真實震撼數據輪播 — 利用 20-40 秒等待，把「無聊 loading」變成
+                  「教育時刻」，讓爸媽不經意看到事情的嚴重性
+                  全部含可查證的權威來源（Wikipedia / BBC / AAP / 媒體）
+                */}
+                <LoadingFacts />
+
                 <ScanningStages progress={progress} />
               </div>
             )}

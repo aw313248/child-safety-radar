@@ -196,18 +196,32 @@ function SetupScreen({
     onPick(n)
   }
 
+  // 5 個時間預設置中（不含「不限時」），不限時抽出來放底部當 link
+  const TIMED = PRESETS.filter(p => p.value !== 0)
+
   return (
     <div className="kids-timer-setup-backdrop" style={{
       position: 'fixed', inset: 0, zIndex: 9500,
-      background: 'rgba(43,24,16,0.55)',
-      backdropFilter: 'blur(8px)',
+      background: 'rgba(43,24,16,0.45)',
+      backdropFilter: 'blur(14px)',
+      WebkitBackdropFilter: 'blur(14px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: 20, overflowY: 'auto',
     }}>
-      <div className="bee-card" style={{
+      <div style={{
         width: '100%', maxWidth: 440,
         padding: '28px 24px 22px',
         margin: 'auto',
+        // Apple liquid glass — 非常透 + 強 blur + saturation + hairline
+        background: 'rgba(255, 246, 230, 0.68)',
+        backdropFilter: 'blur(40px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(40px) saturate(160%)',
+        border: '1px solid rgba(255, 255, 255, 0.55)',
+        borderRadius: 28,
+        boxShadow:
+          'inset 0 1px 0 rgba(255,255,255,0.7),' +     // 頂部高光
+          ' inset 0 -1px 0 rgba(43,24,16,0.06),' +     // 底部微暗 (depth)
+          ' 0 30px 60px -20px rgba(43,24,16,0.30)',    // 飄浮感
       }}>
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{ marginBottom: 4, display: 'flex', justifyContent: 'center' }}>
@@ -216,81 +230,52 @@ function SetupScreen({
           <h2 className="font-display" style={{ fontSize: 26, color: 'var(--ink-hex)', marginBottom: 8 }}>
             小朋友今天要看多久？
           </h2>
-          <p style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.66)', fontWeight: 500, lineHeight: 1.6 }}>
             小析會幫你看時間，時間到就會跳出來提醒
           </p>
         </div>
 
-        {/* Preset grid — 「不設定」用差異化樣式：透明 + 虛線，明顯不是時間選項 */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 14 }}>
-          {PRESETS.map(p => {
-            const isSkip = p.value === 0
+        {/* Preset grid — 5 個時間預設置中（3 + 2），全 liquid glass */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 12 }}>
+          {TIMED.map((p, i) => {
             const isActive = value === p.value
+            // 第二排（idx 3, 4）只有 2 顆 → 置中：給第 4 顆 grid-column 2
+            const gridColumn = i === 3 ? '1 / 2' : i === 4 ? '2 / 3' : 'auto'
             return (
               <button
                 key={p.value}
                 onClick={() => onPick(p.value)}
-                className={isSkip ? '' : 'bee-card-flat'}
+                className="kids-glass-pill"
+                aria-pressed={isActive}
                 style={{
-                  padding: '14px 8px',
+                  gridColumn,
+                  padding: '16px 8px',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                   textAlign: 'center',
-                  borderRadius: 14,
-                  background: isSkip
-                    ? 'transparent'
-                    : isActive ? 'var(--honey-hex)' : 'var(--card-hex)',
-                  border: isSkip
-                    ? '2px dashed rgba(43,24,16,0.15)'
-                    : undefined,
-                  boxShadow: isSkip ? 'none' : undefined,
-                  transition: 'background 0.15s, border-color 0.15s, opacity 0.15s',
-                }}
-                onMouseEnter={e => {
-                  if (isSkip) {
-                    e.currentTarget.style.background = 'rgba(43,24,16,0.04)'
-                    e.currentTarget.style.borderColor = 'rgba(43,24,16,0.25)'
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (isSkip) {
-                    e.currentTarget.style.background = 'transparent'
-                    e.currentTarget.style.borderColor = 'rgba(43,24,16,0.15)'
-                  }
+                  borderRadius: 18,
+                  fontSize: 16, fontWeight: 800,
+                  color: 'var(--ink-hex)',
+                  letterSpacing: '-0.02em',
+                  ...(isActive ? { background: 'rgba(242, 184, 75, 0.55)' } : {}),
                 }}
               >
-                <div style={{
-                  fontSize: isSkip ? 13 : 16,
-                  fontWeight: isSkip ? 700 : 900,
-                  color: isSkip ? 'var(--text-tertiary)' : 'var(--ink-hex)',
-                  letterSpacing: '-0.02em',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-                }}>
-                  {isSkip && (
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.85 }}>
-                      <line x1="18" y1="6" x2="6" y2="18"/>
-                      <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                  )}
-                  {isSkip ? '不限時' : p.label}
-                </div>
+                {p.label}
               </button>
             )
           })}
         </div>
 
-        {/* 自訂 — grid 確保不會擠出去 */}
-        <div style={{
+        {/* 自訂 row — liquid glass，沒有橘色虛線邊 */}
+        <div className="kids-glass-row" style={{
           display: 'grid',
           gridTemplateColumns: 'auto 1fr auto',
-          gap: 8, alignItems: 'center', marginBottom: 14,
-          padding: '12px 14px',
-          background: 'rgba(43,24,16,0.04)',
-          border: '1.5px solid rgba(242, 184, 75, 0.55)',
-          borderRadius: 16,
+          gap: 10, alignItems: 'center', marginBottom: 10,
+          padding: '10px 12px 10px 16px',
+          borderRadius: 18,
           width: '100%', boxSizing: 'border-box',
         }}>
-          <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.01em' }}>自訂</span>
+          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.01em' }}>自訂</span>
           <div style={{
             display: 'flex', alignItems: 'baseline', justifyContent: 'center',
             gap: 4, minWidth: 0,
@@ -306,66 +291,83 @@ function SetupScreen({
                 border: 'none', outline: 'none',
                 background: 'transparent',
                 fontFamily: 'inherit',
-                fontSize: 17, fontWeight: 900,
+                fontSize: 17, fontWeight: 800,
                 color: 'var(--ink-hex)',
                 textAlign: 'right',
                 letterSpacing: '-0.02em',
               }}
               className="strong-placeholder"
             />
-            <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--ink-hex)', flexShrink: 0 }}>分鐘</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-hex)', flexShrink: 0 }}>分鐘</span>
           </div>
           <button
             onClick={handleCustom}
             disabled={!customMin || parseInt(customMin, 10) < 1}
+            className="kids-glass-cta"
+            data-active={!!(customMin && parseInt(customMin, 10) >= 1)}
             style={{
               padding: '10px 18px',
               borderRadius: 9999,
-              background: customMin && parseInt(customMin, 10) >= 1
-                ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
-                : 'rgba(43,24,16,0.08)',
-              color: customMin && parseInt(customMin, 10) >= 1 ? 'var(--ink-hex)' : 'rgba(43,24,16,0.42)',
-              border: '2px solid var(--ink-hex)',
               fontFamily: 'inherit',
               fontSize: 14, fontWeight: 800,
               cursor: customMin ? 'pointer' : 'not-allowed',
               whiteSpace: 'nowrap',
-              boxShadow: customMin && parseInt(customMin, 10) >= 1
-                ? '3px 3px 0 var(--ink-hex)' : '2px 2px 0 rgba(43,24,16,0.25)',
-              transition: 'transform 0.15s, box-shadow 0.15s',
+              color: 'var(--ink-hex)',
             }}
           >
             開始
           </button>
         </div>
 
+        {/* 「先不改」— liquid glass，不再灰 */}
         <button
           onClick={onClose}
+          className="kids-glass-row"
           style={{
-            width: '100%', padding: 12,
+            width: '100%', padding: '12px',
             borderRadius: 14,
-            background: 'rgba(43,24,16,0.04)',
             color: 'var(--ink-hex)',
-            border: '1.5px solid rgba(43,24,16,0.22)',
             cursor: 'pointer',
             fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
             fontFamily: 'inherit',
-            opacity: 0.85,
           }}
         >
           先不改 · 繼續剛剛設的
         </button>
 
+        {/* 「不限時」獨立放底部 — 不是時間預設，是替代路徑 */}
+        <button
+          onClick={() => onPick(0)}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            width: '100%', marginTop: 8, padding: '10px',
+            background: 'transparent',
+            border: 'none',
+            color: 'rgba(43,24,16,0.62)',
+            cursor: 'pointer',
+            fontSize: 12, fontWeight: 600, letterSpacing: '-0.005em',
+            fontFamily: 'inherit',
+            textDecoration: 'underline',
+            textUnderlineOffset: 3,
+            textDecorationColor: 'rgba(43,24,16,0.25)',
+          }}
+        >
+          這次先不要計時
+        </button>
+
         <p style={{
           textAlign: 'center', marginTop: 14,
           padding: '10px 14px',
-          background: 'rgba(242, 184, 75, 0.14)',
-          border: '1px solid rgba(242, 184, 75, 0.4)',
+          background: 'rgba(255, 246, 230, 0.55)',
+          backdropFilter: 'blur(20px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(140%)',
+          border: '1px solid rgba(255, 255, 255, 0.6)',
           borderRadius: 12,
-          fontSize: 13, color: 'var(--text-primary)', letterSpacing: '-0.01em',
-          fontWeight: 700, lineHeight: 1.5,
+          fontSize: 13, color: 'var(--ink-hex)', letterSpacing: '-0.01em',
+          fontWeight: 600, lineHeight: 1.5,
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
         }}>
-          3–6 歲醫學建議：單次 ≤ <strong style={{ color: '#F2B84B', fontWeight: 900 }}>20 分鐘</strong>，一天 ≤ <strong style={{ color: '#F2B84B', fontWeight: 900 }}>1 小時</strong>
+          3–6 歲醫學建議：單次 ≤ <strong style={{ color: '#D99422', fontWeight: 800 }}>20 分鐘</strong>，一天 ≤ <strong style={{ color: '#D99422', fontWeight: 800 }}>1 小時</strong>
         </p>
       </div>
     </div>
