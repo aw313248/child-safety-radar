@@ -6,6 +6,7 @@ import ResultCard from '@/components/ResultCard'
 import Mascot from '@/components/Mascot'
 import ScanningStages from '@/components/ScanningStages'
 import RecentHighRisk from '@/components/RecentHighRisk'
+import SocialProof from '@/components/SocialProof'
 import { AnalysisResult } from '@/types/analysis'
 
 const UnlockModal = dynamic(() => import('@/components/UnlockModal'), { ssr: false })
@@ -93,7 +94,23 @@ export default function Home() {
   }, [])
 
   const handleAnalyze = async () => {
-    if (!url.trim()) return
+    const trimmed = url.trim()
+    if (!trimmed) return
+
+    // Harden: URL 格式驗證 — 接受 youtube.com / youtu.be / @handle
+    const looksLikeYouTube = /youtube\.com|youtu\.be|^@[\w.-]+$|^https?:\/\//.test(trimmed)
+                            || /^[a-zA-Z0-9_-]{4,}$/.test(trimmed)
+    if (!looksLikeYouTube) {
+      setError('看起來不太像 YouTube 網址，再確認一下')
+      return
+    }
+
+    // Harden: 離線檢測
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      setError('好像沒網路欸，連上 Wi-Fi 再試一次')
+      return
+    }
+
     if (!unlocked && scanCount >= FREE_SCANS) { setShowUnlock(true); return }
     setLoading(true); setResult(null); setError(''); setProgress(0)
 
@@ -109,30 +126,48 @@ export default function Home() {
       if (i < steps.length) { setProgress(steps[i].pct); setProgressText(steps[i].text); i++ }
     }, 4000)
 
+    // Harden: 60 秒超時保險，避免卡住一直轉
+    const ctrl = new AbortController()
+    const timeoutId = setTimeout(() => ctrl.abort(), 60_000)
+
     try {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ url: trimmed }),
+        signal: ctrl.signal,
       })
+      clearTimeout(timeoutId)
       clearInterval(timer); setProgress(100)
-      const data = await res.json()
+      const data = await res.json().catch(() => ({ error: '回傳格式怪怪的，再試一次' }))
       if (!res.ok) {
-        setError(data.error || '分析失敗')
+        // Harden: 區分常見錯誤類型
+        if (res.status === 429) setError('太多人在用，等 30 秒再試')
+        else if (res.status === 404) setError('找不到這個頻道，確認網址對不對')
+        else if (res.status >= 500) setError('伺服器暫時罷工，等等再試')
+        else setError(data.error || '分析失敗，再試一次')
       } else {
         const newCount = scanCount + 1
         setScanCount(newCount)
-        localStorage.setItem(SCAN_COUNT_KEY, String(newCount))
+        try { localStorage.setItem(SCAN_COUNT_KEY, String(newCount)) } catch {}
         setResult(data)
         try {
           const raw = localStorage.getItem(HISTORY_KEY)
           const existing: AnalysisResult[] = raw ? JSON.parse(raw) : []
           const deduped = existing.filter((h) => h.channelUrl !== data.channelUrl)
           localStorage.setItem(HISTORY_KEY, JSON.stringify([data, ...deduped].slice(0, MAX_HISTORY)))
-        } catch {}
+        } catch (e) {
+          // Harden: localStorage 滿了或無法寫，不影響掃描結果顯示
+          console.warn('history save failed:', e)
+        }
       }
-    } catch {
-      clearInterval(timer); setError('網路錯誤，請再試一次')
+    } catch (e) {
+      clearTimeout(timeoutId); clearInterval(timer)
+      if (e instanceof Error && e.name === 'AbortError') {
+        setError('掃太久了，可能頻道太大，挑小一點的再試')
+      } else {
+        setError('網路有點問題，再試一次')
+      }
     } finally {
       setLoading(false)
     }
@@ -146,7 +181,10 @@ export default function Home() {
   const canSubmit = url.trim().length > 0 && !loading
 
   return (
-    <main className="page-main">
+    <main className="page-main" id="main">
+
+      {/* a11y: 鍵盤使用者可跳過 nav 直達主內容 */}
+      <a href="#scan-input" className="skip-link">跳到掃描輸入框</a>
 
       {/* 背景裝飾吉祥物 */}
       <div aria-hidden style={{ position: 'fixed', right: -60, top: 60, opacity: 0.07, pointerEvents: 'none', zIndex: 0, transform: 'rotate(8deg)' }}>
@@ -253,13 +291,20 @@ export default function Home() {
 
             {/* 輸入框 */}
             <div className={`glass-input-wrap${error ? ' glass-input-wrap--error' : ''}`}>
+              <label htmlFor="scan-input" className="sr-only">YouTube 頻道網址</label>
               <input
-                type="text"
+                id="scan-input"
+                type="url"
+                inputMode="url"
+                autoComplete="url"
+                spellCheck={false}
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && canSubmit && handleAnalyze()}
                 placeholder={PLACEHOLDERS[phIdx]}
                 disabled={loading}
+                aria-invalid={!!error}
+                aria-describedby={error ? 'scan-error' : undefined}
                 style={{
                   flex: 1, minWidth: 0, padding: '13px 0',
                   fontFamily: 'inherit', fontSize: 15,
@@ -348,9 +393,16 @@ export default function Home() {
 
             {/* 掃描進度 */}
             {loading && (
-              <>
+              <div role="status" aria-live="polite" aria-busy="true" aria-label={`掃描進度 ${progress}%`}>
                 {/* Overdrive 進度條 — 漸層 + shimmer + 流動光點 */}
-                <div className="cinematic-progress" style={{ marginTop: 14 }}>
+                <div
+                  className="cinematic-progress"
+                  style={{ marginTop: 14 }}
+                  role="progressbar"
+                  aria-valuenow={progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
                   <div className="cinematic-progress__fill" style={{ width: `${progress}%` }} />
                   <span className="cinematic-progress__pulse" style={{ left: `${Math.max(progress - 1, 0)}%` }} />
                 </div>
@@ -374,7 +426,7 @@ export default function Home() {
                   </div>
                 </div>
                 <ScanningStages progress={progress} />
-              </>
+              </div>
             )}
           </div>
           </div>
@@ -382,7 +434,7 @@ export default function Home() {
 
         {/* ── 錯誤 ── */}
         {error && !loading && (
-          <div className="glass-error" style={{ marginBottom: 14 }}>
+          <div id="scan-error" className="glass-error" role="alert" aria-live="assertive" style={{ marginBottom: 14 }}>
             <Mascot pose="think" size={50} alt="小析在想哪裡出錯" />
             <div style={{ flex: 1 }}>
               <p style={{ color: 'var(--terra-hex)', fontSize: 14, fontWeight: 800, letterSpacing: '-0.02em' }}>{error}</p>
@@ -392,6 +444,9 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* ── Social proof: 累計守護 ── */}
+        <SocialProof />
 
         {/* ── 熊熊精選 CTA ── */}
         <a href="/kids" className="glass-card-honey reveal-up" style={{ marginBottom: 44 }}>

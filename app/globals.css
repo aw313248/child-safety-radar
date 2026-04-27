@@ -99,6 +99,53 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* a11y: 鍵盤跳過 nav 直達主內容 */
+.skip-link {
+  position: absolute;
+  top: -100px; left: 12px;
+  z-index: 9999;
+  padding: 10px 14px;
+  background: var(--ink-hex);
+  color: var(--cc-gold);
+  font-size: 13px; font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 2px solid var(--cc-gold);
+  transition: top 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.skip-link:focus { top: 12px; outline: none; }
+
+/* a11y: 視覺隱藏但 screen reader 能讀 */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* a11y: 鍵盤 focus 統一 ring，避免 browser default 醜邊框 */
+*:focus-visible {
+  outline: 2px solid var(--cc-gold);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+button:focus-visible,
+a:focus-visible {
+  outline-offset: 3px;
+}
+
+/* Live dot — social proof「正在運轉中」感 */
+@keyframes live-dot {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(122,184,126,0.25); }
+  50%      { box-shadow: 0 0 0 6px rgba(122,184,126,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="live-dot"] { animation: none !important; }
+}
+
 /* ══════════════════════════════════════════════════
    Cinematic 掃描中區塊 — Overdrive moment
    進度條漸層 + 流動光點 + 放大鏡掃過卡片 + 詞彙飄過
