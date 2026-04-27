@@ -265,8 +265,11 @@ export default function KidsModePage() {
           <iframe
             ref={iframeRef}
             onLoad={() => { iframeRef.current?.contentWindow?.postMessage(JSON.stringify({ event: 'listening' }), '*') }}
-            // fs=0 鎖全螢幕鈕、disablekb=1 鎖鍵盤捷徑、modestbranding=1 + rel=0 + iv_load_policy=3 藏 YouTube branding 跟外連
-            src={`https://www.youtube-nocookie.com/embed/${playingVideoId}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&controls=1&disablekb=1&showinfo=0`}
+            // 鎖跳出組合拳：
+            //   loop=1 + playlist=ID = 強制單片循環，end screen 永遠不出現（不會冒「更多影片」推薦）
+            //   fs=0 鎖全螢幕、disablekb=1 鎖鍵盤、modestbranding + rel=0 + iv_load_policy=3 + showinfo=0 砍 YouTube branding 跟外連
+            //   color=white 把進度條從紅色改白色（藏 YouTube 紅標識）
+            src={`https://www.youtube-nocookie.com/embed/${playingVideoId}?autoplay=1&loop=1&playlist=${playingVideoId}&rel=0&modestbranding=1&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&controls=1&disablekb=1&showinfo=0&color=white`}
             // 拿掉 fullscreen 權限，allow 也對應砍掉
             allow="autoplay; encrypted-media"
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}

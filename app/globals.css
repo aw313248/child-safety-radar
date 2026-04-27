@@ -299,6 +299,25 @@
   font-weight: 700;
 }
 
+/* Footer 品牌徽 hover：熊熊 wiggle */
+.footer-brand:hover .footer-brand__mark {
+  transform: rotate(-8deg) scale(1.08);
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-brand:hover .footer-brand__mark { transform: none; }
+}
+
+/* /kids 頻道卡 hover：ChannelAvatar 微縮放回饋 */
+.bee-card:hover .channel-avatar-wrap {
+  transform: scale(1.06) translateY(-2px);
+}
+.channel-avatar-wrap {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .channel-avatar-wrap { transition: none; }
+}
+
 /* /kids 影片區禁用 iOS 長按 callout / 桌面右鍵 / 文字選取 — 防鎖跳出 */
 .kids-player-area {
   -webkit-touch-callout: none;

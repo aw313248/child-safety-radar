@@ -403,6 +403,13 @@ function TimerBubble({ remainSec, onClick }: { remainSec: number; onClick: () =>
   const mm = Math.floor(remainSec / 60)
   const ss = remainSec % 60
   const urgent = remainSec <= 60
+
+  // 口語化顯示（不要 24 小時制冷冰冰）
+  let label: string
+  if (remainSec <= 60) label = '快 1 分鐘了'
+  else if (remainSec < 180) label = `剩 ${mm} 分`
+  else label = `${mm}:${String(ss).padStart(2, '0')}`
+
   return (
     <button
       onClick={onClick}
@@ -412,24 +419,32 @@ function TimerBubble({ remainSec, onClick }: { remainSec: number; onClick: () =>
         top: 'max(14px, env(safe-area-inset-top))',
         right: 14,
         zIndex: 9000,
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '8px 14px 8px 10px',
-        background: urgent ? 'var(--terra-hex)' : 'var(--ink-hex)',
-        color: urgent ? '#fff' : 'var(--honey-hex)',
-        border: '2.5px solid var(--ink-hex)',
+        display: 'flex', alignItems: 'center', gap: 7,
+        padding: '8px 14px 8px 11px',
+        background: urgent
+          ? 'linear-gradient(135deg, rgba(194,65,59,0.92), rgba(142,42,36,0.88))'
+          : 'rgba(43,24,16,0.85)',
+        color: urgent ? '#FFF6E6' : 'var(--cc-gold)',
+        backdropFilter: 'blur(20px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+        border: urgent ? '1px solid rgba(142,42,36,0.5)' : '1px solid rgba(43,24,16,0.55)',
         borderRadius: 9999,
-        boxShadow: '3px 3px 0 rgba(43,24,16,0.92)',
+        boxShadow: urgent
+          ? 'inset 0 1px 0 rgba(255,255,255,0.22), 0 6px 18px -6px rgba(142,42,36,0.5)'
+          : 'inset 0 1px 0 rgba(255,255,255,0.18), 0 4px 14px -4px rgba(43,24,16,0.4)',
         fontFamily: 'inherit',
         cursor: 'pointer',
         animation: urgent ? 'bubble-pulse 0.9s ease-in-out infinite' : 'none',
       }}
     >
-      <span style={{ fontSize: 16 }}>⏱️</span>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>
+      </svg>
       <span style={{
-        fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
-        fontSize: 14, fontWeight: 900, letterSpacing: '0.02em',
+        fontFamily: remainSec >= 180 ? 'ui-monospace, "SF Mono", Menlo, monospace' : 'inherit',
+        fontSize: 13, fontWeight: 700, letterSpacing: '-0.005em',
       }}>
-        {String(mm).padStart(2, '0')}:{String(ss).padStart(2, '0')}
+        {label}
       </span>
       <style>{`
         @keyframes bubble-pulse {

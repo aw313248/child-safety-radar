@@ -69,6 +69,8 @@ export default function ResultCard({ result, onReset }: Props) {
   const cfg = RISK_CONFIG[result.riskLevel]
   const [showBreakdown, setShowBreakdown] = useState(false)
   const [showQR, setShowQR] = useState(false)
+  // distill：警示留言 + 異常標籤 + 熊爸熊媽建議 默認折疊，預設只看分數 + 摘要 + CTA
+  const [showDetails, setShowDetails] = useState(false)
 
   const handleShare = async () => {
     const shareText = `【CareCub Kids 掃描結果】\n${result.channelName}\n風險等級：${cfg.label}\n\n${result.aiSummary.slice(0, 80)}...\n\nCareCub Kids — 越「皮」的孩子，越要先 Peek 過`
@@ -263,8 +265,41 @@ export default function ResultCard({ result, onReset }: Props) {
         </p>
       </div>
 
-      {/* Warning comments */}
-      {result.warningComments.length > 0 && (
+      {/* 折疊：警示留言 / 異常標籤 / 建議 默認收起，使用者按了才展開（distill） */}
+      {(result.warningComments.length > 0 || result.suspiciousTags.length > 0 || result.recommendation) && (
+        <button
+          onClick={() => setShowDetails(!showDetails)}
+          aria-expanded={showDetails}
+          style={{
+            width: '100%', padding: '13px 18px',
+            background: 'rgba(255,255,255,0.55)',
+            backdropFilter: 'blur(18px) saturate(150%)',
+            WebkitBackdropFilter: 'blur(18px) saturate(150%)',
+            border: '1px solid rgba(43,24,16,0.14)',
+            borderRadius: 14,
+            color: 'var(--ink-hex)',
+            fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
+            cursor: 'pointer', fontFamily: 'inherit',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            transition: 'background 0.18s',
+          }}
+        >
+          <span>
+            {showDetails ? '收合' : '看詳細分析'}
+            {!showDetails && result.warningComments.length > 0 && (
+              <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(43,24,16,0.6)', marginLeft: 6 }}>
+                · {result.warningComments.length} 則家長警示留言
+              </span>
+            )}
+          </span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showDetails ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1)' }}>
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+      )}
+
+      {/* Warning comments — 折疊內 */}
+      {showDetails && result.warningComments.length > 0 && (
         <div className="bee-card stagger-3" style={{ padding: '20px' }}>
           <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '14px', opacity: 0.75, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -343,8 +378,8 @@ export default function ResultCard({ result, onReset }: Props) {
         </div>
       )}
 
-      {/* Suspicious tags */}
-      {result.suspiciousTags.length > 0 && (
+      {/* Suspicious tags — 折疊內 */}
+      {showDetails && result.suspiciousTags.length > 0 && (
         <div className="bee-card stagger-3" style={{ padding: '20px' }}>
           <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '12px', opacity: 0.75, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -369,7 +404,8 @@ export default function ResultCard({ result, onReset }: Props) {
         </div>
       )}
 
-      {/* Recommendation */}
+      {/* Recommendation — 折疊內 */}
+      {showDetails && (
       <div className="bee-card-honey stagger-4" style={{ padding: '20px' }}>
         <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '10px', opacity: 0.75, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <span style={{
@@ -387,6 +423,7 @@ export default function ResultCard({ result, onReset }: Props) {
           {result.recommendation}
         </p>
       </div>
+      )}
 
       {/* 非高風險 → 給爸媽一鍵加入熊熊守護模式 */}
       <AddToKidsMode

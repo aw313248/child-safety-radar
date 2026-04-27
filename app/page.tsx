@@ -57,14 +57,14 @@ export default function Home() {
     return () => clearInterval(id)
   }, [url, loading])
 
-  // 結果出現觸發 confetti
+  // 結果出現觸發 confetti（含 result.checkedAt 變動 → 從 history 開另一個 result 也會放）
   useEffect(() => {
     if (result) {
       setConfetti(true)
       const id = setTimeout(() => setConfetti(false), 700)
       return () => clearTimeout(id)
     }
-  }, [result])
+  }, [result?.channelId, result?.checkedAt]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -507,19 +507,21 @@ export default function Home() {
           paddingTop: 24,
           borderTop: '1px dashed rgba(43,24,16,0.14)',
         }}>
-          <div style={{
+          <div className="footer-brand" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             fontSize: 13, fontWeight: 800,
             color: 'var(--ink-hex)',
             letterSpacing: '-0.02em',
             marginBottom: 8,
+            cursor: 'default',
           }}>
-            <span style={{
+            <span className="footer-brand__mark" style={{
               width: 22, height: 22, borderRadius: '50%',
               background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
               border: '1.5px solid var(--ink-hex)',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               overflow: 'hidden',
+              transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
             }}>
               <Mascot pose="hi" size={18} />
             </span>
