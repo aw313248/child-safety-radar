@@ -4,11 +4,27 @@ import { getChannelInfo, getVideoComments, CommentThread } from '@/lib/youtube'
 import { AnalysisResult, RiskLevel, ScoreBreakdownItem } from '@/types/analysis'
 import { authenticate, corsHeaders } from '@/lib/api-auth'
 import { rateLimit, getClientIp, getDeviceFingerprint } from '@/lib/rate-limit'
+import { getScanCount, incrementScanCount } from '@/lib/redis'
 
 const FREE_SCANS = 2
-const SCAN_COOKIE = 'cc_scan_count'
 const UNLOCK_COOKIE = 'cc_unlocked'
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 天
+
+// Cloudflare Turnstile server-side 驗證
+async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY
+  if (!secret) return true // env 未設定 → 跳過（本地開發）
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret, response: token, remoteip: ip }),
+    })
+    const data = await res.json() as { success: boolean }
+    return data.success === true
+  } catch {
+    return true // Cloudflare 掛了 → 放行，不卡正常使用者
+  }
+}
 
 // Manual blacklist (頻道 ID，逗號分隔，從環境變數讀)
 const BLACKLIST = (process.env.CHANNEL_BLACKLIST || '').split(',').map(s => s.trim()).filter(Boolean)
@@ -275,12 +291,16 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // ── 2b. Server-side scan count（cookie，防 client 清 localStorage 重置漏洞）──
+  // ── 2b. Unlock 狀態仍從 httpOnly cookie 讀（Lemon Squeezy 付費後設置）──
   const cookieHeader = req.headers.get('cookie') || ''
   const cookies = Object.fromEntries(cookieHeader.split('; ').map(c => c.split('=')))
   const unlocked = cookies[UNLOCK_COOKIE] === '1'
-  const serverScanCount = parseInt(cookies[SCAN_COOKIE] || '0', 10)
-  if (!unlocked && serverScanCount >= FREE_SCANS) {
+
+  // ── 2c. 掃描次數從 Upstash Redis 讀（按裝置 fingerprint）──
+  // 優勢：清 cookie、換瀏覽器、清 localStorage 全部無效；只有換 IP + UA 才能繞
+  const fingerprint = getDeviceFingerprint(req)
+  const redisScanCount = await getScanCount(fingerprint)
+  if (!unlocked && redisScanCount >= FREE_SCANS) {
     return NextResponse.json(
       { error: '免費次數已用完，請解鎖無限掃描' },
       { status: 402, headers: rlHeaders }
@@ -301,6 +321,16 @@ export async function POST(req: NextRequest) {
     const YOUTUBE_RE = /youtube\.com|youtu\.be|^@[\w.-]+$|^UC[\w-]{22}$/i
     if (!YOUTUBE_RE.test(trimmedUrl)) {
       return NextResponse.json({ error: '請提供有效的 YouTube 頻道網址' }, { status: 400, headers: rlHeaders })
+    }
+
+    // ── Turnstile 人機驗證（TURNSTILE_SECRET_KEY 設定後自動啟用）──
+    const turnstileToken = body?.turnstileToken
+    if (turnstileToken) {
+      const clientIp = getClientIp(req)
+      const ok = await verifyTurnstile(turnstileToken, clientIp)
+      if (!ok) {
+        return NextResponse.json({ error: '人機驗證失敗，重新整理後再試' }, { status: 403, headers: rlHeaders })
+      }
     }
 
     const ytApiKey = process.env.YOUTUBE_API_KEY
@@ -493,16 +523,10 @@ export async function POST(req: NextRequest) {
       scoreBreakdown: breakdown,
     }
 
-    // 成功後 set-cookie 累計 server-side scan count（防漏洞）
+    // 成功後 Redis 累計 fingerprint 掃描次數（非同步，不阻塞回傳）
     const res = NextResponse.json(result, { headers: rlHeaders })
     if (!unlocked) {
-      res.cookies.set(SCAN_COOKIE, String(serverScanCount + 1), {
-        maxAge: COOKIE_MAX_AGE,
-        httpOnly: true,
-        sameSite: 'strict',
-        secure: true,
-        path: '/',
-      })
+      incrementScanCount(fingerprint).catch(() => {}) // Redis 掛了不影響使用者
     }
     return res
   } catch (err: unknown) {

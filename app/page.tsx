@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import ResultCard from '@/components/ResultCard'
 import Mascot from '@/components/Mascot'
+import TurnstileWidget from '@/components/TurnstileWidget'
 import ScanningStages from '@/components/ScanningStages'
 import RecentHighRisk from '@/components/RecentHighRisk'
 import SocialProof from '@/components/SocialProof'
@@ -49,6 +50,8 @@ export default function Home() {
   const [phIdx, setPhIdx] = useState(0)
   // confetti：result 出現的瞬間放一次 0.6s 蜂蜜金小點
   const [confetti, setConfetti] = useState(false)
+  // Turnstile token — 頁面載入後 Cloudflare 背景驗人機，拿到 token 才能掃
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
   // 動態 placeholder 輪播
   useEffect(() => {
@@ -173,7 +176,7 @@ export default function Home() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: trimmed }),
+        body: JSON.stringify({ url: trimmed, ...(turnstileToken ? { turnstileToken } : {}) }),
         signal: ctrl.signal,
       })
       clearTimeout(timeoutId)
@@ -500,6 +503,12 @@ export default function Home() {
         <div id="case-library" className="reveal-up">
           <CaseLibrary />
         </div>
+
+        {/* Turnstile 人機驗證 — invisible 模式，頁面背景靜默驗，不影響 UX */}
+        <TurnstileWidget
+          onSuccess={(token) => setTurnstileToken(token)}
+          onExpire={() => setTurnstileToken(null)}
+        />
 
         {/* Footer — 品牌名收尾 + 免責，全 SVG 無 emoji */}
         <footer className="reveal-up" style={{
