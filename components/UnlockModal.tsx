@@ -162,6 +162,7 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
           href="https://peekkids.lemonsqueezy.com/checkout/buy/5468a3b1-03e2-467e-830a-bfabf0b1f20b?locale=zh-TW"
           target="_blank"
           rel="noopener noreferrer"
+          className="cta-paywall"
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
@@ -188,6 +189,7 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
         {/* Escape hatch — 不想付錢還能用熊熊精選 */}
         <a
           href="/kids"
+          className="cta-escape"
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
             padding: '10px 14px',

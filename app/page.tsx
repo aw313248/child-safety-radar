@@ -231,22 +231,22 @@ export default function Home() {
               ) : (
                 <button
                   onClick={() => setShowUnlock(true)}
+                  className={remainingFree === 0 ? 'chip-blocked' : remainingFree === 1 ? 'chip-urgent' : ''}
                   style={{
                     background: remainingFree === 0 ? 'var(--terra-hex)' : remainingFree === 1 ? 'var(--honey-hex)' : 'transparent',
                     border: remainingFree <= 1 ? '1.5px solid var(--ink-hex)' : 'none',
-                    padding: remainingFree <= 1 ? '3px 9px' : 0,
+                    padding: remainingFree <= 1 ? '4px 10px' : 0,
                     borderRadius: 9999,
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                     fontSize: 11, fontWeight: 600,
                     color: remainingFree === 0 ? '#FFF6E6' : remainingFree === 1 ? 'var(--ink-hex)' : 'var(--text-tertiary)',
                     display: 'inline-flex', alignItems: 'center', gap: 4,
-                    transition: 'transform 0.12s',
                   }}
                   title={remainingFree > 0 ? '點開看看升級方案' : '解鎖無限掃描'}
                 >
                   {remainingFree > 1 && `免費剩 ${remainingFree} 次`}
-                  {remainingFree === 1 && '⚡ 最後 1 次免費 · 看升級'}
+                  {remainingFree === 1 && (<><span className="bolt-bob" aria-hidden>⚡</span>最後 1 次免費 · 看升級</>)}
                   {remainingFree === 0 && '免費已用完 · 解鎖 →'}
                 </button>
               )}

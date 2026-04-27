@@ -653,6 +653,88 @@ html.candy .sticker-tab.is-active {
   .sticker-pop { animation: none; }
 }
 
+/* ══════════════════════════════════════════════════
+   Paywall 動畫 — 緊迫感勾眼球但不騷擾
+   Signature：剩 1 次的 chip 脈衝 + ⚡ 跳動
+   ══════════════════════════════════════════════════ */
+
+/* 1. 緊迫 chip — 蜂蜜金 ring 慢慢擴散外圍，告訴你「這很重要」 */
+@keyframes urgency-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(242, 184, 75, 0.55), 0 2px 0 var(--ink-hex); }
+  50%      { box-shadow: 0 0 0 8px rgba(242, 184, 75, 0), 0 2px 0 var(--ink-hex); }
+}
+.chip-urgent {
+  animation: urgency-pulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chip-urgent:hover {
+  transform: scale(1.04) translateY(-1px);
+  animation-play-state: paused;
+}
+.chip-urgent:active { transform: scale(0.97); }
+
+/* 2. 紅色 chip — 已用完，更急一點 */
+@keyframes urgency-pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(194, 65, 59, 0.55); }
+  50%      { box-shadow: 0 0 0 9px rgba(194, 65, 59, 0); }
+}
+.chip-blocked {
+  animation: urgency-pulse-red 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chip-blocked:hover {
+  transform: scale(1.04) translateY(-1px);
+  animation-play-state: paused;
+}
+.chip-blocked:active { transform: scale(0.97); }
+
+/* 3. ⚡ icon 微微點頭，配合 chip 用 */
+@keyframes bolt-bob {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  20%      { transform: rotate(-8deg) translateY(-1px); }
+  40%      { transform: rotate(6deg) translateY(0); }
+}
+.bolt-bob {
+  display: inline-block;
+  animation: bolt-bob 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  transform-origin: 50% 80%;
+}
+
+/* 4. Modal 主 CTA — 跟 sticker 同套 hover lift + ink shadow 加深 */
+.cta-paywall {
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.18s;
+  will-change: transform;
+}
+.cta-paywall:hover {
+  transform: translate(-1px, -2px);
+  box-shadow: 5px 5px 0 var(--ink-hex);
+  filter: brightness(1.06);
+}
+.cta-paywall:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink-hex);
+}
+
+/* 5. Escape hatch — 虛線變實線 + 浮起 */
+.cta-escape {
+  transition: border-color 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              color 0.2s, background 0.2s,
+              transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cta-escape:hover {
+  border-color: var(--ink-hex);
+  color: var(--ink-hex);
+  background: rgba(242, 184, 75, 0.18);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip-urgent, .chip-blocked, .bolt-bob { animation: none; }
+  .cta-paywall, .cta-escape, .chip-urgent, .chip-blocked { transition: none; }
+}
+
 
 .scan-ring {
   position: absolute; inset: 0;
