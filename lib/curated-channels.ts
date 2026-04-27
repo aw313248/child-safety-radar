@@ -79,58 +79,21 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     language: 'en',
     emoji: '🎨',
   },
-  // ── 台灣 0-6 歲爸媽常用的中文卡通／教育頻道 ──
-  // ⚠️ channel ID 待 Oscar 驗證後填入（目前用 handle 標記，scan 流程仍可運作但 thumbnail 拿不到）
+  // ── 0-6 歲全球熱門卡通 ──
   {
-    channelId: 'UC3p67sUz3tHHEzUtY3fHWuw', // 巧虎 巧連智 官方
-    name: '巧虎 巧連智',
-    handle: '@shimajiro',
-    description: '台灣 Benesse 官方頻道，幼兒生活教育',
-    ageGroups: ['0-3', '3-6'],
-    categories: ['learn', 'cartoon'],
-    language: 'zh',
-    emoji: '🐯',
-  },
-  {
-    channelId: 'UCjz0mBPcmSTM4qRtfGRGZ_g', // YOYO TV 官方
-    name: 'YOYO TV',
-    handle: '@yoyotv',
-    description: '東森 YOYO 親子台 YouTube，台灣兒童電視台招牌',
-    ageGroups: ['0-3', '3-6'],
-    categories: ['cartoon', 'song'],
-    language: 'zh',
-    emoji: '📺',
-  },
-  {
-    channelId: 'UCzuqhhs6NWbgTzMuM09WKDQ', // Polly Pocket 中文
-    name: 'Polly Pocket 中文',
-    handle: '@PollyPocketChinese',
-    description: '美泰兒 Polly Pocket 官方中文頻道',
-    ageGroups: ['3-6'],
-    categories: ['cartoon'],
-    language: 'zh',
-    emoji: '🌸',
-  },
-  {
-    channelId: 'UCBfvN6ICuAJOPwCb6QFuDoA', // Pororo 小企鵝中文
-    name: 'Pororo 小企鵝',
-    handle: '@pororochinese',
-    description: '韓國 Pororo 中文配音版，溫和友善',
+    channelId: 'UCVzLLZkDuFGAE2BGdBuBNBg', // 驗證：Bluey - Official Channel
+    name: 'Bluey',
+    handle: '@BlueyOfficialChannel',
+    description: '澳洲官方 Bluey，目前全球 0-6 歲最紅卡通，家庭互動主題',
     ageGroups: ['0-3', '3-6'],
     categories: ['cartoon'],
-    language: 'zh',
-    emoji: '🐧',
+    language: 'en',
+    emoji: '🐕',
   },
-  {
-    channelId: 'UCFa9ETrSm9eNFRjN4eOiU3w', // 萬能阿曼（鮑伯與阿曼 Bob & Amani 中文）
-    name: '萬能阿曼',
-    handle: '@HandyMannyChinese',
-    description: '迪士尼萬能阿曼，工具修理生活教育',
-    ageGroups: ['3-6'],
-    categories: ['cartoon', 'learn'],
-    language: 'zh',
-    emoji: '🔧',
-  },
+  // ── 待驗證：台灣爸媽常用頻道（需要 Oscar 手動查 channel ID 後填入） ──
+  // 巧虎 Benesse TW：進 youtube.com/@shimajiro 找到 "browseId" 那串 UC ID
+  // YOYO TV 東森：進 youtube.com 搜「YOYO TV 東森」官方頻道，點進去看網址
+  // Pororo 中文：進 youtube.com 搜「Pororo 小企鵝 中文」官方頻道
 ]
 
 // ═══ 影片級關鍵字黑名單 ═══════════════════════════════════════

@@ -70,6 +70,7 @@ export default function KidsModePage() {
   const [videos, setVideos] = useState<SafeVideo[]>([])
   const [loadingVideos, setLoadingVideos] = useState(false)
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
+  const [videoPaused, setVideoPaused] = useState(false)
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   // 退出算數題：每次重開 modal 都換一題（防小孩背答案）+ 多運算混合
   const [exitMath, setExitMath] = useState(() => makeExitMath())
@@ -148,8 +149,17 @@ export default function KidsModePage() {
       if (typeof e.data !== 'string') return
       try {
         const data = JSON.parse(e.data)
-        if (data.event === 'onStateChange' && data.info === 0) setPlayingVideoId(null)
-        if (data.event === 'infoDelivery' && data.info?.playerState === 0) setPlayingVideoId(null)
+        // state: -1=unstarted, 0=ended, 1=playing, 2=paused, 3=buffering, 5=cued
+        if (data.event === 'onStateChange') {
+          if (data.info === 0) setPlayingVideoId(null)
+          if (data.info === 1) setVideoPaused(false)
+          if (data.info === 2) setVideoPaused(true)
+        }
+        if (data.event === 'infoDelivery') {
+          if (data.info?.playerState === 0) setPlayingVideoId(null)
+          if (data.info?.playerState === 1) setVideoPaused(false)
+          if (data.info?.playerState === 2) setVideoPaused(true)
+        }
       } catch {}
     }
     window.addEventListener('message', onMessage)
@@ -213,6 +223,7 @@ export default function KidsModePage() {
     setSelectedChannel(ch)
     setVideos([])
     setPlayingVideoId(null)
+    setVideoPaused(false)
     setLoadingVideos(true)
     try {
       const res = await fetch(`/api/safe-videos?channelId=${ch.channelId}`)
@@ -280,30 +291,45 @@ export default function KidsModePage() {
             蓋住右下/右上角 + 影片左上的標題鏈結
             中央 click-through 維持暫停 / 播放正常
           */}
-          {/* 右下：YouTube logo + 更多影片 + share */}
+          {/* 右下：YouTube logo 角落 */}
           <div aria-hidden style={{
             position: 'absolute', right: 0, bottom: 0,
-            width: 220, height: 56,
-            zIndex: 5,
-            background: 'transparent',
-            cursor: 'not-allowed',
+            width: 180, height: 48,
+            zIndex: 5, background: 'transparent', cursor: 'not-allowed',
           }} onClick={e => { e.preventDefault(); e.stopPropagation() }} />
-          {/* 右上：影片標題鏈結（pause 時會出現「在 YouTube 上看」） */}
-          <div aria-hidden style={{
-            position: 'absolute', right: 0, top: 0,
-            width: 80, height: 56,
-            zIndex: 5,
-            background: 'transparent',
-            cursor: 'not-allowed',
-          }} onClick={e => { e.preventDefault(); e.stopPropagation() }} />
-          {/* 左上：影片標題（pause 時 click 會跳 YouTube watch page） */}
-          <div aria-hidden style={{
-            position: 'absolute', left: 0, top: 0,
-            width: 'calc(100% - 80px)', height: 56,
-            zIndex: 5,
-            background: 'transparent',
-            cursor: 'not-allowed',
-          }} onClick={e => { e.preventDefault(); e.stopPropagation() }} />
+          {/* 暫停偵測 overlay：蓋住整個影片，阻止「更多影片」推薦格被點到 */}
+          {videoPaused && (
+            <div
+              aria-label="點一下繼續播放"
+              style={{
+                position: 'absolute', inset: 0,
+                zIndex: 6,
+                background: 'rgba(0,0,0,0.35)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                // 送 playVideo 指令給 YouTube player API
+                iframeRef.current?.contentWindow?.postMessage(
+                  JSON.stringify({ event: 'command', func: 'playVideo', args: [] }),
+                  '*'
+                )
+                setVideoPaused(false)
+              }}
+            >
+              <div style={{
+                width: 72, height: 72, borderRadius: '50%',
+                background: 'rgba(255,255,255,0.18)',
+                backdropFilter: 'blur(12px)',
+                border: '2px solid rgba(255,255,255,0.55)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="white" stroke="none">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     )
