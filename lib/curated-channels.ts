@@ -79,6 +79,17 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     language: 'en',
     emoji: '🎨',
   },
+  // ── 台灣 0-6 歲精選 ──
+  {
+    channelId: 'UCnjadOj5qlKXsTAXPSwc67A', // 驗證：巧虎TV（台灣巧連智官方頻道）
+    name: '巧虎 巧連智',
+    handle: '@BenesseTaiwan',
+    description: '台灣 Benesse 官方頻道，巧虎 0-6 歲生活教育，台灣爸媽最熟悉的幼兒品牌',
+    ageGroups: ['0-3', '3-6'],
+    categories: ['learn', 'cartoon'],
+    language: 'zh',
+    emoji: '🐯',
+  },
   // ── 0-6 歲全球熱門卡通 ──
   {
     channelId: 'UCVzLLZkDuFGAE2BGdBuBNBg', // 驗證：Bluey - Official Channel
