@@ -178,9 +178,19 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── 輸入卡（毛玻璃，唯一視覺主角） ── */}
+        {/* ── 輸入卡（Double-Bezel：外殼 hairline tray + 內核 glass，給機械精品感） ── */}
         {!result && (
-          <div className="glass-card stagger-2" style={{ padding: '20px 20px 18px', marginBottom: 14 }}>
+          <div className="stagger-2" style={{
+            padding: 6,
+            marginBottom: 14,
+            borderRadius: 30,
+            background: 'linear-gradient(135deg, rgba(242,184,75,0.16), rgba(255,255,255,0.04) 60%, rgba(43,24,16,0.04))',
+            boxShadow:
+              'inset 0 0 0 1px rgba(43,24,16,0.06),' +
+              ' 0 1px 0 rgba(255,255,255,0.7),' +
+              ' 0 22px 40px -28px rgba(43,24,16,0.22)',
+          }}>
+          <div className="glass-card" style={{ padding: '20px 20px 18px', borderRadius: 24 }}>
 
             {/* 輸入框 */}
             <div className={`glass-input-wrap${error ? ' glass-input-wrap--error' : ''}`}>
@@ -199,10 +209,14 @@ export default function Home() {
                 }}
               />
               <button
-                className="glass-btn-honey"
+                className="glass-btn-honey group"
                 onClick={handleAnalyze}
                 disabled={!canSubmit}
                 aria-label="掃這個頻道"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  paddingRight: 6,
+                }}
               >
                 {loading ? (
                   <>
@@ -214,7 +228,25 @@ export default function Home() {
                     }} />
                     掃描中
                   </>
-                ) : '掃這個頻道 →'}
+                ) : (
+                  <>
+                    掃這個頻道
+                    {/* button-in-button 箭頭：包進深可可小圓，給機械精品感 */}
+                    <span aria-hidden style={{
+                      width: 26, height: 26, borderRadius: '50%',
+                      background: 'var(--ink-hex)',
+                      color: 'var(--cc-gold)',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0,
+                      transition: 'transform 0.2s cubic-bezier(0.22, 1, 0.36, 1)',
+                    }} className="cta-arrow-nest">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                      </svg>
+                    </span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -277,6 +309,7 @@ export default function Home() {
                 <ScanningStages progress={progress} />
               </>
             )}
+          </div>
           </div>
         )}
 

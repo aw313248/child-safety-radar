@@ -99,6 +99,26 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* CTA 箭頭 nested 圓 — 主按鈕 hover 時箭頭往右上微推（button-in-button physics） */
+button:hover .cta-arrow-nest,
+.glass-btn-honey:hover .cta-arrow-nest {
+  transform: translate(2px, -1px) scale(1.06);
+}
+button:active .cta-arrow-nest,
+.glass-btn-honey:active .cta-arrow-nest {
+  transform: translate(0, 0) scale(0.96);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-arrow-nest { transition: none !important; }
+}
+
+/* 客製選取色 — 蜂蜜金 + 深可可，比預設藍色貼品牌（細節劇場） */
+::selection {
+  background: var(--cc-gold);
+  color: var(--ink-hex);
+  text-shadow: none;
+}
+
 body {
   font-family: var(--font-heihei), 'PingFang TC', -apple-system, BlinkMacSystemFont,
                'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
@@ -107,6 +127,8 @@ body {
   -webkit-font-smoothing: antialiased;
   font-weight: 400;
   line-height: 1.65;
+  /* Tabular figures — 數字等寬，價格 / 計時 / 分數對齊不亂跳 */
+  font-feature-settings: 'tnum' on, 'lnum' on, 'ss01' on;
 
   /* 護眼底：加強漸層讓毛玻璃有東西可以折射 */
   background-color: var(--paper-hex);
