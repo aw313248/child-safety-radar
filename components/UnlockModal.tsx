@@ -205,7 +205,7 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
           先不解鎖 · 去看免費的熊熊精選頻道 →
         </a>
 
-        {/* Trust signals — 7 天退款 + Lemon Squeezy + Apple/Google Pay */}
+        {/* Trust signals — Apple/Google Pay + Lemon Squeezy 結帳 */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexWrap: 'wrap', gap: '4px 12px',
@@ -213,13 +213,6 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
           letterSpacing: '-0.005em',
           marginBottom: 16, lineHeight: 1.6,
         }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            7 天無條件退款
-          </span>
-          <span>·</span>
           <span>Apple Pay / Google Pay</span>
           <span>·</span>
           <span>Lemon Squeezy 安全結帳</span>
