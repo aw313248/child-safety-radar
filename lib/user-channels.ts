@@ -11,9 +11,11 @@ export interface UserChannel {
   name: string
   thumbnail?: string
   ageGroup: AgeGroup
-  emoji: string
+  /** Mascot pose 取代 emoji。舊資料的 emoji 欄位保留向下相容 */
+  mascotPose?: string
+  /** @deprecated 舊版用 emoji，新版改用 mascotPose */
+  emoji?: string
   addedAt: number
-  // 加入時的 PeekKids 風險分數，方便爸媽事後回顧
   riskScore?: number
 }
 

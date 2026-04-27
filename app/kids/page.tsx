@@ -20,20 +20,21 @@ type DisplayChannel = {
   channelId: string
   name: string
   description: string
-  emoji: string
+  pose: MascotPose
   ageGroups: AgeGroup[]
   source: 'curated' | 'user'
 }
 
 function curatedToDisplay(c: CuratedChannel): DisplayChannel {
-  return { channelId: c.channelId, name: c.name, description: c.description, emoji: c.emoji, ageGroups: c.ageGroups, source: 'curated' }
+  return { channelId: c.channelId, name: c.name, description: c.description, pose: mascotForChannel(c.channelId), ageGroups: c.ageGroups, source: 'curated' }
 }
 function userToDisplay(c: UserChannel): DisplayChannel {
-  return { channelId: c.channelId, name: c.name, description: '爸媽自己加的頻道', emoji: c.emoji, ageGroups: [c.ageGroup], source: 'user' }
+  // 優先用 user 自選的 mascotPose，舊資料 fallback 用 channelId 算 hash pose
+  const pose = (c.mascotPose as MascotPose | undefined) ?? mascotForChannel(c.channelId)
+  return { channelId: c.channelId, name: c.name, description: '爸媽自己加的頻道', pose, ageGroups: [c.ageGroup], source: 'user' }
 }
 
 const LOCK_GUIDE_KEY = 'peekkids_lock_guide_seen'
-const AGE_KEY = 'peekkids_kids_age'
 
 interface SafeVideo {
   id: string
@@ -45,7 +46,6 @@ interface SafeVideo {
 export default function KidsModePage() {
   const [mounted, setMounted] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
-  const [age, setAge] = useState<AgeGroup | 'all'>('3-6')
   const [userChannels, setUserChannels] = useState<UserChannel[]>([])
   const [selectedChannel, setSelectedChannel] = useState<DisplayChannel | null>(null)
   const [videos, setVideos] = useState<SafeVideo[]>([])
@@ -87,10 +87,7 @@ export default function KidsModePage() {
   useEffect(() => {
     setMounted(true)
     setShowGuide(localStorage.getItem(LOCK_GUIDE_KEY) !== '1')
-    const savedAge = localStorage.getItem(AGE_KEY) as AgeGroup | 'all' | null
-    if (savedAge) setAge(savedAge)
     setUserChannels(getUserChannels())
-    // Glass design system — same visual as homepage
   }, [])
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
@@ -157,13 +154,9 @@ export default function KidsModePage() {
     setUserChannels(next)
   }
 
-  const saveAge = (a: AgeGroup | 'all') => {
-    setAge(a)
-    localStorage.setItem(AGE_KEY, a)
-  }
-
-  const curated = filterChannelsByAge(age).map(curatedToDisplay)
-  const mine = userChannels.filter(c => age === 'all' || c.ageGroup === age).map(userToDisplay)
+  // 年齡 filter 拿掉（沒鑑別度），全部秀出來
+  const curated = filterChannelsByAge('all').map(curatedToDisplay)
+  const mine = userChannels.map(userToDisplay)
 
   const openChannel = async (ch: DisplayChannel) => {
     setSelectedChannel(ch)
@@ -258,7 +251,7 @@ export default function KidsModePage() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               overflow: 'hidden',
             }}>
-              <Mascot pose={selectedChannel.source === 'user' ? mascotForChannel(selectedChannel.channelId) : CHANNEL_POSES[selectedChannel.channelId.length % CHANNEL_POSES.length]} size={60} />
+              <Mascot pose={selectedChannel.pose} size={60} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1.08 }}>
@@ -406,23 +399,11 @@ export default function KidsModePage() {
           </div>
         </div>
 
-        {/* ── 年齡選擇 ── */}
-        <div className="sticker-tabs" style={{ marginBottom: 16 }}>
-          {([
-            ['0-3', '0–3 歲'],
-            ['3-6', '3–6 歲'],
-            ['all', '全部'],
-          ] as const).map(([k, label], i) => (
-            <button
-              key={k}
-              onClick={() => saveAge(k)}
-              className={`sticker-tab${age === k ? ' is-active' : ''}`}
-              style={{ animationDelay: `${0.06 * i}s` }}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {/*
+          年齡 tabs 拿掉：5 個官方頻道全部都標記 0-3 + 3-6 雙年齡，
+          filter 結果完全相同 → 沒鑑別度的 UI 就不要假裝有
+          客製化由「掃完 → 加入熊熊守護模式」承擔（爸媽自己選年齡）
+        */}
 
         {/* ── 三層防護提示（同首頁奶油卡風） ── */}
         <div style={{
@@ -452,7 +433,7 @@ export default function KidsModePage() {
             paddingLeft: 4,
             lineHeight: 1,
           }}>
-            官方精選
+            精選頻道
             <span style={{
               position: 'absolute',
               bottom: -3, left: 4, right: 4,
@@ -462,6 +443,15 @@ export default function KidsModePage() {
               borderRadius: 3,
             }} />
           </h2>
+        )}
+        {curated.length > 0 && (
+          <p style={{
+            fontSize: 12, color: 'rgba(43,24,16,0.6)',
+            letterSpacing: '-0.005em', fontWeight: 500,
+            marginTop: -8, marginBottom: 14, paddingLeft: 4,
+          }}>
+            人工驗證 6 歲內安心看，想加自己的頻道請從首頁掃描後加入
+          </p>
         )}
         <div style={{
           display: 'grid',
@@ -489,7 +479,7 @@ export default function KidsModePage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 overflow: 'hidden',
               }}>
-                <Mascot pose={CHANNEL_POSES[idx % CHANNEL_POSES.length]} size={64} />
+                <Mascot pose={ch.pose} size={64} />
               </div>
               <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.03em', marginBottom: 4, lineHeight: 1.2 }}>
                 {ch.name}
@@ -557,7 +547,7 @@ export default function KidsModePage() {
                       boxShadow: '0 8px 18px -8px rgba(43, 24, 16, 0.35)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
                     }}>
-                      <Mascot pose={mascotForChannel(ch.channelId)} size={64} />
+                      <Mascot pose={ch.pose} size={64} />
                     </div>
                     <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.03em', marginBottom: 5, lineHeight: 1.2 }}>
                       {ch.name}

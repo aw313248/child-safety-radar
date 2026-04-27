@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { AgeGroup } from '@/lib/curated-channels'
 import { addUserChannel, hasUserChannel, removeUserChannel } from '@/lib/user-channels'
+import Mascot, { MascotPose } from './Mascot'
 
 interface Props {
   channelId?: string
@@ -12,19 +13,20 @@ interface Props {
   riskLevel: 'high' | 'medium' | 'low'
 }
 
-const EMOJI_POOL = ['🎵', '📚', '🎨', '🐻', '🚂', '🦄', '🌟', '🍎', '🐰', '🚀', '🎪', '🌈']
+// 取代 emoji pool — 用 Mascot pose 跟全站視覺一致
+const POSES: MascotPose[] = ['hi', 'guard', 'fly', 'think', 'thumbs-up', 'search']
 
 export default function AddToKidsMode({ channelId, channelName, channelThumbnail, riskScore, riskLevel }: Props) {
   const [mounted, setMounted] = useState(false)
   const [added, setAdded] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [ageGroup, setAgeGroup] = useState<AgeGroup>('3-6')
-  const [emoji, setEmoji] = useState(EMOJI_POOL[0])
+  const [pose, setPose] = useState<MascotPose>('hi')
 
   useEffect(() => {
     setMounted(true)
     if (channelId) setAdded(hasUserChannel(channelId))
-    setEmoji(EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)])
+    setPose(POSES[Math.floor(Math.random() * POSES.length)])
   }, [channelId])
 
   // 高風險不給加
@@ -36,7 +38,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
       name: channelName,
       thumbnail: channelThumbnail,
       ageGroup,
-      emoji,
+      mascotPose: pose,
       addedAt: Date.now(),
       riskScore,
     })
@@ -53,24 +55,35 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
     return (
       <div style={{
         marginTop: 10,
-        padding: '10px 14px',
-        background: 'rgba(74,143,87,0.08)',
-        border: '1px solid rgba(74,143,87,0.25)',
-        borderRadius: 12,
+        padding: '12px 14px',
+        background: 'rgba(122, 184, 126, 0.12)',
+        border: '1px solid rgba(122, 184, 126, 0.35)',
+        borderRadius: 14,
         display: 'flex', alignItems: 'center', gap: 10,
       }}>
-        <span style={{ fontSize: 18 }}>✅</span>
-        <p style={{ flex: 1, fontSize: 12, color: 'var(--text-primary)', letterSpacing: '-0.01em', fontWeight: 600 }}>
+        <span aria-hidden style={{
+          width: 22, height: 22, borderRadius: '50%',
+          background: '#7AB87E',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+          color: '#fff',
+        }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </span>
+        <p style={{ flex: 1, fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', fontWeight: 600 }}>
           已加入熊熊守護模式
         </p>
         <button
           onClick={handleRemove}
           style={{
-            padding: '6px 10px',
-            background: 'transparent',
-            border: '1px solid var(--border-soft)',
+            padding: '6px 12px',
+            background: 'rgba(255,255,255,0.6)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(43,24,16,0.18)',
             borderRadius: 9999,
-            fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)',
+            fontSize: 11, fontWeight: 700, color: 'var(--ink-hex)',
             letterSpacing: '-0.01em', cursor: 'pointer', fontFamily: 'inherit',
           }}
         >
@@ -86,16 +99,26 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
         onClick={() => setShowModal(true)}
         style={{
           marginTop: 10, width: '100%',
-          padding: '13px 16px',
-          background: 'var(--ink-hex)', color: '#fff',
-          border: 'none', borderRadius: 'var(--radius-lg)',
+          padding: '14px 18px',
+          background: 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)',
+          color: 'var(--ink-hex)',
+          border: '1.5px solid var(--ink-hex)',
+          borderRadius: 16,
           cursor: 'pointer', fontFamily: 'inherit',
           fontSize: 14, fontWeight: 800, letterSpacing: '-0.01em',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-          boxShadow: '0 8px 20px rgba(10,10,10,0.15)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+          boxShadow: '0 6px 16px -6px rgba(217,148,34,0.4)',
         }}
       >
-        <span style={{ fontSize: 16 }}>🛡️</span>
+        <span aria-hidden style={{
+          width: 24, height: 24, borderRadius: '50%',
+          background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #FBF7EA 70%)',
+          border: '1.5px solid var(--ink-hex)',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden', flexShrink: 0,
+        }}>
+          <Mascot pose="hi" size={20} />
+        </span>
         加入熊熊守護模式
       </button>
 
@@ -104,38 +127,58 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
           onClick={() => setShowModal(false)}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(10,10,10,0.6)', backdropFilter: 'blur(8px)',
+            background: 'rgba(43,24,16,0.45)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
           }}
         >
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: '#FFFFFF', borderRadius: 24, padding: 24,
+              background: 'rgba(255, 246, 230, 0.72)',
+              backdropFilter: 'blur(40px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(40px) saturate(160%)',
+              border: '1px solid rgba(255, 255, 255, 0.55)',
+              borderRadius: 28, padding: 24,
               maxWidth: 380, width: '100%',
-              boxShadow: '0 28px 56px rgba(0,0,0,0.24)',
+              boxShadow:
+                'inset 0 1px 0 rgba(255,255,255,0.7),' +
+                ' inset 0 -1px 0 rgba(43,24,16,0.06),' +
+                ' 0 30px 60px -20px rgba(43,24,16,0.30)',
             }}
           >
             <div style={{ textAlign: 'center', marginBottom: 18 }}>
-              <div style={{ fontSize: 42, marginBottom: 6 }}>🛡️</div>
-              <h3 style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)', marginBottom: 4 }}>
-                加入熊熊守護模式？
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: '50%',
+                  background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
+                  border: '2px solid var(--ink-hex)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  overflow: 'hidden',
+                }}>
+                  <Mascot pose="guard" size={48} />
+                </div>
+              </div>
+              <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--ink-hex)', marginBottom: 4 }}>
+                加入熊熊守護模式
               </h3>
-              <p style={{ fontSize: 12, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
-                「{channelName}」將出現在 /kids 頁面<br />
-                小孩只能看這些你驗證過的頻道
+              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.66)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
+                「{channelName}」會出現在熊熊頁面<br />
+                小孩只能看你驗證過的頻道
               </p>
             </div>
 
             {/* 年齡 */}
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(43,24,16,0.55)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
               適合年齡
             </p>
             <div style={{
               display: 'flex', gap: 6, marginBottom: 16,
-              background: 'var(--paper-hex)',
+              background: 'rgba(255,255,255,0.4)',
+              backdropFilter: 'blur(14px)',
               borderRadius: 12, padding: 4,
-              border: '1px solid var(--border-soft)',
+              border: '1px solid rgba(255,255,255,0.55)',
             }}>
               {(['0-3', '3-6'] as AgeGroup[]).map(a => (
                 <button
@@ -145,9 +188,10 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
                     flex: 1, padding: '10px 0',
                     borderRadius: 9, border: 'none', cursor: 'pointer',
                     background: ageGroup === a ? 'var(--ink-hex)' : 'transparent',
-                    color: ageGroup === a ? '#fff' : 'var(--text-secondary)',
+                    color: ageGroup === a ? 'var(--cc-gold)' : 'var(--ink-hex)',
                     fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
                     fontFamily: 'inherit',
+                    transition: 'background 0.15s, color 0.15s',
                   }}
                 >
                   {a === '0-3' ? '0–3 歲' : '3–6 歲'}
@@ -155,36 +199,41 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
               ))}
             </div>
 
-            {/* Emoji */}
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
-              選個圖示
+            {/* 選熊熊 pose 取代 emoji pool */}
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(43,24,16,0.55)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
+              選個熊熊
             </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
-              {EMOJI_POOL.map(e => (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6, marginBottom: 20 }}>
+              {POSES.map(p => (
                 <button
-                  key={e}
-                  onClick={() => setEmoji(e)}
+                  key={p}
+                  onClick={() => setPose(p)}
+                  aria-label={`選 ${p} 熊熊`}
                   style={{
-                    width: 40, height: 40,
-                    borderRadius: 10,
-                    border: emoji === e ? '2px solid var(--ink-hex)' : '1px solid var(--border-soft)',
-                    background: emoji === e ? 'var(--ink-05)' : '#fff',
+                    aspectRatio: '1',
+                    borderRadius: 12,
+                    border: pose === p ? '2px solid var(--ink-hex)' : '1px solid rgba(43,24,16,0.18)',
+                    background: pose === p
+                      ? 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)'
+                      : 'rgba(255,255,255,0.5)',
                     cursor: 'pointer', fontFamily: 'inherit',
-                    fontSize: 20,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    overflow: 'hidden',
+                    transition: 'transform 0.12s, background 0.15s',
                   }}
                 >
-                  {e}
+                  <Mascot pose={p} size={32} />
                 </button>
               ))}
             </div>
 
             <div style={{
-              background: 'rgba(217,162,58,0.08)',
-              border: '1px solid rgba(217,162,58,0.25)',
-              borderRadius: 10, padding: '10px 12px', marginBottom: 14,
+              background: 'rgba(242, 184, 75, 0.14)',
+              border: '1px solid rgba(217, 148, 34, 0.3)',
+              borderRadius: 12, padding: '10px 12px', marginBottom: 14,
             }}>
-              <p style={{ fontSize: 11, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
-                ⚠️ 你加入的頻道由你自己負責，CareCub Kids 只會持續用標題黑名單再篩一次
+              <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.7)', letterSpacing: '-0.01em', lineHeight: 1.55, fontWeight: 600 }}>
+                你加入的頻道由你自己負責，CareCub Kids 會持續用標題黑名單再幫你把關一次
               </p>
             </div>
 
@@ -193,10 +242,11 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
                 onClick={() => setShowModal(false)}
                 style={{
                   flex: 1, padding: 12,
-                  borderRadius: 'var(--radius-lg)',
-                  background: 'var(--ink-05)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--border-soft)', cursor: 'pointer',
+                  borderRadius: 14,
+                  background: 'rgba(255,255,255,0.55)',
+                  backdropFilter: 'blur(14px)',
+                  color: 'var(--ink-hex)',
+                  border: '1px solid rgba(43,24,16,0.18)', cursor: 'pointer',
                   fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
                   fontFamily: 'inherit',
                 }}
@@ -207,8 +257,8 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
                 onClick={handleConfirm}
                 style={{
                   flex: 1, padding: 12,
-                  borderRadius: 'var(--radius-lg)',
-                  background: 'var(--ink-hex)', color: '#fff',
+                  borderRadius: 14,
+                  background: 'var(--ink-hex)', color: 'var(--cc-gold)',
                   border: 'none', cursor: 'pointer',
                   fontSize: 13, fontWeight: 800, letterSpacing: '-0.01em',
                   fontFamily: 'inherit',
