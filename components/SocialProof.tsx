@@ -35,7 +35,7 @@ export default function SocialProof() {
 
   return (
     <div
-      className="reveal-up"
+      className="animate-fade-in-up"
       style={{
         display: 'flex', alignItems: 'center', gap: 12,
         padding: '12px 16px', marginBottom: 18,

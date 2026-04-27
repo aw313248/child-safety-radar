@@ -65,8 +65,6 @@ export default function Home() {
   }, [result])
 
   useEffect(() => {
-    const els = document.querySelectorAll<HTMLElement>('.reveal-up')
-    if (!els.length) return
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -75,9 +73,26 @@ export default function Home() {
       },
       { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
     )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
-  }, [result, loading])
+    // 1. 觀察當下 DOM 上所有 .reveal-up
+    document.querySelectorAll<HTMLElement>('.reveal-up:not(.is-visible)').forEach(el => io.observe(el))
+
+    // 2. MutationObserver 兜底：之後動態加入的 .reveal-up 自動 observe
+    //    （SocialProof / CaseLibrary 等 fetch 完才渲染的元件）
+    const mo = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        m.addedNodes.forEach(node => {
+          if (!(node instanceof HTMLElement)) return
+          if (node.classList?.contains('reveal-up') && !node.classList.contains('is-visible')) {
+            io.observe(node)
+          }
+          node.querySelectorAll?.<HTMLElement>('.reveal-up:not(.is-visible)').forEach(el => io.observe(el))
+        })
+      }
+    })
+    mo.observe(document.body, { childList: true, subtree: true })
+
+    return () => { io.disconnect(); mo.disconnect() }
+  }, [])
 
   useEffect(() => {
     setUnlocked(localStorage.getItem(STORAGE_KEY) === 'true')

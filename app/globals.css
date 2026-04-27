@@ -175,6 +175,18 @@ a:focus-visible {
   outline-offset: 3px;
 }
 
+/* 元件級 fade-in-up — 不依賴 IO observer（給 dynamic-mounted 元件用） */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up { animation: none; opacity: 1; }
+}
+
 /* Live dot — social proof「正在運轉中」感 */
 @keyframes live-dot {
   0%, 100% { box-shadow: 0 0 0 3px rgba(122,184,126,0.25); }
