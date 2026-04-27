@@ -24,6 +24,14 @@ const SCAN_COUNT_KEY = 'child_radar_scan_count'
 const HISTORY_KEY  = 'child_radar_history'
 const MAX_HISTORY  = 30
 
+// 動態 placeholder：四個爸媽常掃的範例頻道，輪播告訴使用者可以丟什麼進來
+const PLACEHOLDERS = [
+  'youtube.com/@cocomelon',
+  'youtube.com/@PinkfongBabyShark',
+  'youtube.com/@SuperSimpleSongs',
+  'youtube.com/@ChuChuTV',
+]
+
 export default function Home() {
   const [url, setUrl]             = useState('')
   const [loading, setLoading]     = useState(false)
@@ -34,6 +42,26 @@ export default function Home() {
   const [unlocked, setUnlocked]   = useState(false)
   const [scanCount, setScanCount] = useState(0)
   const [showUnlock, setShowUnlock] = useState(false)
+  // 動態 placeholder：每 3.5s 換一個範例頻道，告訴使用者可以丟什麼進來
+  const [phIdx, setPhIdx] = useState(0)
+  // confetti：result 出現的瞬間放一次 0.6s 蜂蜜金小點
+  const [confetti, setConfetti] = useState(false)
+
+  // 動態 placeholder 輪播
+  useEffect(() => {
+    if (url || loading) return // 使用者已輸入或掃描中就停
+    const id = setInterval(() => setPhIdx(i => (i + 1) % PLACEHOLDERS.length), 3500)
+    return () => clearInterval(id)
+  }, [url, loading])
+
+  // 結果出現觸發 confetti
+  useEffect(() => {
+    if (result) {
+      setConfetti(true)
+      const id = setTimeout(() => setConfetti(false), 700)
+      return () => clearTimeout(id)
+    }
+  }, [result])
 
   useEffect(() => {
     const els = document.querySelectorAll<HTMLElement>('.reveal-up')
@@ -150,6 +178,37 @@ export default function Home() {
           </a>
         </nav>
 
+        {/* ── Confetti — 結果出現的 0.7s 蜂蜜金小點散開 ── */}
+        {confetti && (
+          <div aria-hidden style={{
+            position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 60,
+            overflow: 'hidden',
+          }}>
+            {Array.from({ length: 18 }).map((_, i) => {
+              const colors = ['#F2B84B', '#D99422', '#C2413B', '#FFF6E6']
+              const left = 12 + (i * 4.6) % 78
+              const delay = (i % 6) * 30
+              const dur = 580 + (i % 5) * 60
+              return (
+                <span key={i} style={{
+                  position: 'absolute',
+                  left: `${left}%`,
+                  top: '38%',
+                  width: 8, height: 8,
+                  borderRadius: i % 3 === 0 ? '50%' : 2,
+                  background: colors[i % colors.length],
+                  border: '1px solid rgba(43,24,16,0.4)',
+                  animation: `confetti-burst ${dur}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms forwards`,
+                  ['--tx' as never]: `${(i % 2 === 0 ? -1 : 1) * (40 + (i * 13) % 120)}px`,
+                  ['--ty' as never]: `${-80 - (i * 17) % 140}px`,
+                  ['--rot' as never]: `${(i * 47) % 360}deg`,
+                  opacity: 0,
+                }} />
+              )
+            })}
+          </div>
+        )}
+
         {/* ── Result ── */}
         {result && !loading && (
           <div className="animate-slide-up" style={{ marginBottom: 28 }}>
@@ -199,7 +258,7 @@ export default function Home() {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && canSubmit && handleAnalyze()}
-                placeholder="youtube.com/@channelname"
+                placeholder={PLACEHOLDERS[phIdx]}
                 disabled={loading}
                 style={{
                   flex: 1, minWidth: 0, padding: '13px 0',
@@ -290,21 +349,29 @@ export default function Home() {
             {/* 掃描進度 */}
             {loading && (
               <>
-                <div style={{ marginTop: 14, background: 'rgba(43,24,16,0.06)', borderRadius: 99, height: 3, overflow: 'hidden' }}>
-                  <div className="progress-shimmer" style={{ height: '100%', borderRadius: 99, width: `${progress}%`, transition: 'width 1.2s var(--ease-out)' }} />
+                {/* Overdrive 進度條 — 漸層 + shimmer + 流動光點 */}
+                <div className="cinematic-progress" style={{ marginTop: 14 }}>
+                  <div className="cinematic-progress__fill" style={{ width: `${progress}%` }} />
+                  <span className="cinematic-progress__pulse" style={{ left: `${Math.max(progress - 1, 0)}%` }} />
                 </div>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  marginTop: 12, padding: '10px 14px',
-                  background: 'rgba(255,183,3,0.10)',
-                  border: '1px solid rgba(255,183,3,0.28)', borderRadius: 16,
-                }}>
-                  <Mascot pose="search" size={46} alt="小析正在查資料" />
-                  <p style={{ flex: 1, fontSize: 13, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.45 }}>
+
+                {/* Overdrive 掃描卡 — 放大鏡掃光、文字流動、留言飄過 */}
+                <div className="cinematic-scan" style={{ marginTop: 12 }}>
+                  <div className="cinematic-scan__sweep" aria-hidden />
+                  <div className="cinematic-scan__mascot">
+                    <Mascot pose="search" size={48} alt="小析正在查資料" />
+                  </div>
+                  <p style={{ flex: 1, fontSize: 13, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.45, position: 'relative', zIndex: 1 }}>
                     {progressText || '小析正在查'}
                     <br />
                     <span style={{ fontSize: 11, opacity: 0.55, fontWeight: 500 }}>你先去倒水，快好了</span>
                   </p>
+                  {/* 飄過的詞彙片段 — 模擬「正在讀」 */}
+                  <div className="cinematic-scan__ticker" aria-hidden>
+                    {['影片', '留言', '標題', '縮圖', '訂閱數', '頻道介紹'].map((w, i) => (
+                      <span key={i} style={{ animationDelay: `${i * 0.6}s` }}>{w}</span>
+                    ))}
+                  </div>
                 </div>
                 <ScanningStages progress={progress} />
               </>

@@ -99,6 +99,118 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ══════════════════════════════════════════════════
+   Cinematic 掃描中區塊 — Overdrive moment
+   進度條漸層 + 流動光點 + 放大鏡掃過卡片 + 詞彙飄過
+   ══════════════════════════════════════════════════ */
+
+.cinematic-progress {
+  position: relative;
+  height: 4px;
+  background: rgba(43,24,16,0.06);
+  border-radius: 99px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 1px rgba(43,24,16,0.08);
+}
+.cinematic-progress__fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #C2413B 0%, #F2B84B 40%, #FFF6E6 70%, #F2B84B 100%);
+  background-size: 200% 100%;
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: progress-flow 2s linear infinite;
+}
+@keyframes progress-flow {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.cinematic-progress__pulse {
+  position: absolute;
+  top: -2px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--cc-gold);
+  box-shadow: 0 0 10px var(--cc-gold), 0 0 18px rgba(242,184,75,0.55);
+  transition: left 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cinematic-scan {
+  position: relative;
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(255,183,3,0.13), rgba(194,65,59,0.06));
+  border: 1px solid rgba(255,183,3,0.32);
+  border-radius: 16px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cinematic-scan__sweep {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 246, 230, 0.5) 45%,
+    rgba(255, 246, 230, 0.7) 50%,
+    rgba(255, 246, 230, 0.5) 55%,
+    transparent 100%);
+  background-size: 60% 100%;
+  background-repeat: no-repeat;
+  animation: scan-sweep 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  z-index: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+@keyframes scan-sweep {
+  0%   { background-position: -60% 0; }
+  100% { background-position: 160% 0; }
+}
+.cinematic-scan__mascot {
+  position: relative;
+  z-index: 1;
+  animation: scan-mascot-bob 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+@keyframes scan-mascot-bob {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%      { transform: translateY(-3px) rotate(2deg); }
+}
+.cinematic-scan__ticker {
+  position: absolute;
+  right: 12px; bottom: 6px;
+  display: flex; gap: 8px;
+  font-size: 10px; font-weight: 700;
+  color: rgba(43,24,16,0.45);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  z-index: 1;
+}
+.cinematic-scan__ticker span {
+  display: inline-block;
+  opacity: 0;
+  animation: ticker-pop 3.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+@keyframes ticker-pop {
+  0%, 100% { opacity: 0; transform: translateY(4px); }
+  10%, 25% { opacity: 1; transform: translateY(0); }
+  35%      { opacity: 0; transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-progress__fill,
+  .cinematic-scan__sweep,
+  .cinematic-scan__mascot,
+  .cinematic-scan__ticker span { animation: none; }
+}
+
+/* Confetti — 結果出現的瞬間蜂蜜金小點散開 0.6s */
+@keyframes confetti-burst {
+  0%   { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(0.4); }
+  20%  { opacity: 1; }
+  100% { opacity: 0;
+         transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="confetti-burst"] { animation: none !important; opacity: 0 !important; }
+}
+
 /* CTA 箭頭 nested 圓 — 主按鈕 hover 時箭頭往右上微推（button-in-button physics） */
 button:hover .cta-arrow-nest,
 .glass-btn-honey:hover .cta-arrow-nest {
