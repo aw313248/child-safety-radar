@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 import { Noto_Sans_TC } from 'next/font/google'
+import ErrorBoundary from '@/components/ErrorBoundary'
 import './globals.css'
 
 // 黑體 display — 中文必須用超黑 (900) 才有 Busy Bee Honey 那種主視覺衝擊力
@@ -144,7 +145,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        {children}
+        <ErrorBoundary>{children}</ErrorBoundary>
         <Analytics />
       </body>
     </html>

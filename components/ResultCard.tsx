@@ -430,9 +430,34 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {showQR && <ShareQRModal result={result} onClose={() => setShowQR(false)} />}
 
-      <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
-        {new Date(result.checkedAt).toLocaleString('zh-TW')} · AI 輔助分析，僅供參考
-      </p>
+      {(() => {
+        const ageMs = Date.now() - new Date(result.checkedAt).getTime()
+        const ageDays = Math.floor(ageMs / 86_400_000)
+        const stale = ageDays >= 7
+        return (
+          <>
+            {stale && (
+              <div style={{
+                padding: '10px 14px', marginTop: 6,
+                background: 'rgba(242, 184, 75, 0.16)',
+                border: '1px solid rgba(217, 148, 34, 0.4)',
+                borderRadius: 12,
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--cc-gold-deep)', flexShrink: 0 }}>
+                  <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>
+                </svg>
+                <p style={{ flex: 1, fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.5, fontWeight: 600 }}>
+                  這是 {ageDays} 天前掃的，頻道內容可能變了，建議重新掃描
+                </p>
+              </div>
+            )}
+            <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
+              {new Date(result.checkedAt).toLocaleString('zh-TW')} · AI 輔助分析，僅供參考
+            </p>
+          </>
+        )
+      })()}
     </div>
   )
 }

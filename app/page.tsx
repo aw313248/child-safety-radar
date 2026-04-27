@@ -112,8 +112,11 @@ export default function Home() {
           const cached = history.find(h => h.channelUrl === u)
           if (cached) {
             setResult(cached)
-            // 把 query string 清掉，避免重整 / 分享連結時又觸發
             window.history.replaceState({}, '', '/')
+          } else {
+            // 沒有 cache（從別人分享連結進來）→ 把網址 prefill 進輸入框，
+            // 讓使用者可以按掃描自己掃，不要顯示別人 cache 的結果（避免分數 mismatch）
+            // setUrl 已經在上面跑過了
           }
         } catch {}
       }

@@ -5,6 +5,7 @@
 import type { AgeGroup } from './curated-channels'
 
 const STORAGE_KEY = 'peekkids_user_channels'
+const MAX_USER_CHANNELS = 50 // 上限避免 localStorage 滿了 crash
 
 export interface UserChannel {
   channelId: string
@@ -33,11 +34,19 @@ export function getUserChannels(): UserChannel[] {
 
 export function addUserChannel(ch: UserChannel): UserChannel[] {
   const list = getUserChannels()
-  // 去重（同 channelId 就覆蓋）
   const next = list.filter(c => c.channelId !== ch.channelId)
   next.unshift(ch)
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-  return next
+  // 上限保護：超過 50 個自動踢掉最舊的（FIFO），避免 localStorage 爆 quota
+  const capped = next.slice(0, MAX_USER_CHANNELS)
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(capped))
+  } catch {
+    // quota exceeded fallback：清舊一半重試
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(capped.slice(0, Math.floor(MAX_USER_CHANNELS / 2))))
+    } catch {}
+  }
+  return capped
 }
 
 export function removeUserChannel(channelId: string): UserChannel[] {
