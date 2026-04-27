@@ -219,70 +219,74 @@
   .kids-glass-pill, .kids-glass-row, .kids-glass-cta { transition: none; }
 }
 
-/* /kids 右上動作鈕 — Apple liquid glass，跟全站 modal 同套 */
+/* /kids 右上動作鈕 — Apple liquid glass
+   typeset：字體 13/700/-0.015em，icon stroke 2.2，gap 7
+   polish：白底 0.62、漸層飽和度收斂，三顆視覺權重平衡
+   quieter：primary / danger 漸層拉成 0.72-0.78，不再過搶 */
 .kids-action {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px 8px 12px;
+  gap: 7px;
+  padding: 9px 15px 9px 13px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   color: var(--ink-hex);
   font-family: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   cursor: pointer;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
     inset 0 -1px 0 rgba(43, 24, 16, 0.05),
-    0 1px 2px rgba(43, 24, 16, 0.04);
-  transition: background 0.18s var(--ease-out),
-              transform 0.18s var(--ease-out),
-              box-shadow 0.18s var(--ease-out);
+    0 1px 2px rgba(43, 24, 16, 0.05);
+  transition: background 0.2s var(--ease-out),
+              transform 0.2s var(--ease-out),
+              box-shadow 0.2s var(--ease-out);
   white-space: nowrap;
 }
+.kids-action svg { stroke-width: 2.2; }
 .kids-action:hover {
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.78);
   transform: translateY(-1px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    0 4px 12px rgba(43, 24, 16, 0.10);
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 5px 14px rgba(43, 24, 16, 0.10);
 }
 .kids-action:active { transform: translateY(0); }
 .kids-action--primary {
-  background: linear-gradient(135deg, rgba(242, 184, 75, 0.85), rgba(217, 148, 34, 0.78));
-  border-color: rgba(217, 148, 34, 0.55);
+  background: linear-gradient(135deg, rgba(242, 184, 75, 0.72), rgba(217, 148, 34, 0.62));
+  border-color: rgba(217, 148, 34, 0.42);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 4px 14px rgba(242, 184, 75, 0.32);
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    0 3px 12px rgba(242, 184, 75, 0.22);
 }
 .kids-action--primary:hover {
-  background: linear-gradient(135deg, rgba(242, 184, 75, 0.95), rgba(217, 148, 34, 0.88));
+  background: linear-gradient(135deg, rgba(242, 184, 75, 0.84), rgba(217, 148, 34, 0.74));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    0 6px 18px rgba(242, 184, 75, 0.42);
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 5px 16px rgba(242, 184, 75, 0.32);
 }
 .kids-action--danger {
-  background: linear-gradient(135deg, rgba(194, 65, 59, 0.88), rgba(142, 42, 36, 0.82));
+  background: linear-gradient(135deg, rgba(194, 65, 59, 0.78), rgba(142, 42, 36, 0.72));
   color: #FFF6E6;
-  border-color: rgba(142, 42, 36, 0.5);
+  border-color: rgba(142, 42, 36, 0.42);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    0 4px 14px rgba(142, 42, 36, 0.32);
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 3px 12px rgba(142, 42, 36, 0.24);
 }
 .kids-action--danger:hover {
-  background: linear-gradient(135deg, rgba(194, 65, 59, 1), rgba(142, 42, 36, 0.92));
+  background: linear-gradient(135deg, rgba(194, 65, 59, 0.92), rgba(142, 42, 36, 0.86));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 6px 18px rgba(142, 42, 36, 0.42);
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 5px 16px rgba(142, 42, 36, 0.34);
 }
 @media (max-width: 380px) {
   .kids-action span { display: none; }
-  .kids-action { padding: 9px; }
+  .kids-action { padding: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .kids-action { transition: none; }
