@@ -145,6 +145,7 @@ export default function KidsTimer({ onTimeUp, onExit }: Props) {
         setCustomMin={setCustomMin}
         onPick={startTimer}
         onClose={() => setNeedSetup(false)}
+        hasRunningTimer={!!endTs}
       />
     )
   }
@@ -182,13 +183,14 @@ export default function KidsTimer({ onTimeUp, onExit }: Props) {
 // 設定畫面 — Busy Bee 風，含自訂
 // ═══════════════════════════════════════
 function SetupScreen({
-  value, customMin, setCustomMin, onPick, onClose,
+  value, customMin, setCustomMin, onPick, onClose, hasRunningTimer,
 }: {
   value: number
   customMin: string
   setCustomMin: (s: string) => void
   onPick: (min: number) => void
   onClose: () => void
+  hasRunningTimer: boolean
 }) {
   const handleCustom = () => {
     const n = parseInt(customMin, 10)
@@ -319,40 +321,42 @@ function SetupScreen({
           </button>
         </div>
 
-        {/* 「先不改」— liquid glass，不再灰 */}
-        <button
-          onClick={onClose}
-          className="kids-glass-row"
-          style={{
-            width: '100%', padding: '12px',
-            borderRadius: 14,
-            color: 'var(--ink-hex)',
-            cursor: 'pointer',
-            fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
-            fontFamily: 'inherit',
-          }}
-        >
-          先不改 · 繼續剛剛設的
-        </button>
+        {/* 「保留剛剛設的計時」— 只在已有 timer running 時顯示，避免首次進來語意混亂 */}
+        {hasRunningTimer && (
+          <button
+            onClick={onClose}
+            className="kids-glass-row"
+            style={{
+              width: '100%', padding: '12px',
+              borderRadius: 14,
+              color: 'var(--ink-hex)',
+              cursor: 'pointer',
+              fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
+              fontFamily: 'inherit',
+            }}
+          >
+            保留剛剛設的計時
+          </button>
+        )}
 
-        {/* 「不限時」獨立放底部 — 不是時間預設，是替代路徑 */}
+        {/* 「不限時」獨立 link — 替代路徑，明確說「不計時、自己看」 */}
         <button
           onClick={() => onPick(0)}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            width: '100%', marginTop: 8, padding: '10px',
+            width: '100%', marginTop: hasRunningTimer ? 8 : 0, padding: '10px',
             background: 'transparent',
             border: 'none',
-            color: 'rgba(43,24,16,0.62)',
+            color: 'rgba(43,24,16,0.66)',
             cursor: 'pointer',
             fontSize: 12, fontWeight: 600, letterSpacing: '-0.005em',
             fontFamily: 'inherit',
             textDecoration: 'underline',
             textUnderlineOffset: 3,
-            textDecorationColor: 'rgba(43,24,16,0.25)',
+            textDecorationColor: 'rgba(43,24,16,0.28)',
           }}
         >
-          這次先不要計時
+          不計時 · 我自己看時間
         </button>
 
         <p style={{

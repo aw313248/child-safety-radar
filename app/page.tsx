@@ -101,7 +101,21 @@ export default function Home() {
     try {
       const params = new URLSearchParams(window.location.search)
       const u = params.get('u')
-      if (u) setUrl(u)
+      if (u) {
+        setUrl(u)
+        // 從「最近標記的」/「歷史」點進來：先查 localStorage 是否有過去的分析結果
+        // 有的話直接顯示，不要重新觸發掃描（避免閃跳 / 浪費 API quota / 違反期待）
+        try {
+          const raw = localStorage.getItem(HISTORY_KEY)
+          const history: AnalysisResult[] = raw ? JSON.parse(raw) : []
+          const cached = history.find(h => h.channelUrl === u)
+          if (cached) {
+            setResult(cached)
+            // 把 query string 清掉，避免重整 / 分享連結時又觸發
+            window.history.replaceState({}, '', '/')
+          }
+        } catch {}
+      }
       if (params.get('unlock') === '1') {
         localStorage.setItem(STORAGE_KEY, 'true')
         setUnlocked(true)
@@ -212,25 +226,8 @@ export default function Home() {
 
       <div className="page-wrapper">
 
-        {/* ── Nav ── */}
-        <nav className="glass-nav">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--ink-hex)' }}>
-            <span style={{
-              width: 22, height: 22, borderRadius: '50%',
-              background: 'var(--cc-gold)', border: '1.5px solid var(--ink-hex)',
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 11, fontWeight: 800, color: 'var(--ink-hex)',
-            }}>CC</span>
-            CareCub Kids
-          </span>
-          <a href="/history" aria-label="歷史紀錄" title="歷史紀錄"
-            className="sticker-icon-btn sticker-icon-btn--gold"
-            style={{ width: 38, height: 38, textDecoration: 'none' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" />
-            </svg>
-          </a>
-        </nav>
+        {/* nav 拿掉 — Oscar 認為無效區塊：歷史已有「最近標記的 → 全部」入口
+            品牌名移到 footer 統一收尾 */}
 
         {/* ── Confetti — 結果出現的 0.7s 蜂蜜金小點散開 ── */}
         {confetti && (
@@ -494,14 +491,38 @@ export default function Home() {
           <CaseLibrary />
         </div>
 
-        <p className="reveal-up" style={{
-          marginTop: 48, textAlign: 'center',
-          fontSize: 11, color: 'var(--ink-hex)',
-          letterSpacing: '0.08em', fontWeight: 600,
-          textTransform: 'uppercase', opacity: 0.38,
+        {/* Footer — 品牌名收尾 + 免責，全 SVG 無 emoji */}
+        <footer className="reveal-up" style={{
+          marginTop: 56, textAlign: 'center',
+          paddingTop: 24,
+          borderTop: '1px dashed rgba(43,24,16,0.14)',
         }}>
-          🐻 AI 輔助分析 · 結果僅供參考 🐝
-        </p>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            fontSize: 13, fontWeight: 800,
+            color: 'var(--ink-hex)',
+            letterSpacing: '-0.02em',
+            marginBottom: 8,
+          }}>
+            <span style={{
+              width: 22, height: 22, borderRadius: '50%',
+              background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
+              border: '1.5px solid var(--ink-hex)',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden',
+            }}>
+              <Mascot pose="hi" size={18} />
+            </span>
+            CareCub Kids
+          </div>
+          <p style={{
+            fontSize: 11, color: 'var(--ink-hex)',
+            letterSpacing: '0.08em', fontWeight: 600,
+            textTransform: 'uppercase', opacity: 0.42,
+          }}>
+            AI 輔助分析 · 結果僅供參考
+          </p>
+        </footer>
       </div>
 
       {showUnlock && (

@@ -256,9 +256,9 @@ export default function KidsModePage() {
               border: '2.5px solid var(--ink-hex)',
               boxShadow: '0 8px 24px -8px rgba(43, 24, 16, 0.35)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 36, overflow: 'hidden',
+              overflow: 'hidden',
             }}>
-              {selectedChannel.emoji}
+              <Mascot pose={selectedChannel.source === 'user' ? mascotForChannel(selectedChannel.channelId) : CHANNEL_POSES[selectedChannel.channelId.length % CHANNEL_POSES.length]} size={60} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1.08 }}>

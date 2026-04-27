@@ -151,6 +151,27 @@ inset 0 1px 0 rgba(255,255,255,0.7)
 
 ---
 
+## 5.5 Iconography 規範（Oscar 鐵則：禁止 emoji）
+
+**全站 zero emoji**：不要用蘋果內建 emoji（🐻🐝🍉🎬🚨⚠️ 等）當 primary iconography
+理由：跨平台 render 不一致 + 太 AI 感 + 跟 storybook 暖色家族衝突
+
+**替代方案（依優先度）**：
+1. **Mascot 角色圖** — 涉及品牌 / 熊熊主角時，用現有 `<Mascot pose="..." />`
+2. **自製 SVG 線條 icon** — 1.8-2.4px stroke，配合家族 ink 色，跟 Phosphor Light / Lucide outline 同風格
+3. **Risk 燈號** — 用 `<span>` 圓點 + ink border，不用 🟢🟡🔴
+4. **CSS 圖形** — pseudo element 或 mask，給單純幾何
+
+**禁用情境**（無例外）：
+- 文字標題 / chip / button label 內
+- card icon、navigation icon
+- placeholder、helper text
+- toast、error、success 訊息
+
+**唯一可能例外**：
+- 影片標題裡使用者輸入的內容（不是我們生成的）
+- 第三方來源原文（comment 翻譯、引用）— 但仍應標明這是引用
+
 ## 6. Voice / 文案口吻
 
 - 結尾用「，」或不收，**不要句號 / 句點**

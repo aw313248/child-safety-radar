@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Mascot from './Mascot'
 
 const SCAN_COUNT_KEY = 'child_radar_scan_count'
 
@@ -37,7 +38,15 @@ export default function SocialProof() {
       }}
       aria-label={`你已經守護過 ${count} 個頻道`}
     >
-      <span aria-hidden style={{ fontSize: 14 }}>🐻</span>
+      <span aria-hidden style={{
+        width: 22, height: 22, borderRadius: '50%',
+        background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
+        border: '1.5px solid var(--ink-hex)',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden', flexShrink: 0,
+      }}>
+        <Mascot pose="hi" size={18} />
+      </span>
       <p style={{
         flex: 1, minWidth: 0,
         fontSize: 12, color: 'var(--ink-hex)',

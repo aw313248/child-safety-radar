@@ -6,6 +6,7 @@ import { AnalysisResult, ScoreBreakdownItem } from '@/types/analysis'
 import DiscussionReporter from './DiscussionReporter'
 import ShareQRModal from './ShareQRModal'
 import AddToKidsMode from './AddToKidsMode'
+import Mascot from './Mascot'
 
 const CATEGORY_LABEL: Record<ScoreBreakdownItem['category'], string> = {
   ai: 'AI 分析',
@@ -28,7 +29,7 @@ const RISK_CONFIG = {
     barColor: 'var(--terra-hex)',
     scoreColor: 'var(--terra-hex)',
     headerBg: '#FFE8E0',
-    emoji: '🚨',
+    icon: 'octagon-x' as const,
   },
   medium: {
     label: '注意觀察',
@@ -37,7 +38,7 @@ const RISK_CONFIG = {
     barColor: 'var(--honey-deep)',
     scoreColor: 'var(--honey-deep)',
     headerBg: 'var(--honey-hex)',
-    emoji: '⚠️',
+    icon: 'eye' as const,
   },
   low: {
     label: '目前安全',
@@ -46,8 +47,22 @@ const RISK_CONFIG = {
     barColor: 'var(--risk-green)',
     scoreColor: 'var(--risk-green)',
     headerBg: '#DCEAD1',
-    emoji: '🐻',
+    icon: 'shield-check' as const,
   },
+}
+
+// 統一線條 icon — 1.8px stroke，跟 storybook 風格一致（取代 emoji）
+function RiskIcon({ name, size = 14 }: { name: 'octagon-x' | 'eye' | 'shield-check'; size?: number }) {
+  const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  if (name === 'octagon-x') return (
+    <svg {...common}><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+  )
+  if (name === 'eye') return (
+    <svg {...common}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+  )
+  return (
+    <svg {...common}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+  )
 }
 
 export default function ResultCard({ result, onReset }: Props) {
@@ -87,7 +102,7 @@ export default function ResultCard({ result, onReset }: Props) {
               textTransform: 'uppercase',
               border: '2px solid var(--ink-hex)',
             }}>
-              <span>{cfg.emoji}</span> {cfg.label}
+              <RiskIcon name={cfg.icon} size={14} /> {cfg.label}
             </div>
             <p className="font-display" style={{ fontSize: 22, color: 'var(--ink-hex)', lineHeight: 1.1 }}>
               {cfg.tagline}
@@ -232,8 +247,13 @@ export default function ResultCard({ result, onReset }: Props) {
             <p style={{ fontWeight: 900, fontSize: '16px', letterSpacing: '-0.03em', color: 'var(--ink-hex)', lineHeight: 1.2 }}>
               {result.channelName}
             </p>
-            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '3px', letterSpacing: '-0.01em', fontWeight: 600 }}>
-              {result.commentsDisabled ? '⚠️ 留言區已關閉' : '💬 留言區開啟'}
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '3px', letterSpacing: '-0.01em', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {result.commentsDisabled
+                  ? <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/></>
+                  : <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>}
+              </svg>
+              {result.commentsDisabled ? '留言區已關閉' : '留言區開啟'}
               {result.videoCount ? ` · ${result.videoCount} 部影片` : ''}
             </p>
           </div>
@@ -246,8 +266,12 @@ export default function ResultCard({ result, onReset }: Props) {
       {/* Warning comments */}
       {result.warningComments.length > 0 && (
         <div className="bee-card stagger-3" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '14px', opacity: 0.7 }}>
-            ⚠️ 家長警示留言
+          <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '14px', opacity: 0.75, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            家長警示留言
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {result.warningComments.map((comment, i) => (
@@ -309,8 +333,12 @@ export default function ResultCard({ result, onReset }: Props) {
       {/* Suspicious tags */}
       {result.suspiciousTags.length > 0 && (
         <div className="bee-card stagger-3" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '12px', opacity: 0.7 }}>
-            🏷️ 異常標籤
+          <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '12px', opacity: 0.75, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+              <line x1="7" y1="7" x2="7.01" y2="7"/>
+            </svg>
+            異常標籤
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {result.suspiciousTags.map((tag, i) => (
@@ -330,8 +358,17 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {/* Recommendation */}
       <div className="bee-card-honey stagger-4" style={{ padding: '20px' }}>
-        <p style={{ fontSize: '11px', fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '10px', opacity: 0.7 }}>
-          🐻 熊爸熊媽建議
+        <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '10px', opacity: 0.75, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{
+            width: 18, height: 18, borderRadius: '50%',
+            background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
+            border: '1.5px solid var(--ink-hex)',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            overflow: 'hidden', flexShrink: 0,
+          }}>
+            <Mascot pose="hi" size={14} />
+          </span>
+          熊爸熊媽建議
         </p>
         <p style={{ fontSize: '15px', color: 'var(--ink-hex)', lineHeight: 1.75, letterSpacing: '-0.01em', fontWeight: 500 }}>
           {result.recommendation}
