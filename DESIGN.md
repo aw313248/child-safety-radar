@@ -164,6 +164,24 @@ inset 0 1px 0 rgba(255,255,255,0.7)
 
 ## 7. Accessibility 規範
 
+### 對比硬規則（WCAG AA）
+- **文字（含 placeholder / disabled）**：最低 4.5:1 對比 vs 背景
+- **大字（≥18px 700 或 ≥24px 400）**：最低 3:1
+- 預設瀏覽器 placeholder（淺灰）一律會違反，所有 input 加 `.strong-placeholder` class 強制覆寫
+- Disabled state：不要用 `opacity: 0.4` 把全部變淺。改用「弱化 background + 維持 ink 色文字 + 0.42-0.5 alpha 文字」
+- Icon-only 按鈕：必有 `aria-label` + visible label 或夠大尺寸（≥44×44 觸控目標）
+
+### Skill workflow
+- 大改 UI 完默認跑 `/audit` (impeccable) + `/web-design-guidelines`
+- 文字不明顯時跑 `/clarify`
+- 改完前自查清單：
+  1. 所有 placeholder 是否 ≥ 4.5:1？
+  2. Disabled 是否仍可讀？
+  3. Icon-only 按鈕是否有文字 caption 或 aria-label？
+  4. Focus ring 是否可見？
+
+### 既有 a11y 實作
+
 - 所有可互動元件 `:focus-visible` 用蜂蜜金 ring 2px outline-offset 2-3px
 - Form input：`<label>` 配 `htmlFor`，視覺隱藏用 `.sr-only`
 - Loading 區 `role="status"` + `aria-live="polite"` + `aria-busy="true"`

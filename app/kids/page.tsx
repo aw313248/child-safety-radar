@@ -358,34 +358,50 @@ export default function KidsModePage() {
               </h1>
             </div>
           </div>
+          {/*
+            使用模式推演（爸媽常用順序）：
+            1. 進來 → 鎖定（每次必用）→ 主鈕，蜂蜜金 emphasis + 「鎖定」label
+            2. 看時間 / 改設定（中段常用）→ 次鈕
+            3. 結束 → 回首頁（需要爸媽算數學）→ 危險色明顯區隔
+            4. 第一次教學：拿掉，改用 LOCK_GUIDE_KEY 自動首次秀（不佔 nav）
+            每顆 icon + 文字 caption 並列，不再純圖示
+          */}
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
             {!isFullscreen && (
-              <button onClick={enterFullscreen} aria-label="全螢幕鎖定" title="全螢幕（把網址列也鎖掉）"
-                className="sticker-icon-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 9V5a1 1 0 011-1h4M20 9V5a1 1 0 00-1-1h-4M4 15v4a1 1 0 001 1h4M20 15v4a1 1 0 01-1 1h-4"/>
+              <button
+                onClick={enterFullscreen}
+                aria-label="鎖定畫面"
+                title="把網址列也鎖掉，小孩跳不出去"
+                className="kids-action kids-action--primary"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="4" y="11" width="16" height="10" rx="2"/>
+                  <path d="M8 11V7a4 4 0 018 0v4"/>
                 </svg>
+                <span>鎖定</span>
               </button>
             )}
             <button
               onClick={() => { localStorage.removeItem('peekkids_timer_end_ts'); window.location.reload() }}
-              aria-label="重新設定時間" title="重新設定時間"
-              className="sticker-icon-btn sticker-icon-btn--gold">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              aria-label="改時間"
+              title="重新設定看多久"
+              className="kids-action"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>
               </svg>
+              <span>時間</span>
             </button>
-            <button onClick={() => setShowGuide(true)} aria-label="鎖螢幕教學" title="看鎖螢幕教學"
-              className="sticker-icon-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
-              </svg>
-            </button>
-            <button onClick={() => setShowExitConfirm(true)} aria-label="回首頁" title="回首頁（需要爸媽算數學）"
-              className="sticker-icon-btn sticker-icon-btn--danger">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <button
+              onClick={() => setShowExitConfirm(true)}
+              aria-label="回首頁"
+              title="回首頁（需要爸媽算數學）"
+              className="kids-action kids-action--danger"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/>
               </svg>
+              <span>回家</span>
             </button>
           </div>
         </div>

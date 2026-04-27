@@ -311,28 +311,28 @@ function SetupScreen({
                 textAlign: 'right',
                 letterSpacing: '-0.02em',
               }}
+              className="strong-placeholder"
             />
-            <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--text-secondary)', flexShrink: 0 }}>分鐘</span>
+            <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--ink-hex)', flexShrink: 0 }}>分鐘</span>
           </div>
           <button
             onClick={handleCustom}
             disabled={!customMin || parseInt(customMin, 10) < 1}
             style={{
-              padding: '8px 14px',
+              padding: '10px 18px',
               borderRadius: 9999,
               background: customMin && parseInt(customMin, 10) >= 1
                 ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
-                : 'rgba(255,255,255,0.12)',
-              color: customMin && parseInt(customMin, 10) >= 1 ? '#0F2444' : 'var(--text-tertiary)',
-              border: customMin && parseInt(customMin, 10) >= 1
-                ? '1.5px solid rgba(255,255,255,0.5)'
-                : '1.5px solid var(--border-soft)',
+                : 'rgba(43,24,16,0.08)',
+              color: customMin && parseInt(customMin, 10) >= 1 ? 'var(--ink-hex)' : 'rgba(43,24,16,0.42)',
+              border: '2px solid var(--ink-hex)',
               fontFamily: 'inherit',
-              fontSize: 13, fontWeight: 900,
+              fontSize: 14, fontWeight: 800,
               cursor: customMin ? 'pointer' : 'not-allowed',
               whiteSpace: 'nowrap',
               boxShadow: customMin && parseInt(customMin, 10) >= 1
-                ? '0 6px 14px -6px rgba(242,184,75,0.5)' : 'none',
+                ? '3px 3px 0 var(--ink-hex)' : '2px 2px 0 rgba(43,24,16,0.25)',
+              transition: 'transform 0.15s, box-shadow 0.15s',
             }}
           >
             開始
@@ -344,12 +344,13 @@ function SetupScreen({
           style={{
             width: '100%', padding: 12,
             borderRadius: 14,
-            background: 'transparent',
-            color: 'var(--text-secondary)',
-            border: '1.5px solid var(--border-soft)',
+            background: 'rgba(43,24,16,0.04)',
+            color: 'var(--ink-hex)',
+            border: '1.5px solid rgba(43,24,16,0.22)',
             cursor: 'pointer',
-            fontSize: 12, fontWeight: 700, letterSpacing: '-0.01em',
+            fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
             fontFamily: 'inherit',
+            opacity: 0.85,
           }}
         >
           先不改 · 繼續剛剛設的

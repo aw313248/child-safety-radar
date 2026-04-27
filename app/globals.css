@@ -137,6 +137,56 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* /kids 右上動作鈕 — icon + label pill，明確告知功能 */
+.kids-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px 7px 10px;
+  border-radius: 9999px;
+  background: var(--card-hex);
+  border: 2px solid var(--ink-hex);
+  color: var(--ink-hex);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink-hex);
+  transition: transform 0.15s var(--ease-out),
+              box-shadow 0.15s var(--ease-out);
+  white-space: nowrap;
+}
+.kids-action:hover {
+  transform: translate(-1px, -2px);
+  box-shadow: 5px 5px 0 var(--ink-hex);
+}
+.kids-action:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink-hex);
+}
+.kids-action--primary {
+  background: var(--cc-gold);
+}
+.kids-action--danger {
+  background: linear-gradient(135deg, #C2413B 0%, #8E2A24 100%);
+  color: #FFF6E6;
+}
+@media (max-width: 380px) {
+  .kids-action span { display: none; }
+  .kids-action { padding: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kids-action { transition: none; }
+}
+
+/* a11y: 強化 placeholder 對比（預設瀏覽器 placeholder 太淡，常被誤認隱藏） */
+.strong-placeholder::placeholder {
+  color: rgba(43, 24, 16, 0.55);
+  opacity: 1;
+  font-weight: 700;
+}
+
 /* a11y: 鍵盤跳過 nav 直達主內容 */
 .skip-link {
   position: absolute;
