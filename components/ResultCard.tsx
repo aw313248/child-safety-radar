@@ -286,16 +286,29 @@ export default function ResultCard({ result, onReset }: Props) {
                     </p>
                   </>
                 ) : (
-                  <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.6, letterSpacing: '-0.01em' }}>
-                    「{comment.text}」
-                  </p>
+                  <>
+                    <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.6, letterSpacing: '-0.01em' }}>
+                      「{comment.text}」
+                    </p>
+                    {/* 翻譯失敗 fallback — 告訴使用者為什麼只剩原文 */}
+                    {/[a-zA-Z]/.test(comment.text) && (
+                      <p style={{ fontSize: '10px', color: 'var(--cc-red-deep)', lineHeight: 1.4, marginTop: '4px', letterSpacing: '-0.005em', fontWeight: 600 }}>
+                        ⓘ AI 翻譯失敗，這是英文原句
+                      </p>
+                    )}
+                  </>
                 )}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', marginTop: '6px' }}>
                   {comment.author && (
                     <span style={{ fontSize: '11px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>— {comment.author}</span>
                   )}
                   {comment.likeCount !== undefined && comment.likeCount > 0 && (
-                    <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>👍 {comment.likeCount}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-tertiary)', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                      </svg>
+                      {comment.likeCount}
+                    </span>
                   )}
                   {comment.sourceUrl && (
                     <a

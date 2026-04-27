@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { AgeGroup } from '@/lib/curated-channels'
 import { addUserChannel, hasUserChannel, removeUserChannel } from '@/lib/user-channels'
 import Mascot, { MascotPose } from './Mascot'
@@ -29,8 +29,46 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
     setPose(POSES[Math.floor(Math.random() * POSES.length)])
   }, [channelId])
 
-  // 高風險不給加
-  if (!mounted || !channelId || riskLevel === 'high') return null
+  // ESC 關 modal
+  const closeModal = useCallback(() => setShowModal(false), [])
+  useEffect(() => {
+    if (!showModal) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeModal() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [showModal, closeModal])
+
+  if (!mounted || !channelId) return null
+
+  // 高風險不給加，顯示說明（不要靜默 return null，使用者會困惑）
+  if (riskLevel === 'high') {
+    return (
+      <div style={{
+        marginTop: 10,
+        padding: '12px 14px',
+        background: 'rgba(194, 65, 59, 0.10)',
+        border: '1px solid rgba(194, 65, 59, 0.32)',
+        borderRadius: 14,
+        display: 'flex', alignItems: 'center', gap: 10,
+      }}>
+        <span aria-hidden style={{
+          width: 22, height: 22, borderRadius: '50%',
+          background: 'var(--cc-red-deep)',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0, color: '#fff',
+        }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </span>
+        <p style={{ flex: 1, fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.5, fontWeight: 600 }}>
+          這個頻道風險太高，不能加入熊熊守護模式
+          <br />
+          <span style={{ fontSize: 11, opacity: 0.65, fontWeight: 500 }}>避免小孩誤點看到不適合的內容</span>
+        </p>
+      </div>
+    )
+  }
 
   const handleConfirm = () => {
     addUserChannel({

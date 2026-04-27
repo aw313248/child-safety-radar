@@ -73,6 +73,8 @@ export default function KidsModePage() {
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   // 退出算數題：每次重開 modal 都換一題（防小孩背答案）+ 多運算混合
   const [exitMath, setExitMath] = useState(() => makeExitMath())
+  // 自製 confirm 取代 native confirm()（風格一致 + iOS 字醜）
+  const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null)
   const [exitInput, setExitInput] = useState('')
   const [exitError, setExitError] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -589,7 +591,7 @@ export default function KidsModePage() {
               {mine.map(ch => (
                 <div key={ch.channelId} className="bee-card" style={{ position: 'relative', padding: '20px 14px 16px', textAlign: 'center' }}>
                   <button
-                    onClick={(e) => { e.stopPropagation(); if (confirm(`移除「${ch.name}」？`)) removeMyChannel(ch.channelId) }}
+                    onClick={(e) => { e.stopPropagation(); setRemoveTarget({ id: ch.channelId, name: ch.name }) }}
                     aria-label="移除"
                     style={{
                       position: 'absolute', top: 8, right: 8,
@@ -773,6 +775,69 @@ export default function KidsModePage() {
                 }}
               >
                 離開安心模式
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 自製移除確認 modal — 取代 native confirm()，跟全站 liquid glass 一致 */}
+      {removeTarget && (
+        <div
+          onClick={() => setRemoveTarget(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 250,
+            background: 'rgba(43,24,16,0.45)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'rgba(255, 246, 230, 0.72)',
+              backdropFilter: 'blur(40px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(40px) saturate(160%)',
+              border: '1px solid rgba(255,255,255,0.55)',
+              borderRadius: 24, padding: 22,
+              maxWidth: 340, width: '100%',
+              boxShadow:
+                'inset 0 1px 0 rgba(255,255,255,0.7),' +
+                ' 0 24px 48px -16px rgba(43,24,16,0.28)',
+            }}
+          >
+            <h3 style={{ fontSize: 17, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em', marginBottom: 6 }}>
+              要移除這個頻道嗎？
+            </h3>
+            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.7)', letterSpacing: '-0.005em', marginBottom: 18, fontWeight: 500 }}>
+              「{removeTarget.name}」會從熊熊守護模式拿掉
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={() => setRemoveTarget(null)}
+                style={{
+                  flex: 1, padding: 12, borderRadius: 12,
+                  background: 'rgba(255,255,255,0.55)',
+                  backdropFilter: 'blur(14px)',
+                  border: '1px solid rgba(43,24,16,0.18)',
+                  color: 'var(--ink-hex)', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
+                }}
+              >
+                先不要
+              </button>
+              <button
+                onClick={() => { removeMyChannel(removeTarget.id); setRemoveTarget(null) }}
+                style={{
+                  flex: 1, padding: 12, borderRadius: 12,
+                  background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
+                  color: '#FFF6E6', border: 'none', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 800, fontFamily: 'inherit',
+                  boxShadow: '0 4px 14px -4px rgba(142,42,36,0.35)',
+                }}
+              >
+                確定移除
               </button>
             </div>
           </div>

@@ -51,18 +51,39 @@ const FACTS: Fact[] = [
 ]
 
 export default function LoadingFacts() {
-  const [idx, setIdx] = useState(0)
+  // 隨機起點，每次 mount 看到不同事實第一條（delight）
+  const [idx, setIdx] = useState(() => Math.floor(Math.random() * FACTS.length))
   const [show, setShow] = useState(true)
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setShow(false)
-      setTimeout(() => {
-        setIdx(i => (i + 1) % FACTS.length)
-        setShow(true)
-      }, 200)
-    }, 5000)
-    return () => clearInterval(id)
+    let intervalId: ReturnType<typeof setInterval> | null = null
+
+    const start = () => {
+      if (intervalId) return
+      intervalId = setInterval(() => {
+        setShow(false)
+        setTimeout(() => {
+          setIdx(i => (i + 1) % FACTS.length)
+          setShow(true)
+        }, 200)
+      }, 5000)
+    }
+    const stop = () => {
+      if (intervalId) { clearInterval(intervalId); intervalId = null }
+    }
+
+    // 視窗 visible 才跑（背景 tab 不浪費 CPU/電）
+    if (document.visibilityState === 'visible') start()
+    const onVis = () => {
+      if (document.visibilityState === 'visible') start()
+      else stop()
+    }
+    document.addEventListener('visibilitychange', onVis)
+
+    return () => {
+      stop()
+      document.removeEventListener('visibilitychange', onVis)
+    }
   }, [])
 
   const fact = FACTS[idx]
