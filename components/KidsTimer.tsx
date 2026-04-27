@@ -241,28 +241,28 @@ function SetupScreen({
                     ? 'transparent'
                     : isActive ? 'var(--honey-hex)' : 'var(--card-hex)',
                   border: isSkip
-                    ? '2px dashed rgba(255, 246, 230, 0.45)'
+                    ? '2px dashed rgba(43,24,16,0.15)'
                     : undefined,
                   boxShadow: isSkip ? 'none' : undefined,
                   transition: 'background 0.15s, border-color 0.15s, opacity 0.15s',
                 }}
                 onMouseEnter={e => {
                   if (isSkip) {
-                    e.currentTarget.style.background = 'rgba(255,246,230,0.08)'
-                    e.currentTarget.style.borderColor = 'rgba(255, 246, 230, 0.75)'
+                    e.currentTarget.style.background = 'rgba(43,24,16,0.04)'
+                    e.currentTarget.style.borderColor = 'rgba(43,24,16,0.25)'
                   }
                 }}
                 onMouseLeave={e => {
                   if (isSkip) {
                     e.currentTarget.style.background = 'transparent'
-                    e.currentTarget.style.borderColor = 'rgba(255, 246, 230, 0.45)'
+                    e.currentTarget.style.borderColor = 'rgba(43,24,16,0.15)'
                   }
                 }}
               >
                 <div style={{
                   fontSize: isSkip ? 13 : 16,
                   fontWeight: isSkip ? 700 : 900,
-                  color: isSkip ? 'rgba(255, 246, 230, 0.7)' : 'var(--ink-hex)',
+                  color: isSkip ? 'var(--text-tertiary)' : 'var(--ink-hex)',
                   letterSpacing: '-0.02em',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                 }}>
@@ -285,12 +285,12 @@ function SetupScreen({
           gridTemplateColumns: 'auto 1fr auto',
           gap: 8, alignItems: 'center', marginBottom: 14,
           padding: '12px 14px',
-          background: 'rgba(255, 246, 230, 0.10)',
+          background: 'rgba(43,24,16,0.04)',
           border: '1.5px solid rgba(242, 184, 75, 0.55)',
           borderRadius: 16,
           width: '100%', boxSizing: 'border-box',
         }}>
-          <span style={{ fontSize: 13, fontWeight: 900, color: '#FFF6E6', letterSpacing: '-0.01em' }}>自訂</span>
+          <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--ink-hex)', letterSpacing: '-0.01em' }}>自訂</span>
           <div style={{
             display: 'flex', alignItems: 'baseline', justifyContent: 'center',
             gap: 4, minWidth: 0,
@@ -307,12 +307,12 @@ function SetupScreen({
                 background: 'transparent',
                 fontFamily: 'inherit',
                 fontSize: 17, fontWeight: 900,
-                color: '#FFF6E6',
+                color: 'var(--ink-hex)',
                 textAlign: 'right',
                 letterSpacing: '-0.02em',
               }}
             />
-            <span style={{ fontSize: 12, fontWeight: 800, color: 'rgba(255,246,230,0.78)', flexShrink: 0 }}>分鐘</span>
+            <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--text-secondary)', flexShrink: 0 }}>分鐘</span>
           </div>
           <button
             onClick={handleCustom}
@@ -323,10 +323,10 @@ function SetupScreen({
               background: customMin && parseInt(customMin, 10) >= 1
                 ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
                 : 'rgba(255,255,255,0.12)',
-              color: customMin && parseInt(customMin, 10) >= 1 ? '#0F2444' : 'rgba(255,246,230,0.5)',
+              color: customMin && parseInt(customMin, 10) >= 1 ? '#0F2444' : 'var(--text-tertiary)',
               border: customMin && parseInt(customMin, 10) >= 1
-                ? '1.5px solid #FFF6E6'
-                : '1.5px solid rgba(255,255,255,0.2)',
+                ? '1.5px solid rgba(255,255,255,0.5)'
+                : '1.5px solid var(--border-soft)',
               fontFamily: 'inherit',
               fontSize: 13, fontWeight: 900,
               cursor: customMin ? 'pointer' : 'not-allowed',
@@ -361,7 +361,7 @@ function SetupScreen({
           background: 'rgba(242, 184, 75, 0.14)',
           border: '1px solid rgba(242, 184, 75, 0.4)',
           borderRadius: 12,
-          fontSize: 13, color: '#FFF6E6', letterSpacing: '-0.01em',
+          fontSize: 13, color: 'var(--text-primary)', letterSpacing: '-0.01em',
           fontWeight: 700, lineHeight: 1.5,
         }}>
           3–6 歲醫學建議：單次 ≤ <strong style={{ color: '#F2B84B', fontWeight: 900 }}>20 分鐘</strong>，一天 ≤ <strong style={{ color: '#F2B84B', fontWeight: 900 }}>1 小時</strong>
