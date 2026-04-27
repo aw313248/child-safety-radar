@@ -18,11 +18,24 @@ const PRESETS: { value: Preset; label: string }[] = [
   { value: 0,  label: '不設定' },
 ]
 
-// 數學題（延長用）
-function makeMath() {
-  const a = 6 + Math.floor(Math.random() * 6)
-  const b = 7 + Math.floor(Math.random() * 6)
-  return { a, b, answer: a + b }
+// 數學題（延長用）— 多樣化避免小孩背答案
+// 隨機混合 +、-、× 三種運算，保持答案 ≥ 0、≤ 100、爸媽 5 秒可算
+function makeMath(): { a: number; b: number; op: '+' | '-' | '×'; answer: number } {
+  const ops: Array<'+' | '-' | '×'> = ['+', '+', '-', '×'] // + 略多
+  const op = ops[Math.floor(Math.random() * ops.length)]
+  if (op === '×') {
+    const a = 3 + Math.floor(Math.random() * 7) // 3-9
+    const b = 2 + Math.floor(Math.random() * 6) // 2-7
+    return { a, b, op, answer: a * b }
+  }
+  if (op === '-') {
+    const a = 12 + Math.floor(Math.random() * 18) // 12-29
+    const b = 3 + Math.floor(Math.random() * Math.min(8, a - 1))
+    return { a, b, op, answer: a - b }
+  }
+  const a = 6 + Math.floor(Math.random() * 14)
+  const b = 7 + Math.floor(Math.random() * 14)
+  return { a, b, op: '+', answer: a + b }
 }
 
 interface Props {
@@ -58,13 +71,18 @@ export default function KidsTimer({ onTimeUp, onExit }: Props) {
     const savedEnd = Number(localStorage.getItem(TIMER_END_KEY) || '0')
     const now = Date.now()
 
-    if (savedEnd && savedEnd > now) {
-      // 還在計時
+    // 跨日重置：endTs 是昨天設的（不同日期）→ 一律過期，不要彈「時間到」
+    const isSameDay = savedEnd > 0 &&
+      new Date(savedEnd).toDateString() === new Date(now).toDateString()
+
+    if (savedEnd && savedEnd > now && isSameDay) {
+      // 同一天還在計時
       setMinutes(savedMin)
       setEndTs(savedEnd)
       setNeedSetup(false)
     } else {
-      // 新 session → 顯示設定
+      // 新一天 / 過期 / 沒設過 → 清掉舊 endTs + 顯示設定
+      if (savedEnd) localStorage.removeItem(TIMER_END_KEY)
       setNeedSetup(true)
       if (savedMin > 0) setMinutes(savedMin)
     }
@@ -491,7 +509,7 @@ function BearWarn({ msg, pose, urgent = false }: { msg: string; pose: MascotPose
 function TimeUpScreen({
   math, input, setInput, error, onExtend, onExit,
 }: {
-  math: { a: number; b: number; answer: number }
+  math: { a: number; b: number; op: '+' | '-' | '×'; answer: number }
   input: string
   setInput: (s: string) => void
   error: boolean
@@ -581,7 +599,7 @@ function TimeUpScreen({
           }}>
             要延長時間，請先算：<br />
             <span style={{ fontSize: 24, fontWeight: 800, letterSpacing: '0.02em', fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace' }}>
-              {math.a} + {math.b} = ?
+              {math.a} {math.op} {math.b} = ?
             </span>
           </p>
 

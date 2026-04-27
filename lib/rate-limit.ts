@@ -41,3 +41,23 @@ export function getClientIp(req: Request): string {
   if (forwarded) return forwarded.split(',')[0].trim()
   return req.headers.get('x-real-ip') || 'unknown'
 }
+
+/**
+ * 產生 device fingerprint：IP + User-Agent
+ * 同 wifi 多人不會誤判（不同 UA），同人多 tab 仍同 fingerprint
+ * Edge Runtime 不能用 node:crypto，用簡單 djb2 hash 即可
+ */
+export function getDeviceFingerprint(req: Request): string {
+  const ip = getClientIp(req)
+  const ua = req.headers.get('user-agent') || 'unknown'
+  return djb2(`${ip}::${ua}`)
+}
+
+function djb2(str: string): string {
+  let hash = 5381
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) + str.charCodeAt(i)
+    hash = hash & 0xFFFFFFFF
+  }
+  return Math.abs(hash).toString(36)
+}

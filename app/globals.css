@@ -299,6 +299,13 @@
   font-weight: 700;
 }
 
+/* /kids 影片區禁用 iOS 長按 callout / 桌面右鍵 / 文字選取 — 防鎖跳出 */
+.kids-player-area {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* a11y: 鍵盤跳過 nav 直達主內容 */
 .skip-link {
   position: absolute;

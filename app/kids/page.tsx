@@ -11,6 +11,22 @@ import ChannelAvatar from '@/components/ChannelAvatar'
 const LockScreenGuide = dynamic(() => import('@/components/LockScreenGuide'), { ssr: false })
 
 const CHANNEL_POSES: MascotPose[] = ['hi', 'thumbs-up', 'fly', 'search', 'guard', 'think']
+
+// 退出題庫 — +/-/× 混合，避免固定 a+b 被小孩背
+function makeExitMath(): { a: number; b: number; op: '+' | '-' | '×'; answer: number } {
+  const ops: Array<'+' | '-' | '×'> = ['+', '+', '-', '×']
+  const op = ops[Math.floor(Math.random() * ops.length)]
+  if (op === '×') {
+    const a = 3 + Math.floor(Math.random() * 7), b = 2 + Math.floor(Math.random() * 6)
+    return { a, b, op, answer: a * b }
+  }
+  if (op === '-') {
+    const a = 12 + Math.floor(Math.random() * 18), b = 3 + Math.floor(Math.random() * Math.min(8, a - 1))
+    return { a, b, op, answer: a - b }
+  }
+  const a = 6 + Math.floor(Math.random() * 14), b = 7 + Math.floor(Math.random() * 14)
+  return { a, b, op: '+', answer: a + b }
+}
 function mascotForChannel(id: string): MascotPose {
   let h = 0
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0
@@ -55,11 +71,8 @@ export default function KidsModePage() {
   const [loadingVideos, setLoadingVideos] = useState(false)
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null)
   const [showExitConfirm, setShowExitConfirm] = useState(false)
-  const [exitMath] = useState(() => {
-    const a = 6 + Math.floor(Math.random() * 6)
-    const b = 7 + Math.floor(Math.random() * 6)
-    return { a, b, answer: a + b }
-  })
+  // 退出算數題：每次重開 modal 都換一題（防小孩背答案）+ 多運算混合
+  const [exitMath, setExitMath] = useState(() => makeExitMath())
   const [exitInput, setExitInput] = useState('')
   const [exitError, setExitError] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -67,6 +80,7 @@ export default function KidsModePage() {
 
   const tryExit = () => {
     if (parseInt(exitInput, 10) === exitMath.answer) {
+      setExitMath(makeExitMath()) // 通過後換題（避免下次預覽答案）
       allowLeaveRef.current = true
       if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
       window.location.href = '/'
@@ -144,7 +158,7 @@ export default function KidsModePage() {
     if (!mounted || showGuide) return
     const lockState = { peekkidsLock: true }
     window.history.pushState(lockState, '', window.location.href)
-    const onPopState = () => { window.history.pushState(lockState, '', window.location.href); setShowExitConfirm(true) }
+    const onPopState = () => { window.history.pushState(lockState, '', window.location.href); (() => { setExitMath(makeExitMath()); setShowExitConfirm(true) })() }
     window.addEventListener('popstate', onPopState)
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
       if (allowLeaveRef.current) return
@@ -241,7 +255,11 @@ export default function KidsModePage() {
           </button>
           <span style={{ fontSize: 12, opacity: 0.7 }}>安心播放中</span>
         </div>
-        <div style={{ flex: 1, position: 'relative', background: '#000' }}>
+        <div
+          className="kids-player-area"
+          style={{ flex: 1, position: 'relative', background: '#000' }}
+          onContextMenu={(e) => e.preventDefault()}
+        >
           <iframe
             ref={iframeRef}
             onLoad={() => { iframeRef.current?.contentWindow?.postMessage(JSON.stringify({ event: 'listening' }), '*') }}
@@ -450,7 +468,7 @@ export default function KidsModePage() {
               <span>時間</span>
             </button>
             <button
-              onClick={() => setShowExitConfirm(true)}
+              onClick={() => (() => { setExitMath(makeExitMath()); setShowExitConfirm(true) })()}
               aria-label="回首頁"
               title="回首頁（需要爸媽算數學）"
               className="kids-action kids-action--danger"
@@ -692,7 +710,7 @@ export default function KidsModePage() {
                 fontFamily: 'ui-monospace, "SF Mono", monospace',
                 letterSpacing: '0.02em', marginBottom: 12,
               }}>
-                {exitMath.a} + {exitMath.b} = ?
+                {exitMath.a} {exitMath.op} {exitMath.b} = ?
               </div>
               <input
                 type="number" inputMode="numeric" autoFocus

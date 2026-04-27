@@ -44,6 +44,7 @@ export default function Home() {
   const [unlocked, setUnlocked]   = useState(false)
   const [scanCount, setScanCount] = useState(0)
   const [showUnlock, setShowUnlock] = useState(false)
+  const [unlockPending, setUnlockPending] = useState(false)
   // 動態 placeholder：每 3.5s 換一個範例頻道，告訴使用者可以丟什麼進來
   const [phIdx, setPhIdx] = useState(0)
   // confetti：result 出現的瞬間放一次 0.6s 蜂蜜金小點
@@ -119,6 +120,12 @@ export default function Home() {
       if (params.get('unlock') === '1') {
         localStorage.setItem(STORAGE_KEY, 'true')
         setUnlocked(true)
+      }
+      // Lemon Squeezy 付款成功 redirect 帶 ?unlock_pending=1 → 自動開 modal 引導填碼
+      if (params.get('unlock_pending') === '1') {
+        setShowUnlock(true)
+        setUnlockPending(true)
+        window.history.replaceState({}, '', '/')
       }
     } catch {}
   }, [])
@@ -526,7 +533,11 @@ export default function Home() {
       </div>
 
       {showUnlock && (
-        <UnlockModal onUnlocked={handleUnlocked} onClose={() => setShowUnlock(false)} />
+        <UnlockModal
+          onUnlocked={handleUnlocked}
+          onClose={() => { setShowUnlock(false); setUnlockPending(false) }}
+          pendingFromCheckout={unlockPending}
+        />
       )}
     </main>
   )

@@ -3,7 +3,12 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { getChannelInfo, getVideoComments, CommentThread } from '@/lib/youtube'
 import { AnalysisResult, RiskLevel, ScoreBreakdownItem } from '@/types/analysis'
 import { authenticate, corsHeaders } from '@/lib/api-auth'
-import { rateLimit, getClientIp } from '@/lib/rate-limit'
+import { rateLimit, getClientIp, getDeviceFingerprint } from '@/lib/rate-limit'
+
+const FREE_SCANS = 2
+const SCAN_COOKIE = 'cc_scan_count'
+const UNLOCK_COOKIE = 'cc_unlocked'
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 天
 
 // Manual blacklist (頻道 ID，逗號分隔，從環境變數讀)
 const BLACKLIST = (process.env.CHANNEL_BLACKLIST || '').split(',').map(s => s.trim()).filter(Boolean)
@@ -250,20 +255,35 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // ── 2. Rate limit：官網 5/分鐘 per IP，API key 30/分鐘 per key ──
-  const rlKey = auth.via === 'api-key' ? `key:${auth.keyOrIp}` : `ip:${getClientIp(req)}`
+  // ── 2. Rate limit：官網 by device fingerprint（IP + UA hash）
+  //    同 wifi 多人不會誤判，5/分鐘 per device + 50/分鐘 per IP（家庭多裝置） ──
+  const fp = getDeviceFingerprint(req)
+  const rlKey = auth.via === 'api-key' ? `key:${auth.keyOrIp}` : `fp:${fp}`
   const rlLimit = auth.via === 'api-key' ? 30 : 5
   const rl = rateLimit(rlKey, rlLimit, 60_000)
+  const ipRl = auth.via === 'api-key' ? null : rateLimit(`ip:${getClientIp(req)}`, 50, 60_000)
   const rlHeaders: HeadersInit = {
     ...corsHeaders(req, auth),
     'X-RateLimit-Limit': String(rl.limit),
     'X-RateLimit-Remaining': String(rl.remaining),
     'X-RateLimit-Reset': String(Math.floor(rl.resetAt / 1000)),
   }
-  if (!rl.ok) {
+  if (!rl.ok || (ipRl && !ipRl.ok)) {
     return NextResponse.json(
-      { error: `請求過於頻繁，請稍後再試（每分鐘上限 ${rl.limit} 次）` },
+      { error: `請求太頻繁，等一下再試（每分鐘上限 ${rl.limit} 次）` },
       { status: 429, headers: rlHeaders }
+    )
+  }
+
+  // ── 2b. Server-side scan count（cookie，防 client 清 localStorage 重置漏洞）──
+  const cookieHeader = req.headers.get('cookie') || ''
+  const cookies = Object.fromEntries(cookieHeader.split('; ').map(c => c.split('=')))
+  const unlocked = cookies[UNLOCK_COOKIE] === '1'
+  const serverScanCount = parseInt(cookies[SCAN_COOKIE] || '0', 10)
+  if (!unlocked && serverScanCount >= FREE_SCANS) {
+    return NextResponse.json(
+      { error: '免費次數已用完，請解鎖無限掃描' },
+      { status: 402, headers: rlHeaders }
     )
   }
 
@@ -461,7 +481,18 @@ export async function POST(req: NextRequest) {
       scoreBreakdown: breakdown,
     }
 
-    return NextResponse.json(result, { headers: rlHeaders })
+    // 成功後 set-cookie 累計 server-side scan count（防漏洞）
+    const res = NextResponse.json(result, { headers: rlHeaders })
+    if (!unlocked) {
+      res.cookies.set(SCAN_COOKIE, String(serverScanCount + 1), {
+        maxAge: COOKIE_MAX_AGE,
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: true,
+        path: '/',
+      })
+    }
+    return res
   } catch (err: unknown) {
     console.error('Analyze error:', err)
     const message = err instanceof Error ? err.message : '分析失敗'

@@ -1,17 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Props {
   onUnlocked: () => void
   onClose: () => void
+  /** 從 Lemon Squeezy 付款 redirect 回來：不顯示 CTA，直接秀「付款成功，請填碼」*/
+  pendingFromCheckout?: boolean
 }
 
-export default function UnlockModal({ onUnlocked, onClose }: Props) {
+export default function UnlockModal({ onUnlocked, onClose, pendingFromCheckout = false }: Props) {
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [showCode, setShowCode] = useState(false)
+  const [showCode, setShowCode] = useState(pendingFromCheckout)
+
+  // ESC 鍵關 modal
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
 
   const handleSubmit = async () => {
     if (!code.trim()) return
@@ -93,6 +104,33 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
           ✕
         </button>
 
+        {/* 付款回來 banner — 引導使用者填碼，避免找不到入口 */}
+        {pendingFromCheckout && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '12px 14px', marginBottom: 16,
+            background: 'rgba(122, 184, 126, 0.16)',
+            border: '1px solid rgba(122, 184, 126, 0.4)',
+            borderRadius: 12,
+          }}>
+            <span aria-hidden style={{
+              width: 24, height: 24, borderRadius: '50%',
+              background: '#7AB87E', flexShrink: 0,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              color: '#fff',
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+            <p style={{ flex: 1, fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.5, fontWeight: 600 }}>
+              付款已收到，授權碼正寄到你的信箱
+              <br />
+              <span style={{ fontSize: 11, opacity: 0.7, fontWeight: 500 }}>1-2 分鐘內到，請在下方輸入</span>
+            </p>
+          </div>
+        )}
+
         {/* Headline — 主動勾起需求 */}
         <div style={{ marginBottom: 18, paddingRight: 36 }}>
           <p style={{
@@ -100,21 +138,24 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
             color: 'var(--cc-red-deep)', textTransform: 'uppercase',
             marginBottom: 6,
           }}>
-            ★ 免費 2 次用完了 ★
+            ★ {pendingFromCheckout ? '輸入授權碼' : '免費 2 次用完了'} ★
           </p>
           <h2 style={{
             fontSize: 24, fontWeight: 800, letterSpacing: '-0.04em',
             color: 'var(--ink-hex)', lineHeight: 1.15,
             marginBottom: 10,
           }}>
-            還有想掃的頻道嗎？<br />
-            解鎖無限掃描
+            {pendingFromCheckout
+              ? <>授權碼來了<br />立刻解鎖</>
+              : <>還有想掃的頻道嗎？<br />解鎖無限掃描</>}
           </h2>
           <p style={{
             fontSize: 13, color: 'rgba(43,24,16,0.72)',
             letterSpacing: '-0.005em', lineHeight: 1.6, fontWeight: 500,
           }}>
-            每次小孩說「我要看這個」，20 秒就知道 OK 不 OK
+            {pendingFromCheckout
+              ? '收到 Lemon Squeezy 寄來的授權碼後，貼在下方'
+              : '每次小孩說「我要看這個」，20 秒就知道 OK 不 OK'}
           </p>
         </div>
 
@@ -157,11 +198,10 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
           </div>
         </div>
 
-        {/* 主 CTA — pill + ink shadow 跟首頁同款 */}
+        {/* 主 CTA — 付款後 redirect 回首頁帶 ?unlock_pending=1 自動引導填碼 */}
+        {!pendingFromCheckout && (
         <a
-          href="https://peekkids.lemonsqueezy.com/checkout/buy/5468a3b1-03e2-467e-830a-bfabf0b1f20b?locale=zh-TW"
-          target="_blank"
-          rel="noopener noreferrer"
+          href={`https://peekkids.lemonsqueezy.com/checkout/buy/5468a3b1-03e2-467e-830a-bfabf0b1f20b?locale=zh-TW&checkout%5Bsuccess_url%5D=${encodeURIComponent('https://child-safety-radar.vercel.app/?unlock_pending=1')}`}
           className="cta-paywall"
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -185,8 +225,10 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
             <polyline points="12 5 19 12 12 19" />
           </svg>
         </a>
+        )}
 
-        {/* Escape hatch — 不想付錢還能用熊熊精選 */}
+        {/* Escape hatch — 不想付錢還能用熊熊精選（付款 pending 不顯示） */}
+        {!pendingFromCheckout && (
         <a
           href="/kids"
           className="cta-escape"
@@ -206,6 +248,7 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
         >
           先不解鎖 · 去看免費的熊熊精選頻道 →
         </a>
+        )}
 
         {/* Trust signals — Apple/Google Pay + Lemon Squeezy 結帳 */}
         <div style={{

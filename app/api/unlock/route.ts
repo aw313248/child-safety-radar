@@ -45,6 +45,25 @@ function getManualCodes(): Set<string> {
   return new Set(codes)
 }
 
+function setUnlockCookie(res: NextResponse) {
+  res.cookies.set('cc_unlocked', '1', {
+    maxAge: 60 * 60 * 24 * 365, // 1 年
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: true,
+    path: '/',
+  })
+  // 同時把 scan count cookie 清掉（解鎖後不再需要計數）
+  res.cookies.set('cc_scan_count', '0', {
+    maxAge: 60 * 60 * 24 * 365,
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: true,
+    path: '/',
+  })
+  return res
+}
+
 export async function POST(req: NextRequest) {
   const { code } = await req.json()
 
@@ -53,21 +72,21 @@ export async function POST(req: NextRequest) {
   }
 
   const trimmed = code.trim()
-
   const upper = trimmed.toUpperCase()
 
   // 先查內建主控碼
   if (BUILTIN_CODES.has(upper)) {
-    return NextResponse.json({ valid: true })
+    return setUnlockCookie(NextResponse.json({ valid: true }))
   }
 
   // 再查環境變數的手動碼
   const manualCodes = getManualCodes()
   if (manualCodes.has(upper)) {
-    return NextResponse.json({ valid: true })
+    return setUnlockCookie(NextResponse.json({ valid: true }))
   }
 
   // 再驗 Lemon Squeezy 授權碼
   const lsValid = await validateLemonSqueezyLicense(trimmed)
-  return NextResponse.json({ valid: lsValid })
+  if (lsValid) return setUnlockCookie(NextResponse.json({ valid: true }))
+  return NextResponse.json({ valid: false })
 }
