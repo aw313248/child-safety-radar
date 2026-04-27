@@ -210,11 +210,42 @@ export default function KidsModePage() {
           <iframe
             ref={iframeRef}
             onLoad={() => { iframeRef.current?.contentWindow?.postMessage(JSON.stringify({ event: 'listening' }), '*') }}
-            src={`https://www.youtube-nocookie.com/embed/${playingVideoId}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&fs=1&playsinline=1&enablejsapi=1&controls=1`}
-            allow="autoplay; encrypted-media; fullscreen"
-            allowFullScreen
+            // fs=0 鎖全螢幕鈕、disablekb=1 鎖鍵盤捷徑、modestbranding=1 + rel=0 + iv_load_policy=3 藏 YouTube branding 跟外連
+            src={`https://www.youtube-nocookie.com/embed/${playingVideoId}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&fs=0&playsinline=1&enablejsapi=1&controls=1&disablekb=1&showinfo=0`}
+            // 拿掉 fullscreen 權限，allow 也對應砍掉
+            allow="autoplay; encrypted-media"
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
           />
+          {/*
+            鎖跳出 YouTube：iframe 內建的「更多影片」、「YouTube logo」、
+            「share」、「全螢幕」按鈕都會把小孩帶離 — 加 4 個透明 overlay
+            蓋住右下/右上角 + 影片左上的標題鏈結
+            中央 click-through 維持暫停 / 播放正常
+          */}
+          {/* 右下：YouTube logo + 更多影片 + share */}
+          <div aria-hidden style={{
+            position: 'absolute', right: 0, bottom: 0,
+            width: 220, height: 56,
+            zIndex: 5,
+            background: 'transparent',
+            cursor: 'not-allowed',
+          }} onClick={e => { e.preventDefault(); e.stopPropagation() }} />
+          {/* 右上：影片標題鏈結（pause 時會出現「在 YouTube 上看」） */}
+          <div aria-hidden style={{
+            position: 'absolute', right: 0, top: 0,
+            width: 80, height: 56,
+            zIndex: 5,
+            background: 'transparent',
+            cursor: 'not-allowed',
+          }} onClick={e => { e.preventDefault(); e.stopPropagation() }} />
+          {/* 左上：影片標題（pause 時 click 會跳 YouTube watch page） */}
+          <div aria-hidden style={{
+            position: 'absolute', left: 0, top: 0,
+            width: 'calc(100% - 80px)', height: 56,
+            zIndex: 5,
+            background: 'transparent',
+            cursor: 'not-allowed',
+          }} onClick={e => { e.preventDefault(); e.stopPropagation() }} />
         </div>
       </main>
     )
