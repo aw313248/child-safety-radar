@@ -234,33 +234,39 @@ export default function ResultCard({ result, onReset }: Props) {
       </div>
 
       {/* Channel info */}
-      <div className="bee-card stagger-2" style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+      <div className="bee-card stagger-2" style={{ padding: '18px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
           {result.channelThumbnail && (
             <Image
               src={result.channelThumbnail}
               alt={result.channelName}
-              width={44}
-              height={44}
-              style={{ borderRadius: '50%', objectFit: 'cover', border: '2.5px solid var(--ink-hex)' }}
+              width={40}
+              height={40}
+              style={{ borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--ink-hex)', flexShrink: 0 }}
             />
           )}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontWeight: 900, fontSize: '16px', letterSpacing: '-0.03em', color: 'var(--ink-hex)', lineHeight: 1.2 }}>
+            <p style={{ fontWeight: 900, fontSize: '15px', letterSpacing: '-0.03em', color: 'var(--ink-hex)', lineHeight: 1.15, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {result.channelName}
             </p>
-            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '3px', letterSpacing: '-0.01em', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                {result.commentsDisabled
-                  ? <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/></>
-                  : <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>}
-              </svg>
-              {result.commentsDisabled ? '留言區已關閉' : '留言區開啟'}
-              {result.videoCount ? ` · ${result.videoCount} 部影片` : ''}
-            </p>
+            <div style={{ display: 'flex', gap: 8, marginTop: 3, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '10px', color: 'rgba(43,24,16,0.5)', fontWeight: 600, letterSpacing: '0.02em', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  {result.commentsDisabled
+                    ? <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/></>
+                    : <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>}
+                </svg>
+                {result.commentsDisabled ? '留言關閉' : '留言開啟'}
+              </span>
+              {result.videoCount ? (
+                <span style={{ fontSize: '10px', color: 'rgba(43,24,16,0.5)', fontWeight: 600, letterSpacing: '0.02em' }}>
+                  {result.videoCount} 部影片
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
-        <p style={{ fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.75, letterSpacing: '-0.005em', fontWeight: 400 }}>
+        <p style={{ fontSize: '13px', color: 'var(--ink-hex)', lineHeight: 1.7, letterSpacing: '-0.005em', fontWeight: 500, opacity: 0.8 }}>
           {result.aiSummary}
         </p>
       </div>
@@ -443,25 +449,31 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: '8px', paddingTop: '2px' }}>
+        <button onClick={handleShare} className="btn-secondary" style={{ flex: 1, fontSize: '13px', padding: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+          分享
+        </button>
         <button
           onClick={() => setShowQR(true)}
           className="btn-secondary"
-          style={{ flex: 1, fontSize: '13px', padding: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+          style={{ flex: 1, fontSize: '13px', padding: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}
           title="用 QR code 傳給另一台裝置"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
             <rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="14" x2="14" y2="14.01"/>
-            <line x1="20" y1="14" x2="20" y2="14.01"/><line x1="14" y1="20" x2="14" y2="20.01"/>
-            <line x1="20" y1="20" x2="20" y2="20.01"/><line x1="17" y1="17" x2="17" y2="17.01"/>
+            <line x1="20" y1="14" x2="20" y2="14.01"/><line x1="17" y1="17" x2="17" y2="17.01"/>
           </svg>
-          傳給裝置
+          傳裝置
         </button>
-        <button onClick={handleShare} className="btn-secondary" style={{ flex: 1, fontSize: '13px', padding: '12px' }}>
-          分享
-        </button>
-        <button onClick={onReset} className="btn-pill btn-pill-honey" style={{ flex: 2, fontSize: '13px', padding: '14px' }}>
-          再掃一個 <span className="arrow">→</span>
+        <button onClick={onReset} className="btn-pill btn-pill-honey" style={{ flex: 2, fontSize: '13px', padding: '14px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          再掃一個
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
         </button>
       </div>
 

@@ -1,3 +1,7 @@
+'use client'
+
+import { useState } from 'react'
+
 // 真實艾莎門案例庫 — 所有資料皆來自公開報導 / Wikipedia
 // 這不是 AI 生成，是有據可查的歷史事件，每張卡都附來源連結
 
@@ -58,146 +62,93 @@ const STATUS_CLASS: Record<CaseStatus, string> = {
 }
 
 export default function CaseLibrary() {
+  const [open, setOpen] = useState(false)
+
   return (
-    <section style={{ marginTop: 48 }}>
-      {/* Section header */}
-      <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <p style={{
-          fontSize: 11,
-          fontWeight: 600,
-          letterSpacing: '0.08em',
-          color: 'var(--forest-mid)',
-          textTransform: 'uppercase',
-          marginBottom: 8,
+    <section style={{ marginTop: 24 }}>
+      {/* 折疊入口 — 預設收起，一行入口不佔版面 */}
+      <button
+        onClick={() => setOpen(v => !v)}
+        aria-expanded={open}
+        style={{
+          width: '100%', padding: '13px 16px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          background: 'rgba(255,255,255,0.45)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+          border: '1px solid rgba(43,24,16,0.12)',
+          borderRadius: open ? '16px 16px 0 0' : 16,
+          cursor: 'pointer', fontFamily: 'inherit',
+          transition: 'border-radius 0.2s',
+        }}
+      >
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--cc-red)', flexShrink: 0 }}>
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          這些頻道真的發生過，有報導為證
+        </span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s cubic-bezier(0.22,1,0.36,1)', flexShrink: 0, color: 'var(--ink-hex)', opacity: 0.5 }}>
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+
+      {open && (
+        <div style={{
+          border: '1px solid rgba(43,24,16,0.12)',
+          borderTop: 'none',
+          borderRadius: '0 0 16px 16px',
+          overflow: 'hidden',
         }}>
-          真實案例
-        </p>
-        <h2 style={{
-          fontSize: 20,
-          fontWeight: 700,
-          letterSpacing: '-0.025em',
-          color: 'var(--text-primary)',
-          lineHeight: 1.3,
-          marginBottom: 6,
-        }}>
-          這些頻道，真的發生過
-        </h2>
-        <p style={{
-          fontSize: 12,
-          color: 'var(--text-secondary)',
-          letterSpacing: '-0.01em',
-          lineHeight: 1.5,
-        }}>
-          不是我們捏造的，每張卡片都附公開報導連結，你可以自己查
-        </p>
-      </div>
+          {/* Cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, background: 'rgba(43,24,16,0.06)' }}>
+            {CASES.map((c) => (
+              <article
+                key={c.name}
+                style={{
+                  background: 'var(--card-hex)',
+                  padding: '14px 16px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5, gap: 8 }}>
+                  <h3 style={{ fontSize: 14, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--ink-hex)' }}>
+                    {c.name}
+                  </h3>
+                  <span className={STATUS_CLASS[c.status]} style={{ whiteSpace: 'nowrap', fontSize: 10 }}>
+                    {c.statusLabel} · {c.year}
+                  </span>
+                </div>
+                <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.5)', letterSpacing: '-0.01em', marginBottom: 5 }}>
+                  {c.meta}
+                </p>
+                <p style={{ fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 8, fontWeight: 500, opacity: 0.75 }}>
+                  {c.desc}
+                </p>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  {c.sources.map((src) => (
+                    <a key={src.url} href={src.url} target="_blank" rel="noopener noreferrer"
+                      style={{ fontSize: 10, color: 'var(--cc-red-deep)', textDecoration: 'none', fontWeight: 600, letterSpacing: '-0.005em', opacity: 0.75 }}>
+                      → {src.label}
+                    </a>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
 
-      {/* Cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {CASES.map((c) => {
-          return (
-            <article
-              key={c.name}
-              style={{
-                background: 'var(--surface)',
-                borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border-default)',
-                padding: '14px 16px',
-                boxShadow: 'var(--shadow-card)',
-                transition: 'border-color 0.15s, transform 0.12s var(--ease-spring)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, gap: 8 }}>
-                <h3 style={{
-                  fontSize: 15,
-                  fontWeight: 700,
-                  letterSpacing: '-0.02em',
-                  color: 'var(--text-primary)',
-                }}>
-                  {c.name}
-                </h3>
-                <span className={STATUS_CLASS[c.status]} style={{ whiteSpace: 'nowrap' }}>
-                  {c.statusLabel} · {c.year}
-                </span>
-              </div>
-
-              <p style={{
-                fontSize: 11,
-                color: 'var(--text-tertiary)',
-                letterSpacing: '-0.01em',
-                marginBottom: 6,
-              }}>
-                {c.meta}
-              </p>
-
-              <p style={{
-                fontSize: 13,
-                color: 'var(--text-secondary)',
-                letterSpacing: '-0.01em',
-                lineHeight: 1.5,
-                marginBottom: 10,
-              }}>
-                {c.desc}
-              </p>
-
-              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                {c.sources.map((src) => (
-                  <a
-                    key={src.url}
-                    href={src.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      fontSize: 11,
-                      color: 'var(--forest-mid)',
-                      textDecoration: 'none',
-                      fontWeight: 500,
-                      letterSpacing: '-0.01em',
-                      borderBottom: '1px solid rgba(44,90,66,0.25)',
-                      paddingBottom: 1,
-                    }}
-                  >
-                    → {src.label}
-                  </a>
-                ))}
-              </div>
-            </article>
-          )
-        })}
-      </div>
-
-      {/* Aggregate stat */}
-      <div style={{
-        marginTop: 14,
-        padding: '12px 14px',
-        background: 'rgba(44,90,66,0.05)',
-        borderRadius: 'var(--radius-md)',
-        border: '1px solid rgba(44,90,66,0.10)',
-      }}>
-        <p style={{
-          fontSize: 12,
-          color: 'var(--text-secondary)',
-          letterSpacing: '-0.01em',
-          lineHeight: 1.5,
-          textAlign: 'center',
-        }}>
-          光是 2017 年，YouTube 就下架 <strong style={{ color: 'var(--text-primary)' }}>15 萬支影片</strong>、終止 <strong style={{ color: 'var(--text-primary)' }}>270 個頻道</strong>
-          <br />
-          <a
-            href="https://en.wikipedia.org/wiki/Elsagate"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              fontSize: 11,
-              color: 'var(--text-tertiary)',
-              textDecoration: 'none',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            來源：Wikipedia: Elsagate →
-          </a>
-        </p>
-      </div>
+          {/* Stat footer */}
+          <div style={{ padding: '10px 16px', background: 'rgba(43,24,16,0.03)', textAlign: 'center' }}>
+            <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.5)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
+              2017 年 YouTube 下架 <strong style={{ color: 'var(--ink-hex)', fontWeight: 700 }}>15 萬支影片</strong>、終止 <strong style={{ color: 'var(--ink-hex)', fontWeight: 700 }}>270 個頻道</strong>
+              <a href="https://en.wikipedia.org/wiki/Elsagate" target="_blank" rel="noopener noreferrer"
+                style={{ color: 'rgba(43,24,16,0.35)', textDecoration: 'none', marginLeft: 6 }}>
+                來源 →
+              </a>
+            </p>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
