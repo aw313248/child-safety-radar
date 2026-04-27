@@ -32,15 +32,12 @@ async function validateLemonSqueezyLicense(licenseKey: string): Promise<boolean>
   }
 }
 
-// 內建主控碼（給開發者 / 站長自用，永遠有效）
-const BUILTIN_CODES = new Set([
-  'PEEKKIDS-OSCAR-2026',
-  'MINEHOOOO-DEV-UNLOCK',
-])
-
-// 備用：手動存取碼（Vercel 環境變數 ACCESS_CODES，逗號分隔）
-function getManualCodes(): Set<string> {
-  const raw = process.env.ACCESS_CODES || ''
+// 所有有效碼從環境變數讀，不在原始碼 hardcode
+// Vercel Dashboard → Settings → Environment Variables：
+//   ACCESS_CODES=SOLD-CODE-A,SOLD-CODE-B   （正式販售碼）
+//   DEV_UNLOCK_CODES=MY-DEV-CODE           （開發者自用，只放 .env.local，不 commit）
+function getAllValidCodes(): Set<string> {
+  const raw = [process.env.ACCESS_CODES || '', process.env.DEV_UNLOCK_CODES || ''].join(',')
   const codes = raw.split(',').map(c => c.trim().toUpperCase()).filter(Boolean)
   return new Set(codes)
 }
@@ -65,27 +62,26 @@ function setUnlockCookie(res: NextResponse) {
 }
 
 export async function POST(req: NextRequest) {
-  const { code } = await req.json()
+  const body = await req.json().catch(() => null)
+  const code = body?.code
 
   if (!code || typeof code !== 'string') {
     return NextResponse.json({ valid: false }, { status: 400 })
   }
 
   const trimmed = code.trim()
+  if (trimmed.length > 200) {
+    return NextResponse.json({ valid: false }, { status: 400 })
+  }
   const upper = trimmed.toUpperCase()
 
-  // 先查內建主控碼
-  if (BUILTIN_CODES.has(upper)) {
+  // 查環境變數碼
+  const validCodes = getAllValidCodes()
+  if (validCodes.size > 0 && validCodes.has(upper)) {
     return setUnlockCookie(NextResponse.json({ valid: true }))
   }
 
-  // 再查環境變數的手動碼
-  const manualCodes = getManualCodes()
-  if (manualCodes.has(upper)) {
-    return setUnlockCookie(NextResponse.json({ valid: true }))
-  }
-
-  // 再驗 Lemon Squeezy 授權碼
+  // 驗 Lemon Squeezy 授權碼
   const lsValid = await validateLemonSqueezyLicense(trimmed)
   if (lsValid) return setUnlockCookie(NextResponse.json({ valid: true }))
   return NextResponse.json({ valid: false })

@@ -288,8 +288,20 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { url } = await req.json()
-    if (!url) return NextResponse.json({ error: '請提供 YouTube 網址' }, { status: 400, headers: rlHeaders })
+    const body = await req.json().catch(() => null)
+    const url = body?.url
+    if (!url || typeof url !== 'string') {
+      return NextResponse.json({ error: '請提供 YouTube 網址' }, { status: 400, headers: rlHeaders })
+    }
+    // Server-side URL 格式驗證（防止注入或濫用 API quota）
+    const trimmedUrl = url.trim()
+    if (trimmedUrl.length > 500) {
+      return NextResponse.json({ error: '網址太長，確認一下是不是貼錯了' }, { status: 400, headers: rlHeaders })
+    }
+    const YOUTUBE_RE = /youtube\.com|youtu\.be|^@[\w.-]+$|^UC[\w-]{22}$/i
+    if (!YOUTUBE_RE.test(trimmedUrl)) {
+      return NextResponse.json({ error: '請提供有效的 YouTube 頻道網址' }, { status: 400, headers: rlHeaders })
+    }
 
     const ytApiKey = process.env.YOUTUBE_API_KEY
     const geminiApiKey = process.env.GEMINI_API_KEY
@@ -298,7 +310,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Channel info
-    const channelInfo = await getChannelInfo(url, ytApiKey)
+    const channelInfo = await getChannelInfo(trimmedUrl, ytApiKey)
 
     // 2. Comments from up to 10 videos (not just 5)
     // 注意：傳入 video.title 讓留言能被追溯到來源影片
@@ -477,7 +489,7 @@ export async function POST(req: NextRequest) {
       aiSummary: aiResult.summary,
       recommendation: aiResult.recommendation,
       checkedAt: new Date().toISOString(),
-      channelUrl: url,
+      channelUrl: trimmedUrl,
       scoreBreakdown: breakdown,
     }
 

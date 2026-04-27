@@ -151,7 +151,6 @@ export default function Home() {
       return
     }
 
-    if (!unlocked && scanCount >= FREE_SCANS) { setShowUnlock(true); return }
     setLoading(true); setResult(null); setError(''); setProgress(0)
 
     const steps = [
@@ -181,8 +180,9 @@ export default function Home() {
       clearInterval(timer); setProgress(100)
       const data = await res.json().catch(() => ({ error: '回傳格式怪怪的，再試一次' }))
       if (!res.ok) {
-        // Harden: 區分常見錯誤類型
-        if (res.status === 429) setError('太多人在用，等 30 秒再試')
+        // 402 = server-side 免費次數用完（真正的守門），彈 modal
+        if (res.status === 402) { setShowUnlock(true) }
+        else if (res.status === 429) setError('太多人在用，等 30 秒再試')
         else if (res.status === 404) setError('找不到這個頻道，確認網址對不對')
         else if (res.status >= 500) setError('伺服器暫時罷工，等等再試')
         else setError(data.error || '分析失敗，再試一次')
