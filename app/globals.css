@@ -82,7 +82,45 @@
   /* ─── Motion ─── */
   --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out:  cubic-bezier(0.45, 0, 0.55, 1);
+
+  /* ─── Duration scale ─── */
+  --dur-instant:  120ms;   /* button press / toggle */
+  --dur-fast:     180ms;   /* hover state */
+  --dur-base:     250ms;   /* state change */
+  --dur-slow:     400ms;   /* layout / modal open */
+  --dur-entrance: 600ms;   /* page load / hero reveal */
+
+  /* ─── Spacing scale (4pt rhythm) ─── */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+  --sp-9: 56px;
+  --sp-10: 72px;
+
+  /* ─── Sticker offset shadow（厚實墨黑）─── */
+  --sticker-shadow:        3px 3px 0 var(--ink-hex);
+  --sticker-shadow-hover:  5px 5px 0 var(--ink-hex);
+  --sticker-shadow-active: 1px 1px 0 var(--ink-hex);
+  --sticker-shadow-lg:     6px 6px 0 rgba(43, 24, 16, 0.92);
+
+  /* ─── Atmospheric shadow（柔和 depth）─── */
+  --atm-shadow-card:  0 14px 36px -16px rgba(43, 24, 16, 0.18), 0 3px 10px rgba(43, 24, 16, 0.05);
+  --atm-shadow-tray:  inset 0 0 0 1px rgba(43, 24, 16, 0.06), 0 1px 0 rgba(255, 255, 255, 0.7), 0 22px 40px -28px rgba(43, 24, 16, 0.22);
+
+  /* ─── Z-index scale ─── */
+  --z-base:    1;
+  --z-elev:    10;
+  --z-sticky:  100;
+  --z-overlay: 1000;
+  --z-modal:   2000;
+  --z-toast:   3000;
 
   /* 舊 var 相容（其他 component 還在用） */
   --bg:             var(--paper-hex);
