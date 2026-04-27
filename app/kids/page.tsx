@@ -465,42 +465,31 @@ export default function KidsModePage() {
               onClick={() => openChannel(ch)}
               className="bee-card sticker-wobble sticker-pop"
               style={{
-                padding: 16, cursor: 'pointer', fontFamily: 'inherit',
+                padding: '20px 14px 16px', cursor: 'pointer', fontFamily: 'inherit',
                 textAlign: 'center', width: '100%',
                 animationDelay: `${0.05 + idx * 0.05}s`,
               }}
             >
+              {/* 頭像放大：76 → 92px，視覺主角 */}
               <div style={{
-                width: 76, height: 76, margin: '0 auto 12px',
+                width: 92, height: 92, margin: '0 auto 12px',
                 borderRadius: '50%',
                 background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
                 border: '2.5px solid var(--ink-hex)',
-                boxShadow: '0 8px 18px -8px rgba(43, 24, 16, 0.35)',
+                boxShadow: '0 10px 22px -10px rgba(43, 24, 16, 0.4)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 overflow: 'hidden',
               }}>
-                <Mascot pose={ch.pose} size={64} />
+                <Mascot pose={ch.pose} size={78} />
               </div>
-              <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.03em', marginBottom: 4, lineHeight: 1.2 }}>
+              {/* 標題清楚：15 / 800，字距收緊 */}
+              <p style={{
+                fontSize: 15, fontWeight: 800, color: 'var(--ink-hex)',
+                letterSpacing: '-0.03em', lineHeight: 1.2,
+              }}>
                 {ch.name}
               </p>
-              <p style={{
-                fontSize: 11, color: 'rgba(43,24,16,0.7)', letterSpacing: '-0.005em',
-                lineHeight: 1.45, fontWeight: 500,
-                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-              }}>
-                {ch.description}
-              </p>
-              <div style={{
-                marginTop: 10, display: 'inline-block',
-                padding: '4px 10px', borderRadius: 9999,
-                background: 'var(--honey-hex)',
-                border: '1.5px solid var(--ink-hex)',
-                fontSize: 10, fontWeight: 700, letterSpacing: '0.02em',
-                color: 'var(--ink-hex)',
-              }}>
-                {ch.ageGroups.join(' · ')} 歲
-              </div>
+              {/* 描述跟年齡 chip 拿掉 — 點進去看詳情 */}
             </button>
           ))}
         </div>
@@ -521,47 +510,39 @@ export default function KidsModePage() {
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 14 }}>
               {mine.map(ch => (
-                <div key={ch.channelId} className="bee-card" style={{ position: 'relative', padding: 16, textAlign: 'center' }}>
+                <div key={ch.channelId} className="bee-card" style={{ position: 'relative', padding: '20px 14px 16px', textAlign: 'center' }}>
                   <button
                     onClick={(e) => { e.stopPropagation(); if (confirm(`移除「${ch.name}」？`)) removeMyChannel(ch.channelId) }}
                     aria-label="移除"
                     style={{
                       position: 'absolute', top: 8, right: 8,
                       width: 26, height: 26, borderRadius: '50%',
-                      background: 'var(--card-hex)', border: '2px solid var(--ink-hex)',
+                      background: 'rgba(255,255,255,0.6)',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(43,24,16,0.18)',
                       cursor: 'pointer', fontFamily: 'inherit',
                       fontSize: 12, color: 'var(--ink-hex)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      lineHeight: 1, fontWeight: 800,
-                      boxShadow: '2px 2px 0 var(--ink-hex)',
+                      lineHeight: 1, fontWeight: 700,
                     }}
                   >
                     ✕
                   </button>
                   <button onClick={() => openChannel(ch)} style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>
                     <div style={{
-                      width: 76, height: 76, margin: '0 auto 12px',
+                      width: 92, height: 92, margin: '0 auto 12px',
                       borderRadius: '50%',
                       background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
                       border: '2.5px solid var(--ink-hex)',
-                      boxShadow: '0 8px 18px -8px rgba(43, 24, 16, 0.35)',
+                      boxShadow: '0 10px 22px -10px rgba(43, 24, 16, 0.4)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
                     }}>
-                      <Mascot pose={ch.pose} size={64} />
+                      <Mascot pose={ch.pose} size={78} />
                     </div>
-                    <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.03em', marginBottom: 5, lineHeight: 1.2 }}>
+                    <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
                       {ch.name}
                     </p>
-                    <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.7)', letterSpacing: '-0.005em', lineHeight: 1.5, fontWeight: 500 }}>
-                      {ch.description}
-                    </p>
-                    <div style={{
-                      marginTop: 10, display: 'inline-block', padding: '3px 10px', borderRadius: 9999,
-                      background: 'var(--honey-hex)', border: '1.5px solid var(--ink-hex)',
-                      fontSize: 10, fontWeight: 700, letterSpacing: '0.02em', color: 'var(--ink-hex)',
-                    }}>
-                      {ch.ageGroups.join(' · ')} 歲
-                    </div>
                   </button>
                 </div>
               ))}
