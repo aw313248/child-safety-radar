@@ -6,6 +6,7 @@ import { CuratedChannel, AgeGroup, filterChannelsByAge } from '@/lib/curated-cha
 import { getUserChannels, removeUserChannel, UserChannel } from '@/lib/user-channels'
 import KidsTimer from '@/components/KidsTimer'
 import Mascot, { MascotPose } from '@/components/Mascot'
+import ChannelAvatar from '@/components/ChannelAvatar'
 
 const LockScreenGuide = dynamic(() => import('@/components/LockScreenGuide'), { ssr: false })
 
@@ -47,6 +48,8 @@ export default function KidsModePage() {
   const [mounted, setMounted] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
   const [userChannels, setUserChannels] = useState<UserChannel[]>([])
+  // YouTube channel 真實頭像 map（從 /api/channel-thumbnails 拿）
+  const [thumbs, setThumbs] = useState<Record<string, string>>({})
   const [selectedChannel, setSelectedChannel] = useState<DisplayChannel | null>(null)
   const [videos, setVideos] = useState<SafeVideo[]>([])
   const [loadingVideos, setLoadingVideos] = useState(false)
@@ -87,7 +90,39 @@ export default function KidsModePage() {
   useEffect(() => {
     setMounted(true)
     setShowGuide(localStorage.getItem(LOCK_GUIDE_KEY) !== '1')
-    setUserChannels(getUserChannels())
+    const users = getUserChannels()
+    setUserChannels(users)
+
+    // 一次性 batch fetch 所有 channel thumbnail（精選 + 爸媽加的）
+    // localStorage cache 24hr，避免每次進來都打 API
+    const allIds = [
+      ...filterChannelsByAge('all').map(c => c.channelId),
+      ...users.map(u => u.channelId),
+    ]
+    if (allIds.length === 0) return
+
+    const CACHE_KEY = 'cc_channel_thumbs_v1'
+    const CACHE_TTL = 24 * 60 * 60 * 1000
+    try {
+      const raw = localStorage.getItem(CACHE_KEY)
+      if (raw) {
+        const cached = JSON.parse(raw) as { ts: number; map: Record<string, string> }
+        if (cached.ts && Date.now() - cached.ts < CACHE_TTL) {
+          setThumbs(cached.map)
+          return
+        }
+      }
+    } catch {}
+
+    const ids = Array.from(new Set(allIds)).join(',')
+    fetch(`/api/channel-thumbnails?ids=${encodeURIComponent(ids)}`, { cache: 'force-cache' })
+      .then(r => r.ok ? r.json() : null)
+      .then((map: Record<string, string> | null) => {
+        if (!map) return
+        setThumbs(map)
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), map })) } catch {}
+      })
+      .catch(() => {})
   }, [])
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
@@ -274,15 +309,13 @@ export default function KidsModePage() {
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-            <div style={{
-              width: 72, height: 72, borderRadius: '50%', flexShrink: 0,
-              background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
-              border: '2.5px solid var(--ink-hex)',
-              boxShadow: '0 8px 24px -8px rgba(43, 24, 16, 0.35)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              overflow: 'hidden',
-            }}>
-              <Mascot pose={selectedChannel.pose} size={60} />
+            <div style={{ width: 72, flexShrink: 0 }}>
+              <ChannelAvatar
+                src={thumbs[selectedChannel.channelId]}
+                fallbackPose={selectedChannel.pose}
+                size={72}
+                alt={selectedChannel.name}
+              />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1.08 }}>
@@ -501,18 +534,13 @@ export default function KidsModePage() {
                 animationDelay: `${0.05 + idx * 0.05}s`,
               }}
             >
-              {/* 頭像放大：76 → 92px，視覺主角 */}
-              <div style={{
-                width: 92, height: 92, margin: '0 auto 12px',
-                borderRadius: '50%',
-                background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
-                border: '2.5px solid var(--ink-hex)',
-                boxShadow: '0 10px 22px -10px rgba(43, 24, 16, 0.4)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                overflow: 'hidden',
-              }}>
-                <Mascot pose={ch.pose} size={78} />
-              </div>
+              {/* 頭像 — 真實 YouTube channel 圖優先，fail 才 fallback Mascot */}
+              <ChannelAvatar
+                src={thumbs[ch.channelId]}
+                fallbackPose={ch.pose}
+                size={92}
+                alt={ch.name}
+              />
               {/* 標題清楚：15 / 800，字距收緊 */}
               <p style={{
                 fontSize: 15, fontWeight: 800, color: 'var(--ink-hex)',
@@ -561,16 +589,12 @@ export default function KidsModePage() {
                     ✕
                   </button>
                   <button onClick={() => openChannel(ch)} style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>
-                    <div style={{
-                      width: 92, height: 92, margin: '0 auto 12px',
-                      borderRadius: '50%',
-                      background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
-                      border: '2.5px solid var(--ink-hex)',
-                      boxShadow: '0 10px 22px -10px rgba(43, 24, 16, 0.4)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-                    }}>
-                      <Mascot pose={ch.pose} size={78} />
-                    </div>
+                    <ChannelAvatar
+                      src={thumbs[ch.channelId]}
+                      fallbackPose={ch.pose}
+                      size={92}
+                      alt={ch.name}
+                    />
                     <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
                       {ch.name}
                     </p>
