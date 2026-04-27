@@ -11,12 +11,12 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
   const [code, setCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showCode, setShowCode] = useState(false)
 
   const handleSubmit = async () => {
     if (!code.trim()) return
     setLoading(true)
     setError('')
-
     try {
       const res = await fetch('/api/unlock', {
         method: 'POST',
@@ -24,126 +24,280 @@ export default function UnlockModal({ onUnlocked, onClose }: Props) {
         body: JSON.stringify({ code: code.trim().toUpperCase() }),
       })
       const data = await res.json()
-      if (data.valid) {
-        onUnlocked()
-      } else {
-        setError('存取碼無效，請確認後重試')
-      }
+      if (data.valid) onUnlocked()
+      else setError('授權碼不對，再確認一下')
     } catch {
-      setError('網路錯誤，請再試一次')
+      setError('網路有點問題，再試一次')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0' }}>
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 50,
+      display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: 0,
+    }}>
       {/* Backdrop */}
       <div
         onClick={onClose}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+        style={{
+          position: 'absolute', inset: 0,
+          background: 'rgba(43,24,16,0.55)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+        }}
       />
 
-      {/* Sheet — slides up from bottom like iOS */}
+      {/* Sheet — 跟首頁同一套：奶油底 + 墨黑邊 + 厚實 offset shadow */}
       <div
         className="animate-slide-up"
         style={{
           position: 'relative',
-          background: 'rgba(255,255,255,0.96)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderRadius: '20px 20px 0 0',
-          padding: '8px 24px 48px',
+          background: '#FBF7EA',
+          border: '2.5px solid var(--ink-hex)',
+          borderTop: '2.5px solid var(--ink-hex)',
+          borderRadius: '24px 24px 0 0',
+          padding: '8px 22px 28px',
           width: '100%',
-          maxWidth: '480px',
+          maxWidth: 480,
+          boxShadow: '0 -10px 40px -8px rgba(43,24,16,0.35)',
         }}
       >
         {/* Drag handle */}
-        <div style={{ width: 36, height: 4, background: 'var(--separator)', borderRadius: 99, margin: '12px auto 24px' }} />
+        <div style={{
+          width: 44, height: 5,
+          background: 'rgba(43,24,16,0.22)',
+          borderRadius: 99,
+          margin: '8px auto 18px',
+        }} />
 
+        {/* 關閉鈕 — sticker 風 */}
         <button
           onClick={onClose}
+          aria-label="關閉"
           style={{
-            position: 'absolute', top: '20px', right: '20px',
-            background: 'rgba(60,60,67,0.08)', border: 'none', cursor: 'pointer',
-            color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600,
-            width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'absolute', top: 18, right: 18,
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'var(--card-hex)',
+            border: '2px solid var(--ink-hex)',
+            cursor: 'pointer',
+            color: 'var(--ink-hex)',
+            fontSize: 16, fontWeight: 700,
+            lineHeight: 1,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '2px 2px 0 var(--ink-hex)',
+            fontFamily: 'inherit',
           }}
         >
-          ×
+          ✕
         </button>
 
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🥤</div>
-          <h2 style={{
-            fontSize: '20px', fontWeight: 700, letterSpacing: '-0.03em',
-            color: 'var(--text-primary)', marginBottom: '8px',
+        {/* Headline — 主動勾起需求 */}
+        <div style={{ marginBottom: 18, paddingRight: 36 }}>
+          <p style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.16em',
+            color: 'var(--cc-red-deep)', textTransform: 'uppercase',
+            marginBottom: 6,
           }}>
-            一杯手搖的錢<br />換小孩 YouTube 的安全
+            ★ 免費 2 次用完了 ★
+          </p>
+          <h2 style={{
+            fontSize: 24, fontWeight: 800, letterSpacing: '-0.04em',
+            color: 'var(--ink-hex)', lineHeight: 1.15,
+            marginBottom: 10,
+          }}>
+            還有想掃的頻道嗎？<br />
+            解鎖無限掃描
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.65, letterSpacing: '-0.01em' }}>
-            NT$99 /月，隨時取消，支援 Apple Pay · Google Pay<br />
+          <p style={{
+            fontSize: 13, color: 'rgba(43,24,16,0.72)',
+            letterSpacing: '-0.005em', lineHeight: 1.6, fontWeight: 500,
+          }}>
             每次小孩說「我要看這個」，20 秒就知道 OK 不 OK
           </p>
         </div>
 
+        {/* 價格 deconstruct — 拆成每天的錢，比手搖便宜 */}
+        <div style={{
+          display: 'flex', alignItems: 'baseline', gap: 10,
+          padding: '14px 18px',
+          background: 'var(--honey-hex)',
+          border: '2px solid var(--ink-hex)',
+          borderRadius: 16,
+          marginBottom: 14,
+          boxShadow: '3px 3px 0 var(--ink-hex)',
+        }}>
+          <div style={{ flex: 1 }}>
+            <div style={{
+              display: 'flex', alignItems: 'baseline', gap: 4,
+              fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
+            }}>
+              <span style={{ fontSize: 32, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                NT$99
+              </span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(43,24,16,0.7)' }}>
+                /月
+              </span>
+            </div>
+            <p style={{
+              fontSize: 11, fontWeight: 600, color: 'rgba(43,24,16,0.72)',
+              letterSpacing: '-0.005em', marginTop: 4,
+            }}>
+              = 每天 NT$3.3，比一杯手搖便宜
+            </p>
+          </div>
+          <div style={{
+            padding: '4px 9px', borderRadius: 9999,
+            background: 'var(--ink-hex)', color: 'var(--honey-hex)',
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.04em',
+            whiteSpace: 'nowrap',
+          }}>
+            隨時取消
+          </div>
+        </div>
+
+        {/* 主 CTA — pill + ink shadow 跟首頁同款 */}
         <a
           href="https://peekkids.lemonsqueezy.com/checkout/buy/5468a3b1-03e2-467e-830a-bfabf0b1f20b?locale=zh-TW"
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            display: 'block',
-            background: 'var(--forest-mid)',
-            color: 'white',
-            fontWeight: 600,
-            fontSize: '15px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            background: 'linear-gradient(135deg, #C2413B 0%, #8E2A24 100%)',
+            color: '#FFF6E6',
+            fontWeight: 800, fontSize: 15,
             letterSpacing: '-0.01em',
-            padding: '14px',
-            borderRadius: 'var(--radius-lg)',
+            padding: '15px 18px',
+            borderRadius: 14,
+            border: '2px solid var(--ink-hex)',
+            boxShadow: '3px 3px 0 var(--ink-hex)',
             textAlign: 'center',
             textDecoration: 'none',
-            marginBottom: '20px',
-            boxShadow: '0 2px 12px rgba(74,143,87,0.3)',
-            transition: 'transform 0.12s var(--ease-spring)',
+            marginBottom: 10,
+            fontFamily: 'inherit',
           }}
         >
-          NT$99／月 · 立即解鎖無限掃描
+          立即解鎖無限掃描
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
         </a>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-          <div style={{ flex: 1, height: 1, background: 'var(--separator)' }} />
-          <span style={{ fontSize: '12px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>已有授權碼</span>
-          <div style={{ flex: 1, height: 1, background: 'var(--separator)' }} />
+        {/* Escape hatch — 不想付錢還能用熊熊精選 */}
+        <a
+          href="/kids"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            padding: '10px 14px',
+            marginBottom: 14,
+            background: 'transparent',
+            color: 'rgba(43,24,16,0.7)',
+            fontSize: 12, fontWeight: 600,
+            letterSpacing: '-0.005em',
+            textDecoration: 'none',
+            border: '1.5px dashed rgba(43,24,16,0.3)',
+            borderRadius: 12,
+            fontFamily: 'inherit',
+          }}
+        >
+          先不解鎖 · 去看免費的熊熊精選頻道 →
+        </a>
+
+        {/* Trust signals — 7 天退款 + Lemon Squeezy + Apple/Google Pay */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexWrap: 'wrap', gap: '4px 12px',
+          fontSize: 11, color: 'rgba(43,24,16,0.55)', fontWeight: 500,
+          letterSpacing: '-0.005em',
+          marginBottom: 16, lineHeight: 1.6,
+        }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            7 天無條件退款
+          </span>
+          <span>·</span>
+          <span>Apple Pay / Google Pay</span>
+          <span>·</span>
+          <span>Lemon Squeezy 安全結帳</span>
         </div>
 
-        <input
-          type="text"
-          value={code}
-          onChange={(e) => { setCode(e.target.value.toUpperCase()); setError('') }}
-          onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-          placeholder="付款後信箱會收到授權碼"
-          className={`input-field${error ? ' input-field--error' : ''}`}
-          style={{ textAlign: 'center', letterSpacing: '0.06em', fontFamily: 'monospace', marginBottom: '10px', fontSize: '14px' }}
-          disabled={loading}
-        />
-
-        {error && (
-          <p style={{ color: 'var(--risk-red)', fontSize: '12px', textAlign: 'center', marginBottom: '10px', letterSpacing: '-0.01em' }}>
-            {error}
-          </p>
+        {/* 已有授權碼 — 折疊起來，不要佔視覺重點 */}
+        {!showCode ? (
+          <button
+            onClick={() => setShowCode(true)}
+            style={{
+              display: 'block', margin: '0 auto',
+              background: 'transparent', border: 'none',
+              fontSize: 12, color: 'rgba(43,24,16,0.55)',
+              fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'inherit', textDecoration: 'underline',
+              textUnderlineOffset: 3,
+            }}
+          >
+            已經有授權碼？
+          </button>
+        ) : (
+          <div className="animate-fade-scale-in">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(43,24,16,0.18)' }} />
+              <span style={{ fontSize: 11, color: 'rgba(43,24,16,0.55)', fontWeight: 600, letterSpacing: '-0.005em' }}>
+                輸入授權碼
+              </span>
+              <div style={{ flex: 1, height: 1, background: 'rgba(43,24,16,0.18)' }} />
+            </div>
+            <input
+              type="text"
+              value={code}
+              onChange={(e) => { setCode(e.target.value.toUpperCase()); setError('') }}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+              placeholder="付款後信箱會收到"
+              style={{
+                width: '100%', boxSizing: 'border-box',
+                padding: '12px 14px',
+                fontSize: 14, fontFamily: 'monospace',
+                fontWeight: 700, textAlign: 'center', letterSpacing: '0.06em',
+                color: 'var(--ink-hex)',
+                background: 'var(--card-hex)',
+                border: `2px solid ${error ? 'var(--terra-hex)' : 'var(--ink-hex)'}`,
+                borderRadius: 12,
+                outline: 'none',
+                marginBottom: 8,
+              }}
+              disabled={loading}
+              autoFocus
+            />
+            {error && (
+              <p style={{
+                color: 'var(--terra-hex)', fontSize: 12, textAlign: 'center',
+                marginBottom: 8, letterSpacing: '-0.005em', fontWeight: 600,
+              }}>
+                {error}
+              </p>
+            )}
+            <button
+              onClick={handleSubmit}
+              disabled={loading || !code.trim()}
+              style={{
+                width: '100%', padding: '12px 14px',
+                background: 'var(--ink-hex)',
+                color: '#FFF6E6',
+                border: 'none',
+                borderRadius: 12,
+                fontFamily: 'inherit',
+                fontSize: 14, fontWeight: 700,
+                letterSpacing: '-0.01em',
+                cursor: code.trim() && !loading ? 'pointer' : 'not-allowed',
+                opacity: code.trim() && !loading ? 1 : 0.4,
+              }}
+            >
+              {loading ? '驗證中…' : '解鎖'}
+            </button>
+          </div>
         )}
-
-        <button
-          onClick={handleSubmit}
-          disabled={loading || !code.trim()}
-          className="btn-primary"
-        >
-          {loading ? '驗證中' : '解鎖'}
-        </button>
-
-        <p style={{ textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '11px', marginTop: '14px', letterSpacing: '-0.01em' }}>
-          付款完成後，授權碼會自動寄到你的信箱
-        </p>
       </div>
     </div>
   )

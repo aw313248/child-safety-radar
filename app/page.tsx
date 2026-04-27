@@ -218,14 +218,38 @@ export default function Home() {
               </button>
             </div>
 
-            {/* 狀態列 */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, padding: '0 4px' }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)' }}>
-                {loading ? progressText || '分析中…'
-                  : unlocked ? '✓ 無限'
-                  : remainingFree > 0 ? `免費剩 ${remainingFree} 次`
-                  : '免費已用完'}
-              </span>
+            {/* 狀態列 — 剩 1 次以下時，免費次數變可點 → 開 modal 預覽 */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, padding: '0 4px', alignItems: 'center' }}>
+              {loading ? (
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)' }}>
+                  {progressText || '分析中…'}
+                </span>
+              ) : unlocked ? (
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-hex)' }}>
+                  ✓ 已解鎖無限
+                </span>
+              ) : (
+                <button
+                  onClick={() => setShowUnlock(true)}
+                  style={{
+                    background: remainingFree === 0 ? 'var(--terra-hex)' : remainingFree === 1 ? 'var(--honey-hex)' : 'transparent',
+                    border: remainingFree <= 1 ? '1.5px solid var(--ink-hex)' : 'none',
+                    padding: remainingFree <= 1 ? '3px 9px' : 0,
+                    borderRadius: 9999,
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    fontSize: 11, fontWeight: 600,
+                    color: remainingFree === 0 ? '#FFF6E6' : remainingFree === 1 ? 'var(--ink-hex)' : 'var(--text-tertiary)',
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    transition: 'transform 0.12s',
+                  }}
+                  title={remainingFree > 0 ? '點開看看升級方案' : '解鎖無限掃描'}
+                >
+                  {remainingFree > 1 && `免費剩 ${remainingFree} 次`}
+                  {remainingFree === 1 && '⚡ 最後 1 次免費 · 看升級'}
+                  {remainingFree === 0 && '免費已用完 · 解鎖 →'}
+                </button>
+              )}
               <span style={{ fontSize: 11, color: 'var(--text-tertiary)', fontWeight: 500 }}>
                 {loading ? '' : '≈ 20 秒'}
               </span>
