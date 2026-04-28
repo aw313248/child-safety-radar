@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { CuratedChannel, AgeGroup, filterChannelsByAge } from '@/lib/curated-channels'
 import { getUserChannels, removeUserChannel, UserChannel } from '@/lib/user-channels'
+import { SLEEP_PLAYLISTS, SleepPlaylist } from '@/lib/sleep-playlists'
 import KidsTimer from '@/components/KidsTimer'
 import Mascot, { MascotPose } from '@/components/Mascot'
 import ChannelAvatar from '@/components/ChannelAvatar'
@@ -75,6 +76,8 @@ export default function KidsModePage() {
   // 退出算數題：每次重開 modal 都換一題（防小孩背答案）+ 多運算混合
   const [exitMath, setExitMath] = useState(() => makeExitMath())
   // 自製 confirm 取代 native confirm()（風格一致 + iOS 字醜）
+  const [sleepMode, setSleepMode] = useState(false)
+  const [selectedPlaylist, setSelectedPlaylist] = useState<SleepPlaylist | null>(null)
   const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null)
   const [exitInput, setExitInput] = useState('')
   const [exitError, setExitError] = useState(false)
@@ -241,6 +244,143 @@ export default function KidsModePage() {
         localStorage.setItem(LOCK_GUIDE_KEY, '1')
         setShowGuide(false)
       }} />
+    )
+  }
+
+  // ── 睡前音樂播放器 ───────────────────────────────
+  if (sleepMode) {
+    return (
+      <main style={{
+        position: 'fixed', inset: 0,
+        background: 'linear-gradient(180deg, #0d0a1a 0%, #1a0f2e 50%, #0a1628 100%)',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      }}>
+        <KidsTimer
+          onTimeUp={() => { setSleepMode(false); setSelectedPlaylist(null) }}
+          onExit={() => {
+            allowLeaveRef.current = true
+            if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
+            localStorage.removeItem('peekkids_timer_end_ts')
+            window.location.href = '/'
+          }}
+        />
+
+        {/* 星星背景 */}
+        <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
+          {[...Array(24)].map((_, i) => (
+            <div key={i} style={{
+              position: 'absolute',
+              width: i % 3 === 0 ? 3 : 2,
+              height: i % 3 === 0 ? 3 : 2,
+              borderRadius: '50%',
+              background: '#fff',
+              opacity: 0.3 + (i % 5) * 0.1,
+              top: `${5 + (i * 37) % 85}%`,
+              left: `${3 + (i * 61) % 94}%`,
+              animation: `bear-blink ${2 + (i % 4)}s ease-in-out infinite`,
+              animationDelay: `${(i * 0.4) % 3}s`,
+            }} />
+          ))}
+        </div>
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 20px 20px', position: 'relative', zIndex: 1, gap: 24 }}>
+
+          {!selectedPlaylist ? (
+            <>
+              <div className="bear-loading" style={{ marginBottom: 4 }}>
+                <Mascot pose="sleep" size={140} />
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <h2 style={{ fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '-0.04em', marginBottom: 6 }}>
+                  睡前音樂
+                </h2>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', letterSpacing: '-0.01em', fontWeight: 500 }}>
+                  選一個，放著就好
+                </p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 360 }}>
+                {SLEEP_PLAYLISTS.map(pl => (
+                  <button
+                    key={pl.id}
+                    onClick={() => setSelectedPlaylist(pl)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 16,
+                      padding: '16px 20px', borderRadius: 20,
+                      background: 'rgba(255,255,255,0.08)',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
+                      transition: 'background 0.2s',
+                    }}
+                  >
+                    <span style={{ fontSize: 32, flexShrink: 0 }}>{pl.emoji}</span>
+                    <div>
+                      <p style={{ fontSize: 15, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', marginBottom: 3 }}>
+                        {pl.name}
+                      </p>
+                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 500, letterSpacing: '-0.005em' }}>
+                        {pl.description}
+                      </p>
+                    </div>
+                    <svg style={{ marginLeft: 'auto', flexShrink: 0, opacity: 0.4 }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setSleepMode(false)}
+                style={{
+                  marginTop: 8, padding: '10px 24px', borderRadius: 9999,
+                  background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                  color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
+                }}
+              >
+                ← 返回頻道
+              </button>
+            </>
+          ) : (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, alignSelf: 'stretch' }}>
+                <button
+                  onClick={() => setSelectedPlaylist(null)}
+                  style={{
+                    padding: '8px 16px', borderRadius: 9999,
+                    background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.18)',
+                    color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
+                  }}
+                >
+                  ← 換一首
+                </button>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>
+                  {selectedPlaylist.emoji} {selectedPlaylist.name}
+                </span>
+              </div>
+              <div style={{
+                width: '100%', maxWidth: 560,
+                aspectRatio: '16/9', borderRadius: 20, overflow: 'hidden',
+                boxShadow: '0 24px 60px rgba(0,0,0,0.6)',
+              }}>
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/videoseries?list=${selectedPlaylist.playlistId}&autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&fs=0&playsinline=1&controls=1`}
+                  allow="autoplay; encrypted-media"
+                  style={{ width: '100%', height: '100%', border: 0 }}
+                />
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div className="bear-loading" style={{ display: 'inline-block' }}>
+                  <Mascot pose="sleep" size={80} />
+                </div>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 8, fontWeight: 500 }}>
+                  晚安，好夢 🌙
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      </main>
     )
   }
 
@@ -480,6 +620,16 @@ export default function KidsModePage() {
             每顆 icon + 文字 caption 並列，不再純圖示
           */}
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+            <button
+              onClick={() => { setSleepMode(true); setSelectedPlaylist(null) }}
+              aria-label="睡前音樂"
+              title="切換到睡前音樂模式"
+              className="kids-action"
+              style={{ background: 'rgba(90,60,140,0.18)', borderColor: 'rgba(160,120,220,0.35)', color: '#c8a8f0' }}
+            >
+              <span style={{ fontSize: 14 }}>🌙</span>
+              <span>睡前</span>
+            </button>
             {!isFullscreen && (
               <button
                 onClick={enterFullscreen}
