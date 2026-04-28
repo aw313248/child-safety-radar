@@ -377,9 +377,16 @@ export default function KidsModePage() {
           </div>
 
           {loadingVideos ? (
-            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-secondary)', fontSize: 14, fontWeight: 600 }}>
-              <div style={{ marginBottom: 12 }}><Mascot pose="search" size={140} /></div>
-              小析正在挑選安心影片⋯
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 20px 40px', gap: 16 }}>
+              <div className="bear-loading">
+                <Mascot pose="search" size={160} />
+              </div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em' }}>
+                小析正在挑選安心影片⋯
+              </p>
+              <div style={{ width: 160, background: 'rgba(43,24,16,0.08)', borderRadius: 9999, overflow: 'hidden' }}>
+                <div className="bear-loading-bar" />
+              </div>
             </div>
           ) : videos.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-secondary)', fontSize: 14, fontWeight: 600 }}>
