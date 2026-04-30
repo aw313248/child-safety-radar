@@ -20,6 +20,7 @@ export interface ScoreBreakdownItem {
 export interface AnalysisResult {
   riskLevel: RiskLevel
   riskScore: number // 0-100
+  riskType?: string // 'elsagate' | 'child_magnet' | 'adult_only' | 'mixed'（AI 判定的類型，用於前端顯示特殊標籤）
   channelId?: string // UC… YouTube 頻道 ID，用於兒童模式播放器
   channelName: string
   channelThumbnail?: string

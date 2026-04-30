@@ -187,7 +187,7 @@ ${isLegitKidsChannel
       ? '本頻道部分標註為兒童內容，但未達「合規幼兒頻道」標準（可能是小頻道或內容定位模糊），留言關閉可能是 COPPA 要求，判斷時請納入考量。'
       : '本頻道未標註為兒童內容，若出現大量兒童吸引元素 + 留言關閉 = 高警戒訊號（可能為刻意迴避家長監督）。'}
 
-【評估框架：三種風險類型】
+【評估框架：四種風險類型】
 
 ▌類型 A — Elsagate（分數 65–100）
 頻道表面使用兒童元素（卡通、玩具、兒歌），實際含暴力、性暗示、恐怖元素。
@@ -199,8 +199,14 @@ ${isLegitKidsChannel
 • 行為有不良示範（危險模仿、不雅語言、暴力衝突）
 • 留言區關閉 + 兒童吸引力 = 高警戒訊號
 
-▌類型 C — 非兒童受眾（分數 0–30）
-新聞、科技教學、政治評論、成人娛樂 — 6 歲幼兒不會主動或誤觸。
+▌類型 C — 純成人非兒童內容（分數 0–25）
+新聞、科技教學、政治評論、財經 — 6 歲幼兒不會主動或誤觸，內容也無露骨。
+
+▌類型 D — 成人露骨內容（分數 50–75）⚠️ 絕不可給低分
+頻道含明確成人露骨關鍵字（性愛、裸露、色情、賭博、暴力血腥、毒品等），
+即使幼兒不會主動找，但萬一被 YouTube 演算法推薦或誤觸，內容絕對不適合。
+標題含「打炮、口交、約跑、性癖、做愛、AV、成人、裸體、色情」等任一字眼即屬此類。
+riskType 必須輸出 "adult_only"，分數最低 50。
 
 【核心判斷問題】
 1. 一個 6 歲的孩子看到頻道縮圖、名稱、影片標題，會不會有興趣點進去？
@@ -237,6 +243,9 @@ ${warningComments.length > 0
     : commentsDisabled
       ? '留言區已關閉，無法取得家長反饋（此為警示訊號，結合其他指標判斷）'
       : '無特殊留言'}
+
+⚠️ 特別注意：類型 D「成人露骨內容」絕不可給低於 50 分。
+即使 6 歲幼兒不會主動點擊，內容本身完全不適合家長環境。
 
 請用繁體中文回答，只輸出以下 JSON 格式（不要其他文字）：
 {
@@ -461,6 +470,35 @@ export async function POST(req: NextRequest) {
       isLegitKidsChannel,
     })
 
+    // ── 成人關鍵字 server-side 偵測（防 AI 漏判）────────────────
+    const ADULT_KEYWORDS = [
+      // 中文
+      '打炮', '口交', '約跑', '性癖', '做愛', '愛愛', '裸體', '色情',
+      '成人片', 'AV', '情色', '激情', '挑逗', '誘惑', '徵信',
+      '一夜情', '約炮', '砲友', '陰道', '陰莖', '保險套', '春藥',
+      // 英文
+      'porn', 'nude', 'naked', 'adult only', 'xxx', 'erotic',
+      'masturbate', 'orgasm', 'fetish', 'escort',
+    ]
+
+    const allTextForAdult = [
+      channelInfo.name,
+      channelInfo.description,
+      ...channelInfo.videos.map(v => v.title),
+      ...channelInfo.videos.map(v => v.description),
+    ].join(' ').toLowerCase()
+
+    const detectedAdultKeywords = ADULT_KEYWORDS.filter(kw =>
+      allTextForAdult.includes(kw.toLowerCase())
+    )
+    const isAdultContent = detectedAdultKeywords.length >= 1
+
+    // 偵測到成人關鍵字 → 強制覆寫 AI 結果
+    if (isAdultContent) {
+      aiResult.riskType = 'adult_only'
+      aiResult.riskScore = Math.max(50, aiResult.riskScore)
+    }
+
     // 7. 評分機制 v2：AI 基底 + 組合訊號 + 黑名單
     // ───────────────────────────────────────────────────────────
     // 核心原則：
@@ -528,9 +566,23 @@ export async function POST(req: NextRequest) {
       breakdown.push({ label: '訂閱數少於 1000（影響力小）', points: -10, category: 'adjustment' })
     }
 
-    // 減分因子：AI 判定為成人非兒童內容
+    // adult_only：依是否偵測到露骨關鍵字決定方向
     if (aiResult.riskType === 'adult_only') {
-      breakdown.push({ label: 'AI 判定為成人非兒童向內容', points: -15, category: 'adjustment' })
+      if (isAdultContent) {
+        // 露骨成人內容：加分（家長環境完全不適合）
+        breakdown.push({
+          label: `偵測到成人露骨關鍵字（${detectedAdultKeywords.slice(0, 3).join('、')}...）`,
+          points: 25,
+          category: 'adjustment',
+        })
+      } else {
+        // 純非兒童（新聞、科技）：減分
+        breakdown.push({
+          label: 'AI 判定為非兒童向內容（新聞/科技類）',
+          points: -15,
+          category: 'adjustment',
+        })
+      }
     }
 
     // 加總並封頂
@@ -545,6 +597,7 @@ export async function POST(req: NextRequest) {
     const result: AnalysisResult = {
       riskLevel,
       riskScore: finalScore,
+      riskType: aiResult.riskType,
       channelId: channelInfo.id,
       channelName: channelInfo.name,
       channelThumbnail: channelInfo.thumbnail,
