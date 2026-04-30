@@ -543,6 +543,34 @@ export default function Home() {
           }}>
             AI 輔助分析 · 結果僅供參考
           </p>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            gap: 16, marginTop: 10,
+          }}>
+            <a href="/privacy" style={{
+              fontSize: 12, color: 'var(--ink-hex)',
+              opacity: 0.5, textDecoration: 'none',
+              fontWeight: 500,
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
+            >
+              隱私權政策
+            </a>
+            <span style={{ fontSize: 10, opacity: 0.3, color: 'var(--ink-hex)' }}>·</span>
+            <a href="/terms" style={{
+              fontSize: 12, color: 'var(--ink-hex)',
+              opacity: 0.5, textDecoration: 'none',
+              fontWeight: 500,
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
+            >
+              服務條款
+            </a>
+          </div>
         </footer>
       </div>
 
