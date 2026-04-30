@@ -49,23 +49,14 @@ const RISK_CONFIG = {
     headerBg: '#DCEAD1',
     icon: 'shield-check' as const,
   },
-  adult_only: {
-    label: '成人內容，不適合兒童',
+  adult_inappropriate: {
+    label: '⚠️ 成人內容，不適合兒童',
     tagline: '含明確成人露骨元素，請勿讓孩子觀看',
     badgeClass: 'badge-high',
     barColor: '#E07B00',
     scoreColor: '#E07B00',
     headerBg: '#FFF0DC',
     icon: 'octagon-x' as const,
-  },
-  adult_only_soft: {
-    label: '非兒童向內容',
-    tagline: '非兒童定向，不適合幼兒',
-    badgeClass: 'badge-medium',
-    barColor: '#E07B00',
-    scoreColor: '#E07B00',
-    headerBg: '#FFF4E5',
-    icon: 'eye' as const,
   },
 }
 
@@ -84,10 +75,8 @@ function RiskIcon({ name, size = 14 }: { name: 'octagon-x' | 'eye' | 'shield-che
 }
 
 export default function ResultCard({ result, onReset }: Props) {
-  // adult_only + 高分 → 橘色成人警告；adult_only + 低分 → 軟性非兒童；否則走一般三段
-  const cfg = result.riskType === 'adult_only'
-    ? (result.riskScore >= 50 ? RISK_CONFIG.adult_only : RISK_CONFIG.adult_only_soft)
-    : RISK_CONFIG[result.riskLevel]
+  // riskLevel 直接決定 config（adult_inappropriate 來自後端關鍵字偵測）
+  const cfg = RISK_CONFIG[result.riskLevel] ?? RISK_CONFIG.high
   const [showBreakdown, setShowBreakdown] = useState(false)
   const [showQR, setShowQR] = useState(false)
   // distill：警示留言 + 異常標籤 + 熊爸熊媽建議 默認折疊，預設只看分數 + 摘要 + CTA

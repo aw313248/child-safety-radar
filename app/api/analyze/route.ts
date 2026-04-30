@@ -472,13 +472,24 @@ export async function POST(req: NextRequest) {
 
     // ── 成人關鍵字 server-side 偵測（防 AI 漏判）────────────────
     const ADULT_KEYWORDS = [
-      // 中文
-      '打炮', '口交', '約跑', '性癖', '做愛', '愛愛', '裸體', '色情',
-      '成人片', 'AV', '情色', '激情', '挑逗', '誘惑', '徵信',
-      '一夜情', '約炮', '砲友', '陰道', '陰莖', '保險套', '春藥',
-      // 英文
+      // A. 性器官 / 性行為（17）
+      '打炮', '口交', '做愛', '愛愛', '裸體', '陰道', '陰莖',
+      '保險套', '春藥', '高潮', '自慰', '肛交', '口愛',
+      '肉棒', '肉穴', '性奴', 'SM',
+      // B. 約炮 / PUA / 兩性操控（12）
+      '約跑', '性癖', '約炮', '砲友', '砲', '一夜情',
+      '撩妹', '撩漢', '把妹', '把妹技巧', 'PUA', '勾引',
+      // C. 成人內容類型（14）
+      '色情', '成人片', 'AV', '情色', '激情', '挑逗', '誘惑', '小三',
+      '限制級', '十八禁', '18+', 'AV女優', 'A片', '無碼',
+      // D. 偷拍 / 黑暗（5）
+      '偷拍', '走光', '外流影片', '暗黑', '援交',
+      // E. 英文（14）
       'porn', 'nude', 'naked', 'adult only', 'xxx', 'erotic',
       'masturbate', 'orgasm', 'fetish', 'escort',
+      'sexy', 'sexual', 'hentai', 'ecchi',
+      // F. 賭博 / 毒品（4）
+      '賭博', 'casino', '大麻', 'weed',
     ]
 
     const allTextForAdult = [
@@ -491,12 +502,26 @@ export async function POST(req: NextRequest) {
     const detectedAdultKeywords = ADULT_KEYWORDS.filter(kw =>
       allTextForAdult.includes(kw.toLowerCase())
     )
-    const isAdultContent = detectedAdultKeywords.length >= 1
+    const adultKeywordCount = detectedAdultKeywords.length
+
+    // 三段加權：關鍵字越多 → 分數下限越高
+    let adultScoreFloor = 0
+    let adultScorePoints = 0
+    if (adultKeywordCount >= 3) {
+      adultScoreFloor = 85
+      adultScorePoints = 45
+    } else if (adultKeywordCount >= 2) {
+      adultScoreFloor = 70
+      adultScorePoints = 35
+    } else if (adultKeywordCount >= 1) {
+      adultScoreFloor = 50
+      adultScorePoints = 25
+    }
 
     // 偵測到成人關鍵字 → 強制覆寫 AI 結果
-    if (isAdultContent) {
+    if (adultKeywordCount >= 1) {
       aiResult.riskType = 'adult_only'
-      aiResult.riskScore = Math.max(50, aiResult.riskScore)
+      aiResult.riskScore = Math.max(adultScoreFloor, aiResult.riskScore)
     }
 
     // 7. 評分機制 v2：AI 基底 + 組合訊號 + 黑名單
@@ -566,13 +591,13 @@ export async function POST(req: NextRequest) {
       breakdown.push({ label: '訂閱數少於 1000（影響力小）', points: -10, category: 'adjustment' })
     }
 
-    // adult_only：依是否偵測到露骨關鍵字決定方向
+    // adult_only：依關鍵字數量決定加分幅度
     if (aiResult.riskType === 'adult_only') {
-      if (isAdultContent) {
-        // 露骨成人內容：加分（家長環境完全不適合）
+      if (adultKeywordCount >= 1) {
+        // 露骨成人內容：依關鍵字數量三段加分
         breakdown.push({
-          label: `偵測到成人露骨關鍵字（${detectedAdultKeywords.slice(0, 3).join('、')}...）`,
-          points: 25,
+          label: `偵測到 ${adultKeywordCount} 個成人露骨關鍵字（${detectedAdultKeywords.slice(0, 3).join('、')}${adultKeywordCount > 3 ? '...' : ''}）`,
+          points: adultScorePoints,
           category: 'adjustment',
         })
       } else {
@@ -589,9 +614,11 @@ export async function POST(req: NextRequest) {
     const rawScore = breakdown.reduce((sum, item) => sum + item.points, 0)
     const finalScore = Math.max(0, Math.min(100, rawScore))
 
-    // 8. Risk level
+    // 8. Risk level（adult_inappropriate 優先，不走分數三段）
     let riskLevel: RiskLevel = 'low'
-    if (finalScore >= 65) riskLevel = 'high'
+    if (aiResult.riskType === 'adult_only' && adultKeywordCount >= 1) {
+      riskLevel = 'adult_inappropriate'
+    } else if (finalScore >= 65) riskLevel = 'high'
     else if (finalScore >= 35) riskLevel = 'medium'
 
     const result: AnalysisResult = {

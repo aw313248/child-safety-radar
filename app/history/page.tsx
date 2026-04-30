@@ -7,9 +7,10 @@ import { AnalysisResult } from '@/types/analysis'
 const HISTORY_KEY = 'child_radar_history'
 
 const RISK_STYLE = {
-  high:   { label: '高風險',   color: 'var(--risk-red)' },
-  medium: { label: '注意觀察', color: 'var(--risk-orange)' },
-  low:    { label: '目前安全', color: 'var(--risk-green)' },
+  high:                { label: '高風險',        color: 'var(--risk-red)' },
+  medium:              { label: '注意觀察',      color: 'var(--risk-orange)' },
+  low:                 { label: '目前安全',      color: 'var(--risk-green)' },
+  adult_inappropriate: { label: '成人露骨內容',  color: '#E07B00' },
 }
 
 export default function HistoryPage() {

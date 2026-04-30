@@ -10,7 +10,7 @@ interface Props {
   channelName: string
   channelThumbnail?: string
   riskScore: number
-  riskLevel: 'high' | 'medium' | 'low'
+  riskLevel: 'high' | 'medium' | 'low' | 'adult_inappropriate'
 }
 
 // 取代 emoji pool — 用 Mascot pose 跟全站視覺一致

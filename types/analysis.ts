@@ -1,4 +1,4 @@
-export type RiskLevel = 'high' | 'medium' | 'low'
+export type RiskLevel = 'high' | 'medium' | 'low' | 'adult_inappropriate'
 
 export interface WarningComment {
   text: string
