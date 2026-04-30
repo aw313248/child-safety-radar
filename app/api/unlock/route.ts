@@ -12,6 +12,7 @@ async function validateLemonSqueezyLicense(licenseKey: string): Promise<boolean>
   }
 
   try {
+    // 5 秒逾時：Lemon Squeezy API 慢或掛掉時，避免使用者卡到 Vercel 30 秒 timeout 看 502
     const res = await fetch('https://api.lemonsqueezy.com/v1/licenses/validate', {
       method: 'POST',
       headers: {
@@ -20,6 +21,7 @@ async function validateLemonSqueezyLicense(licenseKey: string): Promise<boolean>
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({ license_key: licenseKey }),
+      signal: AbortSignal.timeout(5000),
     })
 
     if (!res.ok) return false
@@ -27,7 +29,11 @@ async function validateLemonSqueezyLicense(licenseKey: string): Promise<boolean>
     const data = await res.json()
     // valid = true 且 status = 'active'（訂閱中）
     return data.valid === true && data.license_key?.status === 'active'
-  } catch {
+  } catch (err) {
+    // timeout / 網路錯誤都當驗證失敗處理（前端會顯示「再試一次」）
+    if (err instanceof Error && err.name === 'TimeoutError') {
+      console.error('Lemon Squeezy validation timeout')
+    }
     return false
   }
 }
