@@ -12,7 +12,7 @@
 - [x] App 技術選型鎖定 Flutter（iOS 優先）
 
 ## 🟡 階段 1：網頁完善（進行中）
-- [ ] 1.1 手機版 UI 全面診斷
+- [x] 1.1 手機版 UI 全面診斷
 - [ ] 1.2 手機版 UI 優化
 - [ ] 1.3 桌面版 UI polish
 - [ ] 1.4 補環境變數 YOUTUBE_API_KEY + GEMINI_API_KEY
