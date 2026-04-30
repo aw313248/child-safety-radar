@@ -4,7 +4,7 @@ import { getChannelInfo, getVideoComments, CommentThread } from '@/lib/youtube'
 import { AnalysisResult, RiskLevel, ScoreBreakdownItem } from '@/types/analysis'
 import { authenticate, corsHeaders } from '@/lib/api-auth'
 import { rateLimit, getClientIp, getDeviceFingerprint } from '@/lib/rate-limit'
-import { getScanCount, incrementScanCount } from '@/lib/redis'
+import { getScanCount, incrementScanCount, decrementScanCount } from '@/lib/redis'
 
 const FREE_SCANS = 2
 const UNLOCK_COOKIE = 'cc_unlocked'
@@ -296,15 +296,33 @@ export async function POST(req: NextRequest) {
   const cookies = Object.fromEntries(cookieHeader.split('; ').map(c => c.split('=')))
   const unlocked = cookies[UNLOCK_COOKIE] === '1'
 
-  // ── 2c. 掃描次數從 Upstash Redis 讀（按裝置 fingerprint）──
+  // ── 2c. 掃描次數從 Upstash Redis 讀寫（按裝置 fingerprint）──
   // 優勢：清 cookie、換瀏覽器、清 localStorage 全部無效；只有換 IP + UA 才能繞
+  // 防 race condition：先 INCR 拿到原子化的新計數，超過就拒絕並回滾
+  // 若直接「讀 → 判斷 → 寫」，並行請求會同時讀到 0 全部放行
   const fingerprint = getDeviceFingerprint(req)
-  const redisScanCount = await getScanCount(fingerprint)
-  if (!unlocked && redisScanCount >= FREE_SCANS) {
-    return NextResponse.json(
-      { error: '免費次數已用完，請解鎖無限掃描' },
-      { status: 402, headers: rlHeaders }
-    )
+  let scanCounted = false
+  if (!unlocked) {
+    const newCount = await incrementScanCount(fingerprint)
+    if (newCount > FREE_SCANS) {
+      await decrementScanCount(fingerprint)
+      return NextResponse.json(
+        { error: '免費次數已用完，請解鎖無限掃描' },
+        { status: 402, headers: rlHeaders }
+      )
+    }
+    // newCount === 0 表示 Redis 掛了 → fallback 用舊讀法（向下相容）
+    if (newCount === 0) {
+      const fallback = await getScanCount(fingerprint)
+      if (fallback >= FREE_SCANS) {
+        return NextResponse.json(
+          { error: '免費次數已用完，請解鎖無限掃描' },
+          { status: 402, headers: rlHeaders }
+        )
+      }
+    } else {
+      scanCounted = true
+    }
   }
 
   try {
@@ -523,13 +541,13 @@ export async function POST(req: NextRequest) {
       scoreBreakdown: breakdown,
     }
 
-    // 成功後 Redis 累計 fingerprint 掃描次數（非同步，不阻塞回傳）
-    const res = NextResponse.json(result, { headers: rlHeaders })
-    if (!unlocked) {
-      incrementScanCount(fingerprint).catch(() => {}) // Redis 掛了不影響使用者
-    }
-    return res
+    // 計數已在進入 try 前原子化遞增完成，這裡直接回傳結果
+    return NextResponse.json(result, { headers: rlHeaders })
   } catch (err: unknown) {
+    // 掃描失敗：回滾剛才扣掉的那一次免費次數，避免使用者被白扣
+    if (scanCounted) {
+      decrementScanCount(fingerprint).catch(() => {})
+    }
     console.error('Analyze error:', err)
     const message = err instanceof Error ? err.message : '分析失敗'
     if (message.includes('quotaExceeded') || message.includes('403')) {

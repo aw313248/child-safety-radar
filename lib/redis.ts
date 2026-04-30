@@ -29,12 +29,27 @@ export async function getScanCount(fingerprint: string): Promise<number> {
   }
 }
 
-export async function incrementScanCount(fingerprint: string): Promise<void> {
+// 原子遞增：INCR + EXPIRE 用 pipeline 一次送出，避免兩步驟之間出錯造成 key 永久殘留
+// 回傳遞增後的新計數，供呼叫端做即時判斷（避免 race condition）
+export async function incrementScanCount(fingerprint: string): Promise<number> {
   try {
     const redis = getRedis()
-    await redis.incr(`scan:${fingerprint}`)
-    await redis.expire(`scan:${fingerprint}`, TTL_SECONDS)
+    const key = `scan:${fingerprint}`
+    const pipeline = redis.pipeline()
+    pipeline.incr(key)
+    pipeline.expire(key, TTL_SECONDS)
+    const results = await pipeline.exec<[number, number]>()
+    return results[0] ?? 0
   } catch {
-    // Redis 掛了就算了，不中斷掃描結果回傳
+    return 0
+  }
+}
+
+// 回滾計數（掃描失敗時呼叫，避免使用者被多扣一次）
+export async function decrementScanCount(fingerprint: string): Promise<void> {
+  try {
+    await getRedis().decr(`scan:${fingerprint}`)
+  } catch {
+    // 回滾失敗不影響主流程
   }
 }
