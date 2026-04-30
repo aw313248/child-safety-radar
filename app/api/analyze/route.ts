@@ -187,7 +187,7 @@ ${isLegitKidsChannel
       ? '本頻道部分標註為兒童內容，但未達「合規幼兒頻道」標準（可能是小頻道或內容定位模糊），留言關閉可能是 COPPA 要求，判斷時請納入考量。'
       : '本頻道未標註為兒童內容，若出現大量兒童吸引元素 + 留言關閉 = 高警戒訊號（可能為刻意迴避家長監督）。'}
 
-【評估框架：四種風險類型】
+【評估框架：五種風險類型】
 
 ▌類型 A — Elsagate（分數 65–100）
 頻道表面使用兒童元素（卡通、玩具、兒歌），實際含暴力、性暗示、恐怖元素。
@@ -208,10 +208,28 @@ ${isLegitKidsChannel
 標題含「打炮、口交、約跑、性癖、做愛、AV、成人、裸體、色情」等任一字眼即屬此類。
 riskType 必須輸出 "adult_only"，分數最低 50。
 
+▌類型 E — 過度刺激內容（分數 35–55）⚠️ 新增
+頻道內容明確面向兒童（兒歌、卡通、教育），但呈現方式有以下特徵：
+• 剪輯極快（每 1–2 秒換鏡頭 / 畫面切換）
+• 強烈聲光效果（高彩度、過曝飽和、響亮配樂）
+• 可能讓幼兒大腦過度刺激，影響注意力發展
+• 看完孩子可能變 cranky、難哄、對真實活動失去興趣
+
+判定強訊號（任一即可能屬類型 E）：
+• 訂閱數 ≥ 100 萬 + 影片頻率高（每週 5+ 部）+ 標題模式高度重複 = 工業化兒歌頻道
+  （CoComelon、Pinkfong、ChuChu TV、LooLoo Kids 屬此類）
+• 大量 emoji + 全大寫標題 + 明確兒童關鍵字 = 強訊號
+• 影片時長極短（< 3 分鐘）+ 兒童導向 + 大量更新
+
+⚠️ 即使是 YouTube 官方 Made for Kids 認證的合規頻道，若符合過度刺激特徵，仍應給 35–55 分。
+COPPA 合規 ≠ 適合幼兒長時間觀看。riskType 必須輸出 "overstimulating"，分數嚴格 35–55。
+
 【核心判斷問題】
 1. 一個 6 歲的孩子看到頻道縮圖、名稱、影片標題，會不會有興趣點進去？
 2. 內容是否有幼兒可能模仿的危險行為、不適當語言、驚嚇元素？
 3. 留言區關閉比率高 + 兒童吸引視覺 = 刻意迴避家長監督的訊號，需加重評分。
+4. 頻道是否屬於「工業化兒歌量產」風格（高訂閱 + 高頻率 + 重複模式 + 快剪輯聲光）？
+   若是 → riskType 應為 "overstimulating"，分數 35–55
 
 【頻道資料】
 頻道名稱：${channelName}
@@ -250,7 +268,7 @@ ${warningComments.length > 0
 請用繁體中文回答，只輸出以下 JSON 格式（不要其他文字）：
 {
   "riskScore": <0–100 整數>,
-  "riskType": <"elsagate" | "child_magnet" | "adult_only" | "mixed">,
+  "riskType": <"elsagate" | "child_magnet" | "adult_only" | "overstimulating" | "mixed">,
   "summary": "<2–3句：1)頻道定位與內容性質 2)對6歲以下的吸引力評估 3)風險判斷依據>",
   "recommendation": "<給家長的具體建議，1–2句>"
 }`
@@ -471,25 +489,30 @@ export async function POST(req: NextRequest) {
     })
 
     // ── 成人關鍵字 server-side 偵測（防 AI 漏判）────────────────
-    const ADULT_KEYWORDS = [
-      // A. 性器官 / 性行為（17）
+    // 中文：substring match（無 word boundary 概念）
+    const ADULT_KEYWORDS_ZH = [
+      // A. 性器官 / 性行為
       '打炮', '口交', '做愛', '愛愛', '裸體', '陰道', '陰莖',
       '保險套', '春藥', '高潮', '自慰', '肛交', '口愛',
-      '肉棒', '肉穴', '性奴', 'SM',
-      // B. 約炮 / PUA / 兩性操控（12）
-      '約跑', '性癖', '約炮', '砲友', '砲', '一夜情',
-      '撩妹', '撩漢', '把妹', '把妹技巧', 'PUA', '勾引',
-      // C. 成人內容類型（14）
-      '色情', '成人片', 'AV', '情色', '激情', '挑逗', '誘惑', '小三',
+      '肉棒', '肉穴', '性奴',
+      // B. 約炮 / PUA
+      '約跑', '性癖', '約炮', '砲友', '一夜情',
+      '撩妹', '撩漢', '把妹', '把妹技巧', '勾引',
+      // C. 成人內容類型
+      '色情', '成人片', '情色', '激情', '挑逗', '誘惑', '小三',
       '限制級', '十八禁', '18+', 'AV女優', 'A片', '無碼',
-      // D. 偷拍 / 黑暗（5）
+      // D. 偷拍 / 黑暗
       '偷拍', '走光', '外流影片', '暗黑', '援交',
-      // E. 英文（14）
-      'porn', 'nude', 'naked', 'adult only', 'xxx', 'erotic',
-      'masturbate', 'orgasm', 'fetish', 'escort',
-      'sexy', 'sexual', 'hentai', 'ecchi',
-      // F. 賭博 / 毒品（4）
-      '賭博', 'casino', '大麻', 'weed',
+      // F. 賭博 / 毒品
+      '賭博', '大麻',
+      // PUA 縮寫（中英混用保留中文段）
+      'PUA',
+    ]
+    // 英文：word boundary regex（避免 'SM' 在 'Smile'、'AV' 在 'avocado' 等誤觸）
+    const ADULT_KEYWORDS_EN = [
+      'porn', 'nude', 'naked', 'erotic', 'masturbate', 'orgasm',
+      'fetish', 'escort', 'sexy', 'sexual', 'hentai', 'ecchi',
+      'casino', 'weed', 'adult only', 'xxx',
     ]
 
     const allTextForAdult = [
@@ -497,11 +520,16 @@ export async function POST(req: NextRequest) {
       channelInfo.description,
       ...channelInfo.videos.map(v => v.title),
       ...channelInfo.videos.map(v => v.description),
-    ].join(' ').toLowerCase()
+    ].join(' ')
 
-    const detectedAdultKeywords = ADULT_KEYWORDS.filter(kw =>
-      allTextForAdult.includes(kw.toLowerCase())
-    )
+    // 中文：直接 includes（保留原始大小寫）
+    const detectedZh = ADULT_KEYWORDS_ZH.filter(kw => allTextForAdult.includes(kw))
+    // 英文：word boundary regex（escape 特殊符號如 '+' 在 'xxx'）
+    const detectedEn = ADULT_KEYWORDS_EN.filter(kw => {
+      const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      return new RegExp(`\\b${escaped}\\b`, 'i').test(allTextForAdult)
+    })
+    const detectedAdultKeywords = [...detectedZh, ...detectedEn]
     const adultKeywordCount = detectedAdultKeywords.length
 
     // 三段加權：關鍵字越多 → 分數下限越高
@@ -549,7 +577,8 @@ export async function POST(req: NextRequest) {
 
     // 組合訊號：留言關閉 + 兒童磁鐵 = 警戒
     // 例外：合規幼兒頻道的留言關閉是 COPPA 法規要求，不扣分（方針 2）
-    if (isLegitKidsChannel) {
+    // 合規兒童頻道減分，但過度刺激類型不適用（COPPA 合規 ≠ 適合長時間觀看）
+    if (isLegitKidsChannel && aiResult.riskType !== 'overstimulating') {
       breakdown.push({
         label: `YouTube 官方認證兒童頻道（${Math.round(madeForKidsRatio * 100)}% 影片 Made for Kids）`,
         points: -15,
@@ -608,6 +637,15 @@ export async function POST(req: NextRequest) {
           category: 'adjustment',
         })
       }
+    }
+
+    // overstimulating：AI 基底已落 35-55，記錄標籤、不另加減分
+    if (aiResult.riskType === 'overstimulating') {
+      breakdown.push({
+        label: 'AI 判定為過度刺激內容（快剪輯 / 強聲光，可能影響幼兒注意力發展）',
+        points: 0,
+        category: 'adjustment',
+      })
     }
 
     // 加總並封頂

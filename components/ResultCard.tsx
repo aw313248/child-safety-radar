@@ -79,6 +79,10 @@ const BLACKLIST_KEY = 'cc_user_blacklist'
 export default function ResultCard({ result, onReset }: Props) {
   // riskLevel 直接決定 config（adult_inappropriate 來自後端關鍵字偵測）
   const cfg = RISK_CONFIG[result.riskLevel] ?? RISK_CONFIG.high
+  // overstimulating：覆寫 medium 文案（不改 config，只 override 顯示文字）
+  const isOverstimulating = result.riskType === 'overstimulating' && result.riskLevel === 'medium'
+  const displayLabel   = isOverstimulating ? '⚠️ 過度刺激爭議' : cfg.label
+  const displayTagline = isOverstimulating ? '有過度刺激爭議，建議陪同觀看' : cfg.tagline
   const [showBreakdown, setShowBreakdown] = useState(false)
   const [showQR, setShowQR] = useState(false)
   // distill：警示留言 + 異常標籤 + 熊爸熊媽建議 默認折疊，預設只看分數 + 摘要 + CTA
@@ -116,7 +120,7 @@ export default function ResultCard({ result, onReset }: Props) {
   }
 
   const handleShare = async () => {
-    const shareText = `【CareCub Kids 掃描結果】\n${result.channelName}\n風險等級：${cfg.label}\n\n${result.aiSummary.slice(0, 80)}...\n\nCareCub Kids — 越「皮」的孩子，越要先 Peek 過`
+    const shareText = `【CareCub Kids 掃描結果】\n${result.channelName}\n風險等級：${displayLabel}\n\n${result.aiSummary.slice(0, 80)}...\n\nCareCub Kids — 越「皮」的孩子，越要先 Peek 過`
     try {
       if (navigator.share) {
         await navigator.share({ title: 'CareCub Kids', text: shareText })
@@ -186,11 +190,16 @@ export default function ResultCard({ result, onReset }: Props) {
               textTransform: 'uppercase',
               border: '2px solid var(--ink-hex)',
             }}>
-              <RiskIcon name={cfg.icon} size={14} /> {cfg.label}
+              <RiskIcon name={cfg.icon} size={14} /> {displayLabel}
             </div>
             <p className="font-display" style={{ fontSize: 22, color: 'var(--ink-hex)', lineHeight: 1.1 }}>
-              {cfg.tagline}
+              {displayTagline}
             </p>
+            {isOverstimulating && (
+              <p style={{ fontSize: 12, color: 'var(--ink-hex)', opacity: 0.7, marginTop: 6, lineHeight: 1.55, fontWeight: 500 }}>
+                快節奏 + 強聲光可能影響幼兒注意力，不建議長時間連續觀看
+              </p>
+            )}
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
             <div className="font-display" style={{ fontSize: '64px', color: cfg.scoreColor, lineHeight: 0.9, letterSpacing: '-0.06em' }}>
