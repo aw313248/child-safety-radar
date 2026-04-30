@@ -139,6 +139,10 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── 全站 h1/h2 蘋果風緊縮字距，不覆蓋 inline style ── */
+h1, h2 { letter-spacing: -0.04em; }
+button, .btn-primary, .btn-secondary { letter-spacing: -0.01em; }
+
 /* ══════════════════════════════════════════════════
    Kids Timer Setup — Apple liquid glass 系統
    完全拿掉 ink offset shadow，改半透 + blur + saturation + hairline
@@ -449,7 +453,7 @@ a:focus-visible {
   padding: 12px 14px;
   background: linear-gradient(135deg, rgba(255,183,3,0.13), rgba(194,65,59,0.06));
   border: 1px solid rgba(255,183,3,0.32);
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
   isolation: isolate;
 }
@@ -1735,25 +1739,27 @@ html.candy button[title*="重新設定時間"] {
 /* ── 2. 毛玻璃卡片（主要） ───────────────────────── */
 .glass-card {
   background: rgba(255, 255, 255, 0.58);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.82);
   border-radius: 28px;
   box-shadow:
     0 8px 32px rgba(43, 24, 16, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(43, 24, 16, 0.04);
 }
 
 /* ── 3. 毛玻璃卡片（蜂蜜色 CTA） ────────────────── */
 .glass-card-honey {
   background: rgba(255, 183, 3, 0.78);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255, 218, 80, 0.85);
   border-radius: 28px;
   box-shadow:
     0 8px 32px rgba(255, 183, 3, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 0 rgba(217, 148, 34, 0.12);
   color: var(--ink-hex);
   text-decoration: none;
   display: flex;
@@ -1910,7 +1916,7 @@ html.candy button[title*="重新設定時間"] {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.65);
-  border-radius: 14px;
+  border-radius: 20px;
 }
 
 /* ── 10. 錯誤卡片 ────────────────────────────────── */
@@ -1968,6 +1974,18 @@ html.candy button[title*="重新設定時間"] {
   box-shadow:
     0 20px 56px rgba(43, 24, 16, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* ── Spring lift utility — Apple 彈性懸浮，任何 card / item 可掛 ── */
+.glass-hover-lift {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.glass-hover-lift:hover {
+  transform: translateY(-4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .glass-hover-lift { transition: none; }
+  .glass-hover-lift:hover { transform: none; }
 }
 
 /* ── Bear loading animations ─────────────────────── */
