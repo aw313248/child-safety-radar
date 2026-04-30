@@ -29,9 +29,9 @@
 - [ ] 3.1 確認 Flutter 方案 ✅
 - [ ] 3.2 申請 Apple Developer Account（USD $99/年）
 - [ ] 3.3 安裝 Xcode
-- [ ] 3.4 執行 chat 安裝 Flutter SDK + 建空白 App 專案
+- [x] 3.4 執行 chat 安裝 Flutter SDK + 建空白 App 專案
 - [ ] 3.5 用 iPhone 跑起 hello world
-- [ ] 3.6 把品牌色 token / 字型搬到 Flutter
+- [x] 3.6 把品牌色 token / 字型搬到 Flutter
 
 ## ⚪ 階段 4：Flutter App 核心功能
 - [ ] 4.1 主頁掃描畫面
