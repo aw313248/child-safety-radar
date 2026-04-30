@@ -250,7 +250,34 @@ ${warningComments.length > 0
   const text = result.response.text().trim()
   const jsonMatch = text.match(/\{[\s\S]*\}/)
   if (!jsonMatch) throw new Error('AI 回應格式異常')
-  return JSON.parse(jsonMatch[0])
+
+  let parsed: Record<string, unknown>
+  try {
+    parsed = JSON.parse(jsonMatch[0])
+  } catch {
+    throw new Error('AI 回應 JSON 解析失敗')
+  }
+
+  // 容錯：AI 偶爾會把分數回傳成字串 "70" 而不是數字 70，直接 Math.min 會得到 NaN
+  // 把分數強制轉數字並夾在 0-100，無效就丟錯避免下游汙染
+  const rawScore = parsed.riskScore
+  const riskScore = typeof rawScore === 'number'
+    ? rawScore
+    : typeof rawScore === 'string' ? Number(rawScore) : NaN
+  if (!Number.isFinite(riskScore)) {
+    throw new Error('AI 風險分數格式異常')
+  }
+  const clampedScore = Math.max(0, Math.min(100, Math.round(riskScore)))
+
+  const summary = typeof parsed.summary === 'string' && parsed.summary.trim()
+    ? parsed.summary
+    : '（AI 未提供摘要）'
+  const recommendation = typeof parsed.recommendation === 'string' && parsed.recommendation.trim()
+    ? parsed.recommendation
+    : '建議由家長陪同觀看'
+  const riskType = typeof parsed.riskType === 'string' ? parsed.riskType : undefined
+
+  return { riskScore: clampedScore, summary, recommendation, riskType }
 }
 
 // CORS preflight — 擴充套件會先發 OPTIONS 才發 POST
