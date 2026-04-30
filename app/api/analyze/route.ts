@@ -292,8 +292,19 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 2b. Unlock 狀態仍從 httpOnly cookie 讀（Lemon Squeezy 付費後設置）──
+  // 用 indexOf 找第一個 '=' 切分，避免 value 內含 '=' 時被誤切（base64/JSON cookie 常見）
   const cookieHeader = req.headers.get('cookie') || ''
-  const cookies = Object.fromEntries(cookieHeader.split('; ').map(c => c.split('=')))
+  const cookies: Record<string, string> = {}
+  for (const pair of cookieHeader.split(';')) {
+    const trimmed = pair.trim()
+    if (!trimmed) continue
+    const idx = trimmed.indexOf('=')
+    if (idx === -1) {
+      cookies[trimmed] = ''
+    } else {
+      cookies[trimmed.slice(0, idx)] = trimmed.slice(idx + 1)
+    }
+  }
   const unlocked = cookies[UNLOCK_COOKIE] === '1'
 
   // ── 2c. 掃描次數從 Upstash Redis 讀寫（按裝置 fingerprint）──
