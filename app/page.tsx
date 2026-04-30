@@ -356,13 +356,45 @@ export default function Home() {
               <span className="glass-badge__dot" />
               小析守護中
             </p>
-            <h1 style={{
-              fontSize: 'clamp(28px, 7.5vw, 48px)',
-              fontWeight: 900, letterSpacing: '-0.04em',
-              color: 'var(--ink-hex)', lineHeight: 1.18, marginBottom: 14,
-            }}>
-              「媽媽這個可以看嗎」<br />
-              「等一下，讓小析查一下」
+            <h1 style={{ margin: 0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 24, marginBottom: 16 }}>
+                {/* 媽媽問：左對齊氣泡 */}
+                <div style={{
+                  alignSelf: 'flex-start',
+                  maxWidth: '85%',
+                  padding: '14px 20px',
+                  background: 'rgba(255,255,255,0.65)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1.5px solid rgba(43,24,16,0.12)',
+                  borderRadius: '20px 20px 20px 4px',
+                  fontSize: 'clamp(18px, 4vw, 24px)',
+                  fontWeight: 700,
+                  lineHeight: 1.5,
+                  color: 'var(--ink-hex)',
+                  letterSpacing: '-0.02em',
+                }}>
+                  媽媽這個可以看嗎？
+                </div>
+                {/* 小析回：右對齊氣泡（蜂蜜金） */}
+                <div style={{
+                  alignSelf: 'flex-end',
+                  maxWidth: '85%',
+                  padding: '14px 20px',
+                  background: 'rgba(242,184,75,0.85)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1.5px solid rgba(43,24,16,0.18)',
+                  borderRadius: '20px 20px 4px 20px',
+                  fontSize: 'clamp(18px, 4vw, 24px)',
+                  fontWeight: 700,
+                  lineHeight: 1.5,
+                  color: 'var(--ink-hex)',
+                  letterSpacing: '-0.02em',
+                }}>
+                  等一下，讓小析查一下
+                </div>
+              </div>
             </h1>
             <p style={{ fontSize: 15, fontWeight: 600, color: 'rgba(43,24,16,0.70)', lineHeight: 1.6, marginBottom: 6 }}>
               你知道孩子現在在看什麼嗎？貼網址讓小析幫你看一遍
