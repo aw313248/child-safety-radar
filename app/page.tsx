@@ -52,6 +52,8 @@ export default function Home() {
   const [confetti, setConfetti] = useState(false)
   // Turnstile token — 頁面載入後 Cloudflare 背景驗人機，拿到 token 才能掃
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  // 個人黑名單：若命中直接攔截，不發 API 請求
+  const [blockedChannelId, setBlockedChannelId] = useState<string | null>(null)
 
   // 動態 placeholder 輪播
   useEffect(() => {
@@ -136,9 +138,34 @@ export default function Home() {
     } catch {}
   }, [])
 
+  const USER_BLACKLIST_KEY = 'cc_user_blacklist'
+
+  const handleRemoveBlacklist = (channelId: string) => {
+    try {
+      const list: string[] = JSON.parse(localStorage.getItem(USER_BLACKLIST_KEY) || '[]')
+      localStorage.setItem(USER_BLACKLIST_KEY, JSON.stringify(list.filter(id => id !== channelId)))
+    } catch {}
+    setBlockedChannelId(null)
+  }
+
   const handleAnalyze = async () => {
     const trimmed = url.trim()
     if (!trimmed) return
+
+    // 掃描前先檢查 localStorage 黑名單（從 channel/ URL 解析 channelId）
+    try {
+      const blacklist: string[] = JSON.parse(localStorage.getItem(USER_BLACKLIST_KEY) || '[]')
+      if (blacklist.length > 0) {
+        const channelIdMatch = trimmed.match(/(UC[\w-]{22})/)
+        const channelId = channelIdMatch?.[1]
+        if (channelId && blacklist.includes(channelId)) {
+          setBlockedChannelId(channelId)
+          setResult(null)
+          setError('')
+          return
+        }
+      }
+    } catch {}
 
     // Harden: URL 格式驗證 — 接受 youtube.com / youtu.be / @handle
     const looksLikeYouTube = /youtube\.com|youtu\.be|^@[\w.-]+$|^https?:\/\//.test(trimmed)
@@ -273,10 +300,55 @@ export default function Home() {
           </div>
         )}
 
+        {/* ── 個人黑名單攔截卡 ── */}
+        {blockedChannelId && !loading && (
+          <div className="animate-slide-up bee-card" style={{
+            marginBottom: 28,
+            padding: 20,
+            background: 'var(--adult-orange-soft)',
+            border: '2px solid var(--adult-orange-hex)',
+            borderRadius: 16,
+            display: 'flex', flexDirection: 'column', gap: 12,
+          }}>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--adult-orange-hex)' }}>
+              ⚑ 這個頻道已被你列入黑名單
+            </p>
+            <p style={{ fontSize: 13, color: 'var(--ink-hex)', opacity: 0.7, lineHeight: 1.6 }}>
+              你之前掃描過這個頻道並將其加入個人黑名單。如果要重新掃描，請先移除黑名單
+            </p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button
+                onClick={() => handleRemoveBlacklist(blockedChannelId)}
+                style={{
+                  padding: '10px 16px', minHeight: 44,
+                  background: 'var(--adult-orange-hex)', color: '#fff',
+                  border: 'none', borderRadius: 10,
+                  fontSize: 13, fontWeight: 700,
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                移除黑名單，重新掃描
+              </button>
+              <button
+                onClick={() => { setBlockedChannelId(null); setUrl('') }}
+                style={{
+                  padding: '10px 16px', minHeight: 44,
+                  background: 'transparent', color: 'var(--ink-hex)',
+                  border: '1.5px solid rgba(43,24,16,0.3)', borderRadius: 10,
+                  fontSize: 13, fontWeight: 600,
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ── Result ── */}
         {result && !loading && (
           <div className="animate-slide-up" style={{ marginBottom: 28 }}>
-            <ResultCard result={result} onReset={() => { setResult(null); setUrl('') }} />
+            <ResultCard result={result} onReset={() => { setResult(null); setUrl(''); setBlockedChannelId(null) }} />
           </div>
         )}
 

@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AnalysisResult, ScoreBreakdownItem } from '@/types/analysis'
 import DiscussionReporter from './DiscussionReporter'
 import ShareQRModal from './ShareQRModal'
@@ -74,6 +74,8 @@ function RiskIcon({ name, size = 14 }: { name: 'octagon-x' | 'eye' | 'shield-che
   )
 }
 
+const BLACKLIST_KEY = 'cc_user_blacklist'
+
 export default function ResultCard({ result, onReset }: Props) {
   // riskLevel 直接決定 config（adult_inappropriate 來自後端關鍵字偵測）
   const cfg = RISK_CONFIG[result.riskLevel] ?? RISK_CONFIG.high
@@ -81,6 +83,28 @@ export default function ResultCard({ result, onReset }: Props) {
   const [showQR, setShowQR] = useState(false)
   // distill：警示留言 + 異常標籤 + 熊爸熊媽建議 默認折疊，預設只看分數 + 摘要 + CTA
   const [showDetails, setShowDetails] = useState(false)
+  const [isBlacklisted, setIsBlacklisted] = useState(false)
+
+  // 掛載時檢查是否已在黑名單
+  useEffect(() => {
+    if (!result.channelId) return
+    try {
+      const list: string[] = JSON.parse(localStorage.getItem(BLACKLIST_KEY) || '[]')
+      setIsBlacklisted(list.includes(result.channelId))
+    } catch {}
+  }, [result.channelId])
+
+  const handleBlacklist = () => {
+    if (!result.channelId) return
+    try {
+      const list: string[] = JSON.parse(localStorage.getItem(BLACKLIST_KEY) || '[]')
+      if (!list.includes(result.channelId!)) {
+        list.push(result.channelId!)
+        localStorage.setItem(BLACKLIST_KEY, JSON.stringify(list))
+      }
+      setIsBlacklisted(true)
+    } catch {}
+  }
 
   const handleShare = async () => {
     const shareText = `【CareCub Kids 掃描結果】\n${result.channelName}\n風險等級：${cfg.label}\n\n${result.aiSummary.slice(0, 80)}...\n\nCareCub Kids — 越「皮」的孩子，越要先 Peek 過`
@@ -96,6 +120,45 @@ export default function ResultCard({ result, onReset }: Props) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+      {/* ── adult_inappropriate 大字警示 banner ── */}
+      {result.riskLevel === 'adult_inappropriate' && (
+        <div style={{
+          background: 'var(--adult-orange-hex)',
+          color: '#fff',
+          fontSize: 18,
+          fontWeight: 700,
+          padding: 16,
+          borderRadius: 12,
+          marginBottom: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+          lineHeight: 1.45,
+        }}>
+          <span>⚠️ 此頻道含成人露骨內容，不適合兒童觀看</span>
+          <button
+            onClick={handleBlacklist}
+            disabled={isBlacklisted}
+            style={{
+              alignSelf: 'flex-start',
+              background: isBlacklisted ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.95)',
+              color: isBlacklisted ? 'rgba(255,255,255,0.7)' : 'var(--adult-orange-hex)',
+              border: 'none',
+              borderRadius: 8,
+              padding: '8px 14px',
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: isBlacklisted ? 'default' : 'pointer',
+              transition: 'background 0.2s, color 0.2s',
+              fontFamily: 'inherit',
+              minHeight: 44,
+            }}
+          >
+            {isBlacklisted ? '✓ 已列入黑名單' : '⚑ 列入我的黑名單'}
+          </button>
+        </div>
+      )}
 
       {/* Risk header — Busy Bee big score card */}
       <div className="bee-card stagger-1" style={{ padding: '24px', background: cfg.headerBg }}>

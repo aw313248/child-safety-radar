@@ -35,6 +35,8 @@
   --risk-red:    #C2413B;
   --risk-orange: #C88830;
   --risk-green:  #4A8A5C;
+  --adult-orange-hex: #E07B00;
+  --adult-orange-soft: #FFEEDD;
 
   /* ─── Text — 全部用 ink + 不透明度 ─── */
   --text-primary:   rgba(var(--ink), 1);

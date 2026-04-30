@@ -50,3 +50,24 @@
 - [ ] 5.7 送審 → 上架
 
 ## ⚪ 階段 6：商業 + Android 版本
+
+---
+
+## 待 App 正式開發時統一同步（累積清單）
+
+App 端正式開發（階段 4）時，需把網頁這邊累積的改動套進去：
+
+### 設計系統 token
+- [ ] colors.dart 新增 adultOrange = Color(0xFFE07B00)
+- [ ] colors.dart 新增 adultOrangeSoft = Color(0xFFFFEEDD)
+
+### 資料模型
+- [ ] Flutter RiskLevel enum 加 adult_inappropriate
+
+### 結果頁 UI
+- [ ] result_screen.dart 加 adult_inappropriate 分支
+- [ ] 橘色大字 banner「⚠️ 此頻道含成人露骨內容」
+- [ ] 個人黑名單按鈕「⚑ 列入我的黑名單」（用 SecureStore 存）
+
+### 主頁
+- [ ] 掃描前檢查 SecureStore 黑名單，命中直接顯示警示
