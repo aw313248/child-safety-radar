@@ -305,6 +305,15 @@
   .kids-action { transition: none; }
 }
 
+/* a11y: WCAG 2.1 AA 觸控目標 ≥44×44px — 用 padding 撐，不硬改 height */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* a11y: 強化 placeholder 對比（預設瀏覽器 placeholder 太淡，常被誤認隱藏） */
 .strong-placeholder::placeholder {
   color: rgba(43, 24, 16, 0.55);
@@ -346,7 +355,7 @@
   padding: 10px 14px;
   background: var(--ink-hex);
   color: var(--cc-gold);
-  font-size: 13px; font-weight: 700;
+  font-size: 14px; font-weight: 700;
   border-radius: 8px;
   text-decoration: none;
   border: 2px solid var(--cc-gold);
@@ -1878,7 +1887,7 @@ html.candy button[title*="重新設定時間"] {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 218, 80, 0.55);
   border-radius: 9999px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;

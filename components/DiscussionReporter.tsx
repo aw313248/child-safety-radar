@@ -50,10 +50,10 @@ export default function DiscussionReporter({ channelName, channelUrl, riskScore 
         padding: '14px 16px',
         textAlign: 'center',
       }}>
-        <p style={{ fontSize: 13, color: 'var(--risk-green)', fontWeight: 600, letterSpacing: '-0.01em' }}>
+        <p style={{ fontSize: 14, color: 'var(--risk-green)', fontWeight: 600, letterSpacing: '-0.01em' }}>
           收到了，謝謝你
         </p>
-        <p style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 2, letterSpacing: '-0.01em' }}>
+        <p style={{ fontSize: 14, color: 'var(--text-tertiary)', marginTop: 2, letterSpacing: '-0.01em' }}>
           你的回饋會讓評分模型更準
         </p>
       </div>
@@ -69,14 +69,15 @@ export default function DiscussionReporter({ channelName, channelUrl, riskScore 
     return (
       <div className="card stagger-4" style={{ padding: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
             {mode === 'report' ? '回報評分有誤' : '補充家長討論'}
           </p>
           <button
             onClick={() => { setMode('idle'); setText(''); setStatus('ready') }}
+            className="tap-target"
             style={{
               background: 'transparent', border: 'none', cursor: 'pointer',
-              fontSize: 12, color: 'var(--text-tertiary)', letterSpacing: '-0.01em',
+              fontSize: 14, color: 'var(--text-tertiary)', letterSpacing: '-0.01em',
             }}
           >
             取消
@@ -96,7 +97,7 @@ export default function DiscussionReporter({ channelName, channelUrl, riskScore 
             borderRadius: 'var(--radius-md)',
             padding: '10px 12px',
             fontFamily: 'inherit',
-            fontSize: 13,
+            fontSize: 14,
             color: 'var(--text-primary)',
             letterSpacing: '-0.01em',
             lineHeight: 1.5,
@@ -106,21 +107,21 @@ export default function DiscussionReporter({ channelName, channelUrl, riskScore 
         />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-          <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+          <span style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>
             {text.length}/1000
           </span>
           <button
             onClick={submit}
             disabled={!text.trim() || status === 'sending'}
             className="btn-primary"
-            style={{ width: 'auto', padding: '8px 16px', fontSize: 13 }}
+            style={{ width: 'auto', padding: '8px 16px', fontSize: 14 }}
           >
             {status === 'sending' ? '傳送中' : '送出'}
           </button>
         </div>
 
         {status === 'error' && (
-          <p style={{ fontSize: 11, color: 'var(--risk-red)', marginTop: 8, letterSpacing: '-0.01em' }}>
+          <p style={{ fontSize: 14, color: 'var(--risk-red)', marginTop: 8, letterSpacing: '-0.01em' }}>
             送出失敗，請再試一次
           </p>
         )}
@@ -136,21 +137,21 @@ export default function DiscussionReporter({ channelName, channelUrl, riskScore 
       borderRadius: 'var(--radius-lg)',
       padding: '14px 16px',
     }}>
-      <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5, letterSpacing: '-0.01em', marginBottom: 10, textAlign: 'center' }}>
+      <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5, letterSpacing: '-0.01em', marginBottom: 10, textAlign: 'center' }}>
         覺得這次評分不準，或看過家長討論？
       </p>
       <div style={{ display: 'flex', gap: 8 }}>
         <button
           onClick={() => setMode('report')}
           className="btn-secondary"
-          style={{ flex: 1, fontSize: 12, padding: '9px', letterSpacing: '-0.01em' }}
+          style={{ flex: 1, fontSize: 14, padding: '9px', letterSpacing: '-0.01em', minHeight: 44 }}
         >
           🚩 評分有誤
         </button>
         <button
           onClick={() => setMode('discussion')}
           className="btn-secondary"
-          style={{ flex: 1, fontSize: 12, padding: '9px', letterSpacing: '-0.01em' }}
+          style={{ flex: 1, fontSize: 14, padding: '9px', letterSpacing: '-0.01em', minHeight: 44 }}
         >
           💬 補充討論
         </button>

@@ -110,7 +110,7 @@ export default function LoadingFacts() {
       <div style={{
         display: 'flex', alignItems: 'center', gap: 6,
         marginBottom: 8,
-        fontSize: 10, fontWeight: 700,
+        fontSize: 12, fontWeight: 700,
         color: 'rgba(43,24,16,0.55)',
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
@@ -134,7 +134,7 @@ export default function LoadingFacts() {
         }}
       >
         <p style={{
-          fontSize: 13.5, fontWeight: 600,
+          fontSize: 14, fontWeight: 600,
           color: 'var(--ink-hex)',
           letterSpacing: '-0.01em', lineHeight: 1.5,
           marginBottom: 4,
@@ -142,7 +142,7 @@ export default function LoadingFacts() {
           {fact.headline}
         </p>
         <p style={{
-          fontSize: 10, fontWeight: 600,
+          fontSize: 12, fontWeight: 600,
           color: 'rgba(43,24,16,0.5)',
           letterSpacing: '-0.005em',
           display: 'flex', alignItems: 'center', gap: 4,

@@ -82,7 +82,7 @@ export default function CaseLibrary() {
           transition: 'border-radius 0.2s',
         }}
       >
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: 8 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--cc-red)', flexShrink: 0 }}>
             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
             <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -115,20 +115,20 @@ export default function CaseLibrary() {
                   <h3 style={{ fontSize: 14, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--ink-hex)' }}>
                     {c.name}
                   </h3>
-                  <span className={STATUS_CLASS[c.status]} style={{ whiteSpace: 'nowrap', fontSize: 10 }}>
+                  <span className={STATUS_CLASS[c.status]} style={{ whiteSpace: 'nowrap', fontSize: 12 }}>
                     {c.statusLabel} · {c.year}
                   </span>
                 </div>
-                <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.5)', letterSpacing: '-0.01em', marginBottom: 5 }}>
+                <p style={{ fontSize: 14, color: 'rgba(43,24,16,0.5)', letterSpacing: '-0.01em', marginBottom: 5 }}>
                   {c.meta}
                 </p>
-                <p style={{ fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 8, fontWeight: 500, opacity: 0.75 }}>
+                <p style={{ fontSize: 14, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 8, fontWeight: 500, opacity: 0.75 }}>
                   {c.desc}
                 </p>
                 <div style={{ display: 'flex', gap: 10 }}>
                   {c.sources.map((src) => (
                     <a key={src.url} href={src.url} target="_blank" rel="noopener noreferrer"
-                      style={{ fontSize: 10, color: 'var(--cc-red-deep)', textDecoration: 'none', fontWeight: 600, letterSpacing: '-0.005em', opacity: 0.75 }}>
+                      style={{ fontSize: 12, color: 'var(--cc-red-deep)', textDecoration: 'none', fontWeight: 600, letterSpacing: '-0.005em', opacity: 0.75 }}>
                       → {src.label}
                     </a>
                   ))}
@@ -139,7 +139,7 @@ export default function CaseLibrary() {
 
           {/* Stat footer */}
           <div style={{ padding: '10px 16px', background: 'rgba(43,24,16,0.03)', textAlign: 'center' }}>
-            <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.5)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: 'rgba(43,24,16,0.5)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
               2017 年 YouTube 下架 <strong style={{ color: 'var(--ink-hex)', fontWeight: 700 }}>15 萬支影片</strong>、終止 <strong style={{ color: 'var(--ink-hex)', fontWeight: 700 }}>270 個頻道</strong>
               <a href="https://en.wikipedia.org/wiki/Elsagate" target="_blank" rel="noopener noreferrer"
                 style={{ color: 'rgba(43,24,16,0.35)', textDecoration: 'none', marginLeft: 6 }}>

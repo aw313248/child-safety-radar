@@ -15,7 +15,7 @@ const UnlockModal = dynamic(() => import('@/components/UnlockModal'), { ssr: fal
 const CaseLibrary = dynamic(() => import('@/components/CaseLibrary'), {
   ssr: false,
   loading: () => (
-    <div style={{ padding: 24, textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 13 }}>
+    <div style={{ padding: 24, textAlign: 'center', color: 'var(--text-tertiary)', fontSize: 14 }}>
       載入案例…
     </div>
   ),
@@ -383,25 +383,25 @@ export default function Home() {
             {/* 狀態列 — 剩 1 次以下時，免費次數變可點 → 開 modal 預覽 */}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, padding: '0 4px', alignItems: 'center' }}>
               {loading ? (
-                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)' }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-tertiary)' }}>
                   {progressText || '分析中…'}
                 </span>
               ) : unlocked ? (
-                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-hex)' }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-hex)' }}>
                   ✓ 已解鎖無限
                 </span>
               ) : (
                 <button
                   onClick={() => setShowUnlock(true)}
-                  className={remainingFree === 0 ? 'chip-blocked' : remainingFree === 1 ? 'chip-urgent' : ''}
+                  className={`tap-target ${remainingFree === 0 ? 'chip-blocked' : remainingFree === 1 ? 'chip-urgent' : ''}`}
                   style={{
                     background: remainingFree === 0 ? 'var(--terra-hex)' : remainingFree === 1 ? 'var(--honey-hex)' : 'transparent',
                     border: remainingFree <= 1 ? '1.5px solid var(--ink-hex)' : 'none',
-                    padding: remainingFree <= 1 ? '4px 10px' : 0,
+                    padding: remainingFree <= 1 ? '4px 12px' : '0 4px',
                     borderRadius: 9999,
                     cursor: 'pointer',
                     fontFamily: 'inherit',
-                    fontSize: 11, fontWeight: 600,
+                    fontSize: 14, fontWeight: 600,
                     color: remainingFree === 0 ? '#FFF6E6' : remainingFree === 1 ? 'var(--ink-hex)' : 'var(--text-tertiary)',
                     display: 'inline-flex', alignItems: 'center', gap: 4,
                   }}
@@ -412,7 +412,7 @@ export default function Home() {
                   {remainingFree === 0 && '免費已用完 · 解鎖 →'}
                 </button>
               )}
-              <span style={{ fontSize: 11, color: 'var(--text-tertiary)', fontWeight: 500 }}>
+              <span style={{ fontSize: 14, color: 'var(--text-tertiary)', fontWeight: 500 }}>
                 {loading ? '' : '≈ 20 秒'}
               </span>
             </div>
@@ -439,10 +439,10 @@ export default function Home() {
                   <div className="cinematic-scan__mascot">
                     <Mascot pose="search" size={48} alt="小析正在查資料" />
                   </div>
-                  <p style={{ flex: 1, fontSize: 13, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.45, position: 'relative', zIndex: 1 }}>
+                  <p style={{ flex: 1, fontSize: 14, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.45, position: 'relative', zIndex: 1 }}>
                     {progressText || '小析正在查'}
                     <br />
-                    <span style={{ fontSize: 11, opacity: 0.55, fontWeight: 500 }}>你先去倒水，快好了</span>
+                    <span style={{ fontSize: 14, opacity: 0.55, fontWeight: 500 }}>你先去倒水，快好了</span>
                   </p>
                 </div>
 
@@ -466,7 +466,7 @@ export default function Home() {
             <Mascot pose="think" size={50} alt="小析在想哪裡出錯" />
             <div style={{ flex: 1 }}>
               <p style={{ color: 'var(--terra-hex)', fontSize: 14, fontWeight: 800, letterSpacing: '-0.02em' }}>{error}</p>
-              <p style={{ color: 'var(--text-secondary)', fontSize: 12, marginTop: 4, fontWeight: 500 }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginTop: 4, fontWeight: 500 }}>
                 試試直接從瀏覽器網址列複製貼上
               </p>
             </div>
@@ -485,7 +485,7 @@ export default function Home() {
             <p style={{ fontSize: 15, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.025em' }}>
               丟平板前，先讓熊熊看過
             </p>
-            <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.65)', marginTop: 2, fontWeight: 500, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: 'rgba(43,24,16,0.65)', marginTop: 2, fontWeight: 500, lineHeight: 1.5 }}>
               人工精選，直接給小孩看
             </p>
           </div>
@@ -518,7 +518,7 @@ export default function Home() {
         }}>
           <div className="footer-brand" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            fontSize: 13, fontWeight: 800,
+            fontSize: 14, fontWeight: 800,
             color: 'var(--ink-hex)',
             letterSpacing: '-0.02em',
             marginBottom: 8,
@@ -537,7 +537,7 @@ export default function Home() {
             CareCub Kids
           </div>
           <p style={{
-            fontSize: 11, color: 'var(--ink-hex)',
+            fontSize: 12, color: 'var(--ink-hex)',
             letterSpacing: '0.08em', fontWeight: 600,
             textTransform: 'uppercase', opacity: 0.42,
           }}>
