@@ -70,6 +70,22 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
     )
   }
 
+  // adult_inappropriate：含成人露骨內容，嚴禁加入守護模式
+  if (riskLevel === 'adult_inappropriate') {
+    return (
+      <button disabled style={{
+        width: '100%', padding: '14px', minHeight: 44,
+        background: '#999', color: '#fff',
+        border: 'none', borderRadius: '12px',
+        fontSize: '15px', fontWeight: 600,
+        cursor: 'not-allowed', opacity: 0.7,
+        fontFamily: 'inherit',
+      }}>
+        ⛔ 此頻道風險過高，不能加入守護模式
+      </button>
+    )
+  }
+
   const handleConfirm = () => {
     addUserChannel({
       channelId,

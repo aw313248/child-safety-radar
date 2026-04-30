@@ -85,23 +85,32 @@ export default function ResultCard({ result, onReset }: Props) {
   const [showDetails, setShowDetails] = useState(false)
   const [isBlacklisted, setIsBlacklisted] = useState(false)
 
-  // 掛載時檢查是否已在黑名單
+  // 掛載時檢查是否已在黑名單（backward compat：支援舊 string[] 格式）
   useEffect(() => {
     if (!result.channelId) return
     try {
-      const list: string[] = JSON.parse(localStorage.getItem(BLACKLIST_KEY) || '[]')
-      setIsBlacklisted(list.includes(result.channelId))
+      const raw = JSON.parse(localStorage.getItem(BLACKLIST_KEY) || '[]')
+      const inList = raw.some((item: string | { channelId: string }) =>
+        typeof item === 'string' ? item === result.channelId : item.channelId === result.channelId
+      )
+      setIsBlacklisted(inList)
     } catch {}
   }, [result.channelId])
 
   const handleBlacklist = () => {
     if (!result.channelId) return
     try {
-      const list: string[] = JSON.parse(localStorage.getItem(BLACKLIST_KEY) || '[]')
-      if (!list.includes(result.channelId!)) {
-        list.push(result.channelId!)
-        localStorage.setItem(BLACKLIST_KEY, JSON.stringify(list))
-      }
+      const raw = JSON.parse(localStorage.getItem(BLACKLIST_KEY) || '[]')
+      // 移除舊條目（不論是 string 還是物件格式），再統一存新物件格式
+      const filtered = raw.filter((item: string | { channelId: string }) =>
+        typeof item === 'string' ? item !== result.channelId : item.channelId !== result.channelId
+      )
+      filtered.push({
+        channelId: result.channelId,
+        channelName: result.channelName,
+        blacklistedAt: new Date().toISOString(),
+      })
+      localStorage.setItem(BLACKLIST_KEY, JSON.stringify(filtered))
       setIsBlacklisted(true)
     } catch {}
   }

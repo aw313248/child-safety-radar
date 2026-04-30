@@ -154,15 +154,15 @@ export default function Home() {
 
     // 掃描前先檢查 localStorage 黑名單（從 channel/ URL 解析 channelId）
     try {
-      const blacklist: string[] = JSON.parse(localStorage.getItem(USER_BLACKLIST_KEY) || '[]')
-      if (blacklist.length > 0) {
+      const blacklistRaw = JSON.parse(localStorage.getItem(USER_BLACKLIST_KEY) || '[]')
+      if (blacklistRaw.length > 0) {
         const channelIdMatch = trimmed.match(/(UC[\w-]{22})/)
         const channelId = channelIdMatch?.[1]
-        if (channelId && blacklist.includes(channelId)) {
-          setBlockedChannelId(channelId)
-          setResult(null)
-          setError('')
-          return
+        if (channelId) {
+          const isBlocked = blacklistRaw.some((item: string | { channelId: string }) =>
+            typeof item === 'string' ? item === channelId : item.channelId === channelId
+          )
+          if (isBlocked) { setBlockedChannelId(channelId); setResult(null); setError(''); return }
         }
       }
     } catch {}
@@ -641,6 +641,18 @@ export default function Home() {
             onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
             >
               服務條款
+            </a>
+            <span style={{ fontSize: 10, opacity: 0.3, color: 'var(--ink-hex)' }}>·</span>
+            <a href="/blacklist" style={{
+              fontSize: 12, color: 'var(--ink-hex)',
+              opacity: 0.5, textDecoration: 'none',
+              fontWeight: 500,
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
+            >
+              ⚑ 我的黑名單
             </a>
           </div>
         </footer>

@@ -71,3 +71,11 @@ App 端正式開發（階段 4）時，需把網頁這邊累積的改動套進�
 
 ### 主頁
 - [ ] 掃描前檢查 SecureStore 黑名單，命中直接顯示警示
+
+### 結果頁 UI（補）
+- [ ] AddToKidsMode 對 adult_inappropriate 改 disabled「⛔ 此頻道風險過高，不能加入守護模式」
+
+### 黑名單功能
+- [ ] 新增「我的黑名單」管理頁（讀 SecureStore）
+- [ ] 列入黑名單時存物件 {channelId, channelName, blacklistedAt}（不是只存 ID）
+- [ ] 主頁 footer 加「我的黑名單」入口
