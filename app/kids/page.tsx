@@ -601,12 +601,14 @@ export default function KidsModePage() {
         {/* ── Nav ── */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Mascot pose="hi" size={52} priority />
+            <div className="kids-nav-mascot">
+              <Mascot pose="hi" size={52} priority />
+            </div>
             <div>
-              <p style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 2 }}>
+              <p className="kids-nav-label" style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 2 }}>
                 CareCub · Bear Mode
               </p>
-              <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1 }}>
+              <h1 className="kids-nav-title" style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1 }}>
                 熊熊守護模式
               </h1>
             </div>
@@ -619,7 +621,7 @@ export default function KidsModePage() {
             4. 第一次教學：拿掉，改用 LOCK_GUIDE_KEY 自動首次秀（不佔 nav）
             每顆 icon + 文字 caption 並列，不再純圖示
           */}
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+          <div className="kids-nav-actions" style={{ flexShrink: 0 }}>
             <button
               onClick={() => { setSleepMode(true); setSelectedPlaylist(null) }}
               aria-label="睡前音樂"
@@ -627,7 +629,9 @@ export default function KidsModePage() {
               className="kids-action"
               style={{ background: 'rgba(90,60,140,0.18)', borderColor: 'rgba(160,120,220,0.35)', color: '#c8a8f0' }}
             >
-              <span style={{ fontSize: 14 }}>🌙</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
               <span>睡前</span>
             </button>
             {!isFullscreen && (

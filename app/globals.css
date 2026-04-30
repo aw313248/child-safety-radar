@@ -284,9 +284,22 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.28),
     0 5px 16px rgba(142, 42, 36, 0.34);
 }
-@media (max-width: 380px) {
+/* Kids nav responsive helpers */
+.kids-nav-label { }
+.kids-nav-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kids-nav-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+@media (max-width: 520px) {
+  .kids-nav-label { display: none !important; }
+  .kids-nav-title { font-size: 17px !important; }
+  .kids-nav-mascot img { width: 40px !important; height: 40px !important; }
+  .kids-nav-actions { gap: 6px; }
   .kids-action span { display: none; }
-  .kids-action { padding: 10px; }
+  .kids-action { min-width: 44px; min-height: 44px; padding: 0; justify-content: center; }
+}
+@media (max-width: 380px) {
+  .kids-nav-mascot img { width: 34px !important; height: 34px !important; }
+  .kids-nav-title { font-size: 15px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .kids-action { transition: none; }
