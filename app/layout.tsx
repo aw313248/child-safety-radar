@@ -25,25 +25,25 @@ const SITE_URL = 'https://child-safety-radar.vercel.app'
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'CareCub Kids — 20 秒看穿 YouTube 頻道藏沒藏「艾莎門」',
-    template: '%s · CareCub Kids',
+    default: 'CareCub · 小析守護 — 用 AI 幫你判斷 YouTube 頻道適不適合孩子',
+    template: '%s · CareCub',
   },
-  description: '偽裝成兒童卡通的「艾莎門」影片越來越多，CareCub Kids 用 AI 20 秒掃描 YouTube 頻道，看穿是否藏有暴力、恐怖、成人梗等危險內容，給家有「皮」小孩的爸媽用',
-  keywords: ['CareCub Kids', 'Elsagate', '艾莎門', '兒童安全', 'YouTube', '家長', '育兒', 'AI 分析', 'YouTube Kids', '兒童 YouTube', '影片過濾', '卡通安全'],
+  description: '偽裝成兒童卡通的「艾莎門」影片越來越多，CareCub 用 AI 20 秒掃描 YouTube 頻道，看穿是否藏有暴力、恐怖、成人梗等危險內容，給家有「皮」小孩的爸媽用',
+  keywords: ['CareCub', 'Elsagate', '艾莎門', '兒童安全', 'YouTube', '家長', '育兒', 'AI 分析', 'YouTube Kids', '兒童 YouTube', '影片過濾', '卡通安全'],
   authors: [{ name: 'Oscar / minehoooo' }],
-  creator: 'CareCub Kids',
+  creator: 'CareCub',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'CareCub Kids — 這個卡通安全嗎？20 秒掃給你看',
+    title: 'CareCub — 這個卡通安全嗎？20 秒掃給你看',
     description: '貼上 YouTube 網址，AI 看完影片跟留言，紅橘綠燈告訴你能不能給小孩看',
     type: 'website',
     locale: 'zh_TW',
     url: SITE_URL,
-    siteName: 'CareCub Kids',
+    siteName: 'CareCub',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'CareCub Kids — 20 秒看穿卡通藏什麼',
+    title: 'CareCub — 20 秒看穿卡通藏什麼',
     description: '貼上 YouTube 網址，AI 看完影片跟留言，告訴你能不能給小孩看',
   },
   robots: {
@@ -63,7 +63,7 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'CareCub Kids',
+    name: 'CareCub',
     url: SITE_URL,
     description: '用 AI 20 秒掃描 YouTube 頻道，看穿是否藏有暴力、恐怖、成人梗等不適合小孩的內容',
     applicationCategory: 'ParentingApplication',
@@ -83,7 +83,7 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'CareCub Kids',
+    name: 'CareCub',
     url: SITE_URL,
     logo: `${SITE_URL}/icon.png`,
     sameAs: [
@@ -105,7 +105,7 @@ const jsonLd = [
       },
       {
         '@type': 'Question',
-        name: 'CareCub Kids 怎麼掃描頻道？',
+        name: 'CareCub 怎麼掃描頻道？',
         acceptedAnswer: {
           '@type': 'Answer',
           text: '貼上 YouTube 頻道網址，AI 會抓最近影片的標題、縮圖、留言警訊，綜合判斷是否安全，回傳紅橘綠燈號跟摘要建議',

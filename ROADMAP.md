@@ -1,4 +1,4 @@
-# CareCub Kids — 開發路線圖
+# CareCub — 開發路線圖
 > 最後更新：2026-04-30
 > App 技術：Flutter（iOS 優先）
 > 工作模式：規劃 chat 寫策略 + 指令稿，執行 chat 做事

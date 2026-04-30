@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og'
 // OG 分享圖 — 貼在 Threads / Line / FB / iMessage 會顯示的預覽卡
 // 1200×630 標準尺寸，CareCub Hearth 暖色家族
 export const runtime = 'edge'
-export const alt = 'CareCub Kids — 這個卡通安全嗎？20 秒掃給你看'
+export const alt = 'CareCub — 這個卡通安全嗎？20 秒掃給你看'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -54,7 +54,7 @@ export default async function Image() {
             <span style={{
               fontSize: 28, fontWeight: 900, color: '#2B1810',
               letterSpacing: '-0.025em',
-            }}>CareCub Kids</span>
+            }}>CareCub</span>
           </div>
           <div style={{
             fontSize: 18, fontWeight: 500,

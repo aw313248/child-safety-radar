@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: '隱私權政策',
-  description: 'CareCub Kids 隱私權政策 — 說清楚我們收集哪些資料、為什麼收集、怎麼保護',
+  description: 'CareCub 隱私權政策 — 說清楚我們收集哪些資料、為什麼收集、怎麼保護',
   robots: { index: true, follow: true },
 }
 
@@ -31,7 +31,7 @@ export default function PrivacyPage() {
           color: '#2B1810', textDecoration: 'none',
           letterSpacing: '-0.02em',
         }}>
-          ← CareCub Kids
+          ← CareCub
         </Link>
         <span style={{ fontSize: 13, color: '#2B1810', opacity: 0.6 }}>
           隱私權政策
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
 
         <Section title="1. 我們是誰">
           <p>
-            CareCub Kids（以下簡稱「本服務」）是由 Oscar（minehoooo）個人開發的 AI 兒童頻道安全分析工具，
+            CareCub（以下簡稱「本服務」）是由 Oscar（minehoooo）個人開發的 AI 兒童頻道安全分析工具，
             服務對象是家長與照護者，協助快速評估 YouTube 頻道是否適合兒童觀看。
           </p>
           <p>

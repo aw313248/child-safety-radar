@@ -27,12 +27,9 @@ const SCAN_COUNT_KEY = 'child_radar_scan_count'
 const HISTORY_KEY  = 'child_radar_history'
 const MAX_HISTORY  = 30
 
-// 動態 placeholder：四個爸媽常掃的範例頻道，輪播告訴使用者可以丟什麼進來
+// placeholder
 const PLACEHOLDERS = [
-  'youtube.com/@cocomelon',
-  'youtube.com/@PinkfongBabyShark',
-  'youtube.com/@SuperSimpleSongs',
-  'youtube.com/@ChuChuTV',
+  '把那個頻道連結貼這',
 ]
 
 export default function Home() {
@@ -360,15 +357,18 @@ export default function Home() {
               小析守護中
             </p>
             <h1 style={{
-              fontSize: 'clamp(44px, 12vw, 68px)',
-              fontWeight: 900, letterSpacing: '-0.05em',
-              color: 'var(--ink-hex)', lineHeight: 0.98, marginBottom: 14,
+              fontSize: 'clamp(28px, 7.5vw, 48px)',
+              fontWeight: 900, letterSpacing: '-0.04em',
+              color: 'var(--ink-hex)', lineHeight: 1.18, marginBottom: 14,
             }}>
-              這個<span style={{ color: 'var(--cc-red-deep)' }}>卡通</span><br />
-              安全嗎？
+              「媽媽這個可以看嗎」<br />
+              「等一下，讓小析查一下」
             </h1>
-            <p style={{ fontSize: 14, fontWeight: 500, color: 'rgba(43,24,16,0.60)', lineHeight: 1.6 }}>
-              讓小析去查，你去泡咖啡
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'rgba(43,24,16,0.70)', lineHeight: 1.6, marginBottom: 6 }}>
+              你知道孩子現在在看什麼嗎？貼網址讓小析幫你看一遍
+            </p>
+            <p style={{ fontSize: 13, fontWeight: 500, color: 'rgba(43,24,16,0.45)', lineHeight: 1.6 }}>
+              免費 2 次，不用註冊
             </p>
           </div>
         )}
@@ -432,7 +432,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    掃這個頻道
+                    現在掃這個頻道
                     {/* button-in-button 箭頭：包進深可可小圓，給機械精品感 */}
                     <span aria-hidden style={{
                       width: 26, height: 26, borderRadius: '50%',
@@ -606,7 +606,7 @@ export default function Home() {
             }}>
               <Mascot pose="hi" size={18} />
             </span>
-            CareCub Kids
+            CareCub
           </div>
           <p style={{
             fontSize: 12, color: 'var(--ink-hex)',

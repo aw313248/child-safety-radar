@@ -1,4 +1,4 @@
-# CareCub Kids App Icon — Prompt 提案
+# CareCub App Icon — Prompt 提案
 > 給 Oscar 貼到 Midjourney / Google AI Studio (Imagen 3) 使用
 > 更新：2026-05-01
 

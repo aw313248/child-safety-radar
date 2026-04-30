@@ -287,7 +287,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
               borderRadius: 12, padding: '10px 12px', marginBottom: 14,
             }}>
               <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.7)', letterSpacing: '-0.01em', lineHeight: 1.55, fontWeight: 600 }}>
-                你加入的頻道由你自己負責，CareCub Kids 會持續用標題黑名單再幫你把關一次
+                你加入的頻道由你自己負責，CareCub 會持續用標題黑名單再幫你把關一次
               </p>
             </div>
 

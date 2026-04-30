@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: '服務條款',
-  description: 'CareCub Kids 服務條款 — 使用本服務前請閱讀這份簡單條款',
+  description: 'CareCub 服務條款 — 使用本服務前請閱讀這份簡單條款',
   robots: { index: true, follow: true },
 }
 
@@ -31,7 +31,7 @@ export default function TermsPage() {
           color: '#2B1810', textDecoration: 'none',
           letterSpacing: '-0.02em',
         }}>
-          ← CareCub Kids
+          ← CareCub
         </Link>
         <span style={{ fontSize: 13, color: '#2B1810', opacity: 0.6 }}>
           服務條款
@@ -56,7 +56,7 @@ export default function TermsPage() {
 
         <Section title="1. 接受條款">
           <p>
-            使用 CareCub Kids（child-safety-radar.vercel.app，以下簡稱「本服務」）即表示你同意本條款。
+            使用 CareCub（child-safety-radar.vercel.app，以下簡稱「本服務」）即表示你同意本條款。
             如不同意，請停止使用本服務。
           </p>
           <p>
@@ -66,7 +66,7 @@ export default function TermsPage() {
 
         <Section title="2. 服務說明">
           <p>
-            CareCub Kids 是一款 AI 輔助分析工具，透過 YouTube Data API 擷取公開頻道資訊，
+            CareCub 是一款 AI 輔助分析工具，透過 YouTube Data API 擷取公開頻道資訊，
             再由 Gemini AI 進行內容風險摘要，幫助家長快速評估 YouTube 頻道是否適合兒童觀看。
           </p>
           <Callout emoji="⚠️">
@@ -107,7 +107,7 @@ export default function TermsPage() {
 
         <Section title="5. 智慧財產權">
           <ul>
-            <li>本服務的程式碼、設計、品牌元素（CareCub Kids、小析、熊熊守護）均為開發者所有</li>
+            <li>本服務的程式碼、設計、品牌元素（CareCub、小析、熊熊守護）均為開發者所有</li>
             <li>本服務分析所使用的 YouTube 影片資訊，其版權歸屬原頻道作者</li>
             <li>AI 生成的摘要結果版權屬於本服務，不得未授權轉載或商用</li>
           </ul>

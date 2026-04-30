@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'CareCub Kids — 20 秒看穿卡通藏什麼',
-    short_name: 'CareCub Kids',
+    name: 'CareCub — 20 秒看穿卡通藏什麼',
+    short_name: 'CareCub',
     description: '貼上 YouTube 網址，AI 看完影片跟留言，告訴你能不能給小孩看',
     start_url: '/',
     display: 'standalone',
