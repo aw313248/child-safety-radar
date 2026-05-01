@@ -378,7 +378,7 @@ export default function Home() {
               letterSpacing: '-0.01em',
               marginBottom: 8,
             }}>
-              替孩子掃描 YouTube，30 秒看穿頻道適不適合
+              YouTube 給孩子？先讓 CareCub 看一遍
             </p>
             {/* Microcopy */}
             <p style={{ fontSize: 13, color: 'var(--ink-hex)', opacity: 0.5 }}>
