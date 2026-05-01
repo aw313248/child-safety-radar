@@ -253,11 +253,11 @@ export default function Home() {
       {/* a11y: 鍵盤使用者可跳過 nav 直達主內容 */}
       <a href="#scan-input" className="skip-link">跳到掃描輸入框</a>
 
-      {/* 背景裝飾吉祥物 */}
-      <div aria-hidden style={{ position: 'fixed', right: -60, top: 60, opacity: 0.07, pointerEvents: 'none', zIndex: 0, transform: 'rotate(8deg)' }}>
+      {/* 背景裝飾吉祥物 — 桌面才顯示，手機隱藏避免擠 Hero */}
+      <div aria-hidden className="bg-mascot-decoration" style={{ position: 'fixed', right: -60, top: 60, pointerEvents: 'none', zIndex: 0, transform: 'rotate(8deg)' }}>
         <Mascot pose="guard" size={320} priority />
       </div>
-      <div aria-hidden style={{ position: 'fixed', left: -50, bottom: 80, opacity: 0.05, pointerEvents: 'none', zIndex: 0, transform: 'rotate(-12deg)' }}>
+      <div aria-hidden className="bg-mascot-decoration" style={{ position: 'fixed', left: -50, bottom: 80, pointerEvents: 'none', zIndex: 0, transform: 'rotate(-12deg)' }}>
         <Mascot pose="hi" size={220} />
       </div>
 
