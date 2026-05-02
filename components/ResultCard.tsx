@@ -132,7 +132,7 @@ export default function ResultCard({ result, onReset }: Props) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
       {/* ── adult_inappropriate 大字警示 banner ── */}
       {result.riskLevel === 'adult_inappropriate' && (
@@ -173,39 +173,61 @@ export default function ResultCard({ result, onReset }: Props) {
         </div>
       )}
 
-      {/* Risk header — Busy Bee big score card */}
-      <div className="bee-card stagger-1" style={{ padding: '24px', background: cfg.headerBg }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px', gap: 14 }}>
-          <div style={{ flex: 1 }}>
+      {/* Risk header — apple glass score card */}
+      <div className="bee-card stagger-1" style={{
+        padding: '28px',
+        background: cfg.headerBg,
+        borderRadius: 24,
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: 14 }}>
+          {/* 左側：標籤 + tagline */}
+          <div style={{ flex: 1, animation: 'stagger-in 0.4s var(--ease-out) forwards 0.05s', opacity: 0 }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontSize: '12px',
+              fontSize: '11px',
               fontWeight: 900,
               padding: '5px 12px',
               borderRadius: 9999,
               background: 'var(--ink-hex)',
               color: cfg.scoreColor,
-              marginBottom: '10px',
-              letterSpacing: '0.04em',
+              marginBottom: '12px',
+              letterSpacing: '0.06em',
               textTransform: 'uppercase',
               border: '2px solid var(--ink-hex)',
             }}>
-              <RiskIcon name={cfg.icon} size={14} /> {displayLabel}
+              <RiskIcon name={cfg.icon} size={13} /> {displayLabel}
             </div>
-            <p className="font-display" style={{ fontSize: 22, color: 'var(--ink-hex)', lineHeight: 1.1 }}>
+            <p className="font-display" style={{ fontSize: 20, color: 'var(--ink-hex)', lineHeight: 1.2, letterSpacing: '-0.03em' }}>
               {displayTagline}
             </p>
             {isOverstimulating && (
-              <p style={{ fontSize: 12, color: 'var(--ink-hex)', opacity: 0.7, marginTop: 6, lineHeight: 1.55, fontWeight: 500 }}>
+              <p style={{ fontSize: 12, color: 'var(--ink-hex)', opacity: 0.65, marginTop: 8, lineHeight: 1.55, fontWeight: 500, letterSpacing: '-0.01em' }}>
                 快節奏 + 強聲光可能影響幼兒注意力，不建議長時間連續觀看
               </p>
             )}
           </div>
-          <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div className="font-display" style={{ fontSize: '64px', color: cfg.scoreColor, lineHeight: 0.9, letterSpacing: '-0.06em' }}>
+          {/* 右側：大數字評分 */}
+          <div style={{
+            textAlign: 'right', flexShrink: 0,
+            animation: 'stagger-in 0.4s var(--ease-out) forwards 0.12s', opacity: 0,
+          }}>
+            <div style={{
+              fontSize: '60px',
+              fontWeight: 900,
+              color: cfg.scoreColor,
+              lineHeight: 0.88,
+              letterSpacing: '-0.06em',
+              fontFamily: 'var(--font-heihei), sans-serif',
+            }}>
               {result.riskScore}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--ink-hex)', marginTop: '4px', fontWeight: 800, opacity: 0.6, letterSpacing: '0.08em' }}>/ 100</div>
+            <div style={{
+              fontSize: '12px', color: 'var(--ink-hex)',
+              marginTop: '5px', fontWeight: 700,
+              opacity: 0.5, letterSpacing: '-0.01em',
+            }}>
+              分 / 100
+            </div>
           </div>
         </div>
 
@@ -325,7 +347,7 @@ export default function ResultCard({ result, onReset }: Props) {
       </div>
 
       {/* Channel info */}
-      <div className="bee-card stagger-2" style={{ padding: '18px 20px' }}>
+      <div className="bee-card stagger-2" style={{ padding: '20px 24px', borderRadius: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
           {result.channelThumbnail && (
             <Image
@@ -367,18 +389,19 @@ export default function ResultCard({ result, onReset }: Props) {
         <button
           onClick={() => setShowDetails(!showDetails)}
           aria-expanded={showDetails}
+          className="glass-hover-lift glass-press"
           style={{
-            width: '100%', padding: '13px 18px',
-            background: 'rgba(255,255,255,0.55)',
-            backdropFilter: 'blur(18px) saturate(150%)',
-            WebkitBackdropFilter: 'blur(18px) saturate(150%)',
-            border: '1px solid rgba(43,24,16,0.14)',
-            borderRadius: 14,
+            width: '100%', padding: '14px 20px',
+            background: 'rgba(255,255,255,0.58)',
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            border: '1px solid rgba(43,24,16,0.10)',
+            borderRadius: 20,
             color: 'var(--ink-hex)',
             fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
             cursor: 'pointer', fontFamily: 'inherit',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            transition: 'background 0.18s',
+            boxShadow: '0 2px 12px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.90)',
           }}
         >
           <span>
@@ -397,7 +420,7 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {/* Warning comments — 折疊內 */}
       {showDetails && result.warningComments.length > 0 && (
-        <div className="bee-card stagger-3" style={{ padding: '20px' }}>
+        <div className="bee-card stagger-3" style={{ padding: '20px', borderRadius: 20 }}>
           <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '14px', opacity: 0.75, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -407,7 +430,11 @@ export default function ResultCard({ result, onReset }: Props) {
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {result.warningComments.map((comment, i) => (
-              <div key={i} style={{ background: 'var(--surface-raised)', borderRadius: 'var(--radius-md)', padding: '11px 13px' }}>
+              <div key={i} className="glass-subtle glass-hover-lift" style={{
+                padding: '13px 15px',
+                borderRadius: 16,
+                border: '1px solid rgba(255,255,255,0.65)',
+              }}>
                 {comment.textZh ? (
                   <>
                     <p style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.6, letterSpacing: '-0.01em', fontWeight: 500 }}>
@@ -477,7 +504,7 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {/* Suspicious tags — 折疊內 */}
       {showDetails && result.suspiciousTags.length > 0 && (
-        <div className="bee-card stagger-3" style={{ padding: '20px' }}>
+        <div className="bee-card stagger-3" style={{ padding: '20px', borderRadius: 20 }}>
           <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '12px', opacity: 0.75, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
@@ -503,7 +530,7 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {/* Recommendation — 折疊內 */}
       {showDetails && (
-      <div className="bee-card-honey stagger-4" style={{ padding: '20px' }}>
+      <div className="bee-card-honey stagger-4" style={{ padding: '20px', borderRadius: 20 }}>
         <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '10px', opacity: 0.75, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
           <span style={{
             width: 18, height: 18, borderRadius: '50%',
@@ -539,18 +566,52 @@ export default function ResultCard({ result, onReset }: Props) {
       />
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: '8px', paddingTop: '2px' }}>
-        <button onClick={handleShare} className="btn-secondary" style={{ flex: 1, fontSize: '13px', padding: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+      <div style={{ display: 'flex', gap: '8px', paddingTop: '4px' }}>
+        {/* 分享 — 次按鈕（毛玻璃透明底） */}
+        <button
+          onClick={handleShare}
+          className="glass-press"
+          style={{
+            flex: 1, fontSize: '13px', fontWeight: 700, letterSpacing: '-0.01em',
+            padding: '13px 12px',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+            background: 'rgba(255,255,255,0.60)',
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            border: '1.5px solid rgba(43,24,16,0.18)',
+            borderRadius: 20,
+            color: 'var(--ink-hex)',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            boxShadow: '0 2px 8px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.80)',
+            transition: 'background 0.18s',
+          }}
+        >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
           </svg>
           分享
         </button>
+        {/* 傳裝置 — 次按鈕 */}
         <button
           onClick={() => setShowQR(true)}
-          className="btn-secondary"
-          style={{ flex: 1, fontSize: '13px', padding: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}
+          className="glass-press"
+          style={{
+            flex: 1, fontSize: '13px', fontWeight: 700, letterSpacing: '-0.01em',
+            padding: '13px 12px',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+            background: 'rgba(255,255,255,0.60)',
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+            border: '1.5px solid rgba(43,24,16,0.18)',
+            borderRadius: 20,
+            color: 'var(--ink-hex)',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            boxShadow: '0 2px 8px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.80)',
+            transition: 'background 0.18s',
+          }}
           title="用 QR code 傳給另一台裝置"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -560,9 +621,26 @@ export default function ResultCard({ result, onReset }: Props) {
           </svg>
           傳裝置
         </button>
-        <button onClick={onReset} className="btn-pill btn-pill-honey" style={{ flex: 2, fontSize: '13px', padding: '14px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+        {/* 再掃一個 — 主按鈕（蜂蜜金底 + ink 邊框） */}
+        <button
+          onClick={onReset}
+          className="glass-press"
+          style={{
+            flex: 2, fontSize: '14px', fontWeight: 900, letterSpacing: '-0.02em',
+            padding: '14px 16px',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+            background: 'var(--honey-hex)',
+            border: '2px solid var(--ink-hex)',
+            borderRadius: 20,
+            color: 'var(--ink-hex)',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            boxShadow: '3px 3px 0 var(--ink-hex)',
+            transition: 'transform 0.15s, box-shadow 0.15s, background 0.15s',
+          }}
+        >
           再掃一個
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
         </button>
