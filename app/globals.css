@@ -1741,6 +1741,21 @@ html.candy button[title*="重新設定時間"] {
   position: relative;
 }
 
+/* ── 手機版 fold 以下間距補強 ── */
+@media (max-width: 480px) {
+  .page-main {
+    padding: 20px 16px 80px;
+  }
+  /* reveal-up section 之間至少 16px gap 防止擠在一起 */
+  .reveal-up + .reveal-up {
+    margin-top: 8px;
+  }
+  /* 文字不小於 15px */
+  body { font-size: 15px; }
+  /* h2 不超過 26px */
+  h2 { font-size: min(26px, 6vw); }
+}
+
 /* ── 2. 毛玻璃卡片（主要） ───────────────────────── */
 .glass-card {
   background: rgba(255, 255, 255, 0.58);

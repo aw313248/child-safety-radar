@@ -560,10 +560,12 @@ export default function Home() {
         )}
 
         {/* ── Social proof: 累計守護 ── */}
-        <SocialProof />
+        <div style={{ marginTop: 48, marginBottom: 8 }}>
+          <SocialProof />
+        </div>
 
         {/* ── 熊熊精選 CTA ── */}
-        <a href="/kids" className="glass-card-honey reveal-up" style={{ marginBottom: 44 }}>
+        <a href="/kids" className="glass-card-honey reveal-up" style={{ marginBottom: 64 }}>
           <div className="glass-avatar" style={{ width: 46, height: 46 }}>
             <Mascot pose="hi" size={36} />
           </div>
@@ -581,12 +583,12 @@ export default function Home() {
         </a>
 
         {/* ── 最近高風險 ── */}
-        <section className="reveal-up" style={{ marginBottom: 32 }}>
+        <section className="reveal-up" style={{ marginBottom: 64 }}>
           <RecentHighRisk />
         </section>
 
         {/* ── 真實案例 ── */}
-        <div id="case-library" className="reveal-up">
+        <div id="case-library" className="reveal-up" style={{ marginBottom: 32 }}>
           <CaseLibrary />
         </div>
 
