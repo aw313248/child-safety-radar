@@ -282,7 +282,12 @@
     `
     card.querySelector('.peekkids-setup-dismiss').addEventListener('click', () => card.remove())
     card.querySelector('.peekkids-setup-cta').addEventListener('click', () => {
-      chrome.runtime.sendMessage({ type: 'OPEN_OPTIONS' })
+      chrome.runtime.sendMessage({ type: 'OPEN_OPTIONS' }, (response) => {
+        if (chrome.runtime.lastError || !response?.ok) {
+          // fallback：直接從 content script 開新分頁
+          window.open(chrome.runtime.getURL('options.html'), '_blank')
+        }
+      })
     })
     document.body.appendChild(card)
   }

@@ -65,7 +65,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     return false
   }
   if (msg.type === 'OPEN_OPTIONS') {
-    chrome.runtime.openOptionsPage()
+    chrome.tabs.create({ url: chrome.runtime.getURL('options.html') })
     sendResponse({ ok: true })
     return false
   }
