@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { getChannelInfo, getVideoComments, CommentThread } from '@/lib/youtube'
-import { AnalysisResult, RiskLevel, ScoreBreakdownItem } from '@/types/analysis'
+import { AnalysisResult, RiskLevel, ScoreBreakdownItem, ChannelScore, ScoreDimension } from '@/types/analysis'
 import { authenticate, corsHeaders } from '@/lib/api-auth'
 import { rateLimit, getClientIp, getDeviceFingerprint } from '@/lib/rate-limit'
 import { getScanCount, incrementScanCount, decrementScanCount } from '@/lib/redis'
@@ -307,6 +307,140 @@ ${warningComments.length > 0
   return { riskScore: clampedScore, summary, recommendation, riskType }
 }
 
+// ── 拿鐵媽媽 v1.0 低刺激評分 — server-side 自動降級規則 ─────────
+// framework 啟發自 @happy.3clatte，Threads：https://www.threads.net/@happy.3clatte
+// 授權確認後更新為「授權使用」
+function applyAutoDowngrade(score: Omit<ChannelScore, 'overallRating'>): ChannelScore {
+  const dims: ScoreDimension[] = [score.pacing, score.visual, score.auditory, score.realism, score.behavioral]
+  const lowCount = dims.filter(d => d.stars < 3).length
+
+  let overallRating: ChannelScore['overallRating']
+  if (lowCount >= 2) {
+    overallRating = '不建議觀看'
+  } else if (lowCount === 1) {
+    overallRating = '中度符合'
+  } else if (dims.every(d => d.stars >= 4)) {
+    overallRating = '高度推薦'
+  } else {
+    overallRating = '中度符合'
+  }
+
+  return { ...score, overallRating }
+}
+
+// ── 拿鐵媽媽 v1.0 低刺激 5 維度評分（AI） ───────────────────────
+// 注意：授權確認前使用內部評估 prompt，不公開展示原版 framework 原文
+async function analyzeLowStimulation(params: {
+  channelName: string
+  channelDescription: string
+  subscriberCount: string
+  videoTitles: string[]
+  videoDescriptions: string[]
+  madeForKidsRatio: number
+  isLegitKidsChannel: boolean
+}): Promise<ChannelScore | null> {
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
+    })
+
+    const { channelName, channelDescription, subscriberCount, videoTitles, videoDescriptions, madeForKidsRatio } = params
+
+    const prompt = `你是一位評估 YouTube 頻道對 0–5 歲幼兒刺激程度的專家分析師。
+請根據以下 5 個維度對此頻道進行評分（1-5 星）。評估標準以「是否符合低刺激、緩慢節奏、有益幼兒神經發展」為核心。
+
+【評分維度說明】
+
+▌1. 畫面節奏 (Pacing)
+5 星：鏡頭切換慢（每畫面 > 5 秒），動作穩定、無快閃
+3 星：偶有快切但整體可接受
+1 星：工業化快剪（1-2 秒/畫面），視覺轟炸，可能引發過度刺激
+
+▌2. 視覺環境 (Visual)
+5 星：低飽和、柔和色調，場景簡單乾淨
+3 星：色彩稍亮但有限制
+1 星：過曝高彩度、螢光色、爆炸特效，可能干擾幼兒視覺注意力
+
+▌3. 聲音與互動 (Auditory)
+5 星：安靜、自然音、語速慢、無大音效
+3 星：背景音樂適中
+1 星：轟炸式音效、響亮重複旋律、過度電子合成音
+
+▌4. 敘事與真實性 (Realism)
+5 星：貼近真實生活、故事有完整結構、誠實呈現
+3 星：部分誇張但有意義
+1 星：荒誕誇張、無敘事邏輯、虛假操控情緒
+
+▌5. 觀後反應 (Behavioral)
+5 星：孩子看完可平靜進行下一活動、不哭鬧
+3 星：可能稍微興奮
+1 星：已知或預期會讓孩子看完後難以轉換，或產生黏屏行為
+
+【星級對應文字評等】
+5星 = 優 | 4星 = 良 | 3星 = 普 | 1-2星 = 不建議
+
+【頻道資料】
+頻道名稱：${channelName}
+訂閱人數：${Number(subscriberCount).toLocaleString()}
+Made for Kids 比率：${Math.round(madeForKidsRatio * 100)}%
+
+【頻道簡介】
+${channelDescription ? channelDescription.slice(0, 300) : '（無簡介）'}
+
+【最近影片標題（最多15部）】
+${videoTitles.slice(0, 15).map((t, i) => `${i + 1}. ${t}`).join('\n')}
+
+【影片說明摘要】
+${videoDescriptions.slice(0, 3).map((d, i) => `[影片${i + 1}] ${d.slice(0, 150)}`).join('\n') || '（無）'}
+
+請輸出以下 JSON（不要其他文字）：
+{
+  "pacing":    { "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
+  "visual":    { "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
+  "auditory":  { "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
+  "realism":   { "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
+  "behavioral":{ "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
+  "overallStimulation": <"低刺激"|"中刺激"|"高刺激">,
+  "ageRange": "<建議適合年齡，例 '18個月-3歲' 或 '3歲以上'，無法判斷填 '待確認'>",
+  "guidelines": <["AAP"] 或 ["WHO"] 或 ["AAP","WHO"]>,
+  "recommendation": "<給家長的一句話建議，不超過30字，不加句號>"
+}`
+
+    const result = await model.generateContent(prompt)
+    const text = result.response.text().trim()
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) return null
+
+    const parsed = JSON.parse(jsonMatch[0])
+
+    // 驗證必要欄位存在
+    const requiredDims = ['pacing', 'visual', 'auditory', 'realism', 'behavioral']
+    for (const dim of requiredDims) {
+      if (!parsed[dim]?.stars || !parsed[dim]?.rating || !parsed[dim]?.reason) return null
+    }
+
+    const partial: Omit<ChannelScore, 'overallRating'> = {
+      pacing:    parsed.pacing,
+      visual:    parsed.visual,
+      auditory:  parsed.auditory,
+      realism:   parsed.realism,
+      behavioral: parsed.behavioral,
+      overallStimulation: parsed.overallStimulation || '中刺激',
+      ageRange: typeof parsed.ageRange === 'string' ? parsed.ageRange : '待確認',
+      guidelines: Array.isArray(parsed.guidelines) ? parsed.guidelines : ['AAP', 'WHO'],
+      recommendation: typeof parsed.recommendation === 'string' ? parsed.recommendation : '建議家長陪同觀看',
+    }
+
+    // 套用自動降級規則（鐵則：server-side 計算，不依賴 AI）
+    return applyAutoDowngrade(partial)
+  } catch (err) {
+    console.error('Low stimulation analysis error:', err)
+    return null
+  }
+}
+
 // CORS preflight — 擴充套件會先發 OPTIONS 才發 POST
 export async function OPTIONS(req: NextRequest) {
   return new NextResponse(null, {
@@ -471,22 +605,33 @@ export async function POST(req: NextRequest) {
     // 6a. 翻譯警示留言（與 AI 分析並行跑，節省時間）
     const translationsPromise = translateWarningComments(warningComments, geminiApiKey)
 
-    // 6b. AI analysis
-    const aiResult = await analyzeWithGemini({
-      channelName: channelInfo.name,
-      channelDescription: channelInfo.description,
-      subscriberCount: channelInfo.subscriberCount,
-      videoCount: channelInfo.videos.length,
-      videoTitles,
-      videoDescriptions,
-      warningComments,
-      childTargetingSignals,
-      childAppealSignals,
-      commentsDisabled,
-      commentsDisabledRatio,
-      madeForKidsRatio,
-      isLegitKidsChannel,
-    })
+    // 6b. AI analysis（主風險評估 + 低刺激 5 維度評分並行）
+    const [aiResult, channelScore] = await Promise.all([
+      analyzeWithGemini({
+        channelName: channelInfo.name,
+        channelDescription: channelInfo.description,
+        subscriberCount: channelInfo.subscriberCount,
+        videoCount: channelInfo.videos.length,
+        videoTitles,
+        videoDescriptions,
+        warningComments,
+        childTargetingSignals,
+        childAppealSignals,
+        commentsDisabled,
+        commentsDisabledRatio,
+        madeForKidsRatio,
+        isLegitKidsChannel,
+      }),
+      analyzeLowStimulation({
+        channelName: channelInfo.name,
+        channelDescription: channelInfo.description,
+        subscriberCount: channelInfo.subscriberCount,
+        videoTitles,
+        videoDescriptions,
+        madeForKidsRatio,
+        isLegitKidsChannel,
+      }),
+    ])
 
     // ── 成人關鍵字 server-side 偵測（防 AI 漏判）────────────────
     // 中文：substring match（無 word boundary 概念）
@@ -695,6 +840,7 @@ export async function POST(req: NextRequest) {
       checkedAt: new Date().toISOString(),
       channelUrl: trimmedUrl,
       scoreBreakdown: breakdown,
+      channelScore: channelScore ?? undefined,
     }
 
     // 計數已在進入 try 前原子化遞增完成，這裡直接回傳結果

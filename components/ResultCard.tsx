@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { AnalysisResult, ScoreBreakdownItem } from '@/types/analysis'
+import { AnalysisResult, ScoreBreakdownItem, ChannelScore, ScoreDimension } from '@/types/analysis'
 import DiscussionReporter from './DiscussionReporter'
 import ShareQRModal from './ShareQRModal'
 import AddToKidsMode from './AddToKidsMode'
@@ -75,6 +75,217 @@ function RiskIcon({ name, size = 14 }: { name: 'octagon-x' | 'eye' | 'shield-che
 }
 
 const BLACKLIST_KEY = 'cc_user_blacklist'
+
+// ── 拿鐵媽媽 v1.0 低刺激評分卡 ─────────────────────────────────
+// framework 啟發自 @happy.3clatte（Threads）
+// 授權確認前以「framework 啟發自」標示
+
+const DIMENSION_LABELS: Record<keyof Pick<ChannelScore, 'pacing'|'visual'|'auditory'|'realism'|'behavioral'>, string> = {
+  pacing:    '畫面節奏 (Pacing)',
+  visual:    '視覺環境 (Visual)',
+  auditory:  '聲音與互動 (Auditory)',
+  realism:   '敘事與真實性 (Realism)',
+  behavioral:'觀後反應 (Behavioral)',
+}
+
+const OVERALL_BANNER: Record<ChannelScore['overallRating'], { bg: string; text: string; headline: string }> = {
+  '高度推薦': {
+    bg: 'var(--risk-green)',
+    text: '#fff',
+    headline: '這個頻道符合低刺激標準',
+  },
+  '中度符合': {
+    bg: 'var(--terra-hex)',
+    text: '#fff',
+    headline: '這個頻道有部分指標需注意，建議家長陪同觀看',
+  },
+  '不建議觀看': {
+    bg: 'var(--adult-orange-hex)',
+    text: '#fff',
+    headline: '這個頻道高頻刺激，AAP 不建議 2 歲以下單獨觀看',
+  },
+}
+
+function StarRow({ dim }: { dim: ScoreDimension }) {
+  const filled = dim.stars
+  const ratingColor =
+    dim.rating === '優' ? 'var(--risk-green)' :
+    dim.rating === '良' ? '#4A8A6B' :
+    dim.rating === '普' ? 'var(--honey-deep)' : 'var(--adult-orange-hex)'
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+      <div style={{ display: 'flex', gap: 2, flexShrink: 0, marginTop: 1 }}>
+        {[1,2,3,4,5].map(n => (
+          <span key={n} style={{
+            fontSize: 16,
+            color: n <= filled ? '#F2B84B' : 'rgba(43,24,16,0.18)',
+            lineHeight: 1,
+          }}>★</span>
+        ))}
+      </div>
+      <span style={{
+        fontSize: 12, fontWeight: 700,
+        color: ratingColor,
+        letterSpacing: '-0.01em',
+        flexShrink: 0,
+      }}>（{dim.rating}）</span>
+      <span style={{
+        fontSize: 13, color: 'rgba(43,24,16,0.72)',
+        letterSpacing: '-0.01em', lineHeight: 1.55,
+      }}>{dim.reason}</span>
+    </div>
+  )
+}
+
+function LowStimCard({ score }: { score: ChannelScore }) {
+  const banner = OVERALL_BANNER[score.overallRating]
+  const dims = Object.entries(DIMENSION_LABELS) as [keyof typeof DIMENSION_LABELS, string][]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+
+      {/* ── 頂部 Overall Rating Banner ── */}
+      <div style={{
+        background: banner.bg,
+        color: banner.text,
+        borderRadius: '20px 20px 0 0',
+        padding: '16px 20px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 12,
+      }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.8, marginBottom: 4 }}>
+            低刺激影片評等
+          </div>
+          <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.3 }}>
+            {banner.headline}
+          </div>
+        </div>
+        <div style={{
+          flexShrink: 0,
+          background: 'rgba(255,255,255,0.2)',
+          borderRadius: 12,
+          padding: '6px 14px',
+          fontSize: 14, fontWeight: 800,
+          letterSpacing: '-0.01em',
+          whiteSpace: 'nowrap',
+        }}>
+          {score.overallRating}
+        </div>
+      </div>
+
+      {/* ── 5 維度詳細 ── */}
+      <div className="glass-card" style={{
+        borderRadius: '0 0 20px 20px',
+        padding: '20px 20px 16px',
+        display: 'flex', flexDirection: 'column', gap: 16,
+        border: '1px solid rgba(255,255,255,0.80)',
+        borderTop: '1px solid rgba(43,24,16,0.07)',
+      }}>
+        {dims.map(([key, label]) => (
+          <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{
+              fontSize: 12, fontWeight: 800,
+              color: 'var(--ink-hex)',
+              letterSpacing: '-0.01em',
+              opacity: 0.6,
+            }}>{label}</div>
+            <StarRow dim={score[key]} />
+          </div>
+        ))}
+
+        {/* ── 刺激等級 + 適合年齡 ── */}
+        <div style={{
+          display: 'flex', gap: 8, flexWrap: 'wrap',
+          paddingTop: 12,
+          borderTop: '1px solid rgba(43,24,16,0.08)',
+        }}>
+          {[
+            { label: '刺激等級', value: score.overallStimulation },
+            { label: '適合年齡', value: score.ageRange },
+          ].map(item => (
+            <div key={item.label} style={{
+              display: 'flex', gap: 6, alignItems: 'center',
+              background: 'rgba(43,24,16,0.04)',
+              borderRadius: 9999,
+              padding: '5px 12px',
+              fontSize: 12,
+            }}>
+              <span style={{ color: 'rgba(43,24,16,0.5)', fontWeight: 600 }}>{item.label}</span>
+              <span style={{ color: 'var(--ink-hex)', fontWeight: 800, letterSpacing: '-0.01em' }}>{item.value}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* ── AAP / WHO 引用區 ── */}
+        {score.guidelines.length > 0 && (
+          <div style={{
+            background: 'rgba(74,138,92,0.06)',
+            border: '1px solid rgba(74,138,92,0.2)',
+            borderRadius: 14,
+            padding: '12px 14px',
+            display: 'flex', flexDirection: 'column', gap: 6,
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--risk-green)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              {score.guidelines.join(' + ')} 育兒準則
+            </div>
+            {score.guidelines.includes('AAP') && (
+              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.72)', lineHeight: 1.6, letterSpacing: '-0.005em' }}>
+                <strong>AAP（美國兒科學會）：</strong>1 歲以下不建議螢幕時間；2-5 歲每日不超過 1 小時，且建議家長陪同
+              </p>
+            )}
+            {score.guidelines.includes('WHO') && (
+              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.72)', lineHeight: 1.6, letterSpacing: '-0.005em' }}>
+                <strong>WHO（世界衛生組織）：</strong>2-4 歲每日靜態螢幕時間不超過 1 小時，「愈少愈好」
+              </p>
+            )}
+            {score.ageRange !== '待確認' && (
+              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.72)', lineHeight: 1.6 }}>
+                本頻道評估適合年齡：<strong>{score.ageRange}</strong>
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* ── 家長建議（從 AI 輸出） ── */}
+        <p style={{
+          fontSize: 13, fontWeight: 600,
+          color: 'var(--ink-hex)',
+          letterSpacing: '-0.01em',
+          lineHeight: 1.6,
+          padding: '8px 12px',
+          background: 'rgba(242,184,75,0.10)',
+          borderRadius: 10,
+          borderLeft: '3px solid var(--honey-hex)',
+        }}>
+          {score.recommendation}
+        </p>
+
+        {/* ── Credit + 免責聲明 ── */}
+        <div style={{
+          paddingTop: 12,
+          borderTop: '1px dashed rgba(43,24,16,0.12)',
+          display: 'flex', flexDirection: 'column', gap: 6,
+        }}>
+          <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.5)', lineHeight: 1.6, letterSpacing: '-0.005em' }}>
+            評分標準 framework 啟發自拿鐵媽媽（@happy.3clatte）整理 + AAP/WHO 育兒標準 ·{' '}
+            <a
+              href="https://www.threads.net/@happy.3clatte"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'rgba(43,24,16,0.6)', textDecoration: 'underline' }}
+            >
+              Threads 查看原文
+            </a>
+          </p>
+          <p style={{ fontSize: 10, color: 'rgba(43,24,16,0.38)', lineHeight: 1.65, letterSpacing: '-0.005em' }}>
+            本評估為 AI 自動化分析，僅供家長參考，非專業醫療或教育診斷建議 · 影片內容可能隨平台更新而變動，建議於孩子觀看前再次確認 · 對於因參考本評估產生的任何行為或影響，本工具及其創作者不承擔法律責任
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function ResultCard({ result, onReset }: Props) {
   // riskLevel 直接決定 config（adult_inappropriate 來自後端關鍵字偵測）
@@ -647,6 +858,9 @@ export default function ResultCard({ result, onReset }: Props) {
       </div>
 
       {showQR && <ShareQRModal result={result} onClose={() => setShowQR(false)} />}
+
+      {/* ── 拿鐵媽媽 v1.0 低刺激評分卡 ── */}
+      {result.channelScore && <LowStimCard score={result.channelScore} />}
 
       {(() => {
         const ageMs = Date.now() - new Date(result.checkedAt).getTime()
