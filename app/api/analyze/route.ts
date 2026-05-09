@@ -127,7 +127,7 @@ async function translateWarningComments(
   try {
     const genAI = new GoogleGenerativeAI(apiKey)
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
     })
     const prompt = `請把下列 YouTube 留言翻譯成繁體中文（台灣用語），每則留言獨立一行，只輸出翻譯結果、不要加編號或解釋。保留原文的語氣（可疑、讚美、警告都要翻出來）。如果原文已是中文，就原文照貼回來。
@@ -165,7 +165,7 @@ async function analyzeWithGemini(params: {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
   // 鎖死 temperature = 0，同頻道必給同分數（方針 2）
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-2.0-flash',
     generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
   })
 
@@ -341,7 +341,8 @@ function applyAutoDowngrade(score: Omit<ChannelScore, 'overallRating'>): Channel
 }
 
 // ── 拿鐵媽媽 v1.0 低刺激 5 維度評分（AI） ───────────────────────
-// 注意：授權確認前使用內部評估 prompt，不公開展示原版 framework 原文
+// 使用拿鐵媽媽 v1.0 原版 prompt（@happy.3clatte 授權內部使用）
+// model: gemini-2.0-flash（1500 RPD 免費額度，適合結構化評分任務）
 async function analyzeLowStimulation(params: {
   channelName: string
   channelDescription: string
@@ -354,91 +355,106 @@ async function analyzeLowStimulation(params: {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash',
       generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
     })
 
     const { channelName, channelDescription, subscriberCount, videoTitles, videoDescriptions, madeForKidsRatio } = params
 
-    const prompt = `你是一位依據 AAP（美國兒科學會）與 WHO 育兒標準，評估 YouTube 頻道對 0–5 歲幼兒刺激程度的專家分析師。
-請根據以下 5 個維度對此頻道進行評分（1-5 星）。
+    // ── 拿鐵媽媽 v1.0 原版 prompt + 5 few-shot examples ─────────
+    const prompt = `你是學齡前低刺激影音篩選專家
 
-【重要：區分「優質慢節奏兒童內容」與「工業化快剪量產內容」】
-並非所有兒童動畫都是高刺激。以下是關鍵區分：
-• 慢節奏教育動畫（如 Bluey、Super Simple Songs、Daniel Tiger）：鏡頭穩定、配色柔和、有教育意義 → 應得 4-5 星
-• 工業化量產兒歌（如 CoComelon、LooLoo Kids）：1-2 秒快剪、高飽和螢光色、音效轟炸 → 應得 1-2 星
-• 不要因為「是動畫」就自動降分，要看實際的節奏、色調、音效
+五大篩選指南與標準
 
-【評分維度說明（基於 AAP/WHO 低刺激標準）】
+1. 畫面節奏 (Pacing)：單一鏡頭需維持 6 秒以上，避免頻繁切換或過度縮放。鏡頭應模擬真實觀看視角，嚴禁劇烈旋轉、俯衝或無意義震動，以減少大腦處理視覺資訊時的深度疲勞
 
-▌1. 畫面節奏 (Pacing)
-5 星：單一鏡頭維持 6 秒以上，模擬真實觀看視角，無劇烈旋轉或俯衝
-4 星：鏡頭平均 4-6 秒，偶有場景切換但流暢自然
-3 星：鏡頭 3-4 秒，有快切但整體可接受
-2 星：頻繁切換（2-3 秒），過度縮放
-1 星：工業化快剪（1-2 秒/畫面），視覺轟炸，劇烈震動
+2. 視覺環境 (Visual Environment)：追求視覺降噪，色調需柔和且背景簡潔，避免過多閃爍特效或雜亂裝飾
 
-▌2. 視覺環境 (Visual)
-5 星：視覺降噪，色調柔和且背景簡潔，無閃爍特效
-4 星：色彩明亮但不刺眼，背景適度簡潔
-3 星：色彩鮮明但有限制，偶有裝飾
-2 星：高飽和，閃爍特效偶現
-1 星：過曝螢光色、爆炸特效、雜亂裝飾
+3. 聲音與互動 (Auditory & Interaction)：配樂應隨情境輕柔起伏，對話須清晰，且句間需保留 3-5 秒的「聽覺留白」。角色應展現平穩正向的情緒調節，不以尖叫或誇大恐懼來吸引注意
 
-▌3. 聲音與互動 (Auditory)
-5 星：配樂隨情境輕柔起伏，對話清晰，句間保留 3-5 秒「聽覺留白」，角色情緒平穩
-4 星：配樂適中，有留白空間，無尖叫或誇張情緒
-3 星：背景音樂稍強但不干擾
-2 星：音效過密，幾乎無留白
-1 星：轟炸式音效、尖叫、誇大恐懼，重複旋律轟炸
+4. 敘事與真實性 (Realism & Logic)：角色移動與情節發展應符合物理規律（如正常行走、因果關係明確），避免瞬間移動或缺乏邏輯的視覺衝擊
 
-▌4. 敘事與真實性 (Realism)
-5 星：角色移動與情節符合物理規律，因果關係明確，教育意義清晰
-4 星：故事有完整結構，部分奇幻但合理
-3 星：部分誇張但有意義
-2 星：邏輯跳躍，缺乏因果
-1 星：瞬間移動、無邏輯視覺衝擊、虛假操控情緒
+5. 觀後反應 (Behavioral Response)：評估影片是否會引發多巴胺激增。理想影片應讓孩子在關閉後，能平靜地過渡到現實活動
 
-▌5. 觀後反應 (Behavioral)
-5 星：孩子關閉後能平靜過渡到現實活動，不引發多巴胺激增
-4 星：孩子看完基本平穩，可順利轉換
-3 星：可能稍微興奮但可控
-2 星：容易黏屏，需家長介入才能停
-1 星：明確引發多巴胺激增，難以從螢幕世界抽離
+任務目標
+當提供「影片連結」或「頻道名稱」時，執行以下分析：
 
-【星級對應文字評等】
-5星 = 優 | 4星 = 良 | 3星 = 普 | 1-2星 = 不建議
+1. 詳細分析：針對上述五項指標逐一評分，格式為「★★★★★(優)」，括號內需含描述性字眼（如：優、良、普、不建議），並說明具體觀察原因
 
-【頻道資料】
+2. 綜合評等：分為「高度推薦(低刺激)」、「中度符合(建議家長陪同)」、「不建議觀看(高刺激)」。若前五項指標中有任何一項低於 ★★★(普)，則綜合評等最高不得超過「中度符合」
+
+3. 具體建議：若影片有缺點，請指出適合的年齡層，且建議需嚴格遵循 AAP 與 WHO 育兒標準
+
+4. 格式禁令（嚴格執行）：禁止輸出任何開場白、結語、任務說明或寒暄。直接由分析結果開始輸出，結尾亦不得包含任何總結性贅詞
+
+以下是已評估的參考範例：
+
+範例 1：Super Simple Songs - Five Spotted Dogs
+- 畫面節奏 ★★★★★(優)：單一鏡頭多維持 6 秒以上，轉換節奏緩慢平穩
+- 視覺環境 ★★★★★(優)：背景設計簡潔，色調柔和飽滿，無多餘閃爍特效
+- 聲音與互動 ★★★★★(優)：配樂輕快柔和，數數與動作之間留有清晰留白
+- 敘事與真實性 ★★★★★(優)：小狗移動方式（慢跑、拿骨頭）符合物理規律
+- 觀後反應 ★★★★★(優)：氛圍寧靜祥和，無多巴胺激增風險
+- 綜合：高度推薦（低刺激），18 個月-3 歲
+
+範例 2：Bluey - Pizza Girls
+- 畫面節奏 ★★★★★(優)：鏡頭切換頻率極低，多以中長鏡頭記錄角色互動
+- 視覺環境 ★★★★★(優)：色調飽和但溫暖柔和，背景簡潔不雜亂
+- 聲音與互動 ★★★★★(優)：對話咬字清晰，角色以溝通解決衝突而非尖叫
+- 敘事與真實性 ★★★★★(優)：劇情圍繞兒童想像遊戲與真實生活經驗，因果邏輯強
+- 觀後反應 ★★★★★(優)：氛圍平靜祥和，著重情感連結與日常教育
+- 綜合：高度推薦（低刺激），2 歲以上
+
+範例 3：Alphablocks - A-Z S1E1
+- 畫面節奏 ★★★★★(優)：鏡頭轉換極慢且規律，無快速縮放或干擾性過場
+- 視覺環境 ★★★★★(優)：背景柔和粉藍色調，設計簡潔，視覺降噪極佳
+- 聲音與互動 ★★★★★(優)：每個字母發音後留有「聽覺留白」讓孩子模仿
+- 敘事與真實性 ★★★★(良)：字母擬人化但移動與物體下墜遵循基本物理邏輯
+- 觀後反應 ★★★★★(優)：風格平靜且教育意義，不含成癮性高度刺激元素
+- 綜合：高度推薦（低刺激），2-6 歲
+
+範例 4：Preschool Prep - Meet the Colors
+- 畫面節奏 ★★★★★(優)：轉場極為緩慢，單一鏡頭停留通常超過 10 秒
+- 視覺環境 ★★★★★(優)：背景純白或極簡風格，大幅減少視覺干擾
+- 聲音與互動 ★★★★★(優)：對話極簡重複性高，單字之間「聽覺留白」充足
+- 敘事與真實性 ★★★★(良)：擬人化顏色塊，移動互動邏輯簡單因果明確
+- 觀後反應 ★★★★★(優)：氛圍極度平靜穩定，旨在教育非娛樂刺激
+- 綜合：高度推薦（低刺激），9 個月-3 歲
+
+範例 5：CoComelon - Once I Caught a Fish Alive
+- 畫面節奏 ★★(不建議)：鏡頭切換過於頻繁，2-4 秒內即跳轉，無意義縮放
+- 視覺環境 ★★(不建議)：色調極度鮮豔飽和，背景充滿閃爍泡泡與快速裝飾
+- 聲音與互動 ★★★(普)：配樂節奏快，句間幾乎無 3-5 秒留白
+- 敘事與真實性 ★★★(普)：基本因果但角色物理移動誇張略顯超現實
+- 觀後反應 ★★(不建議)：高頻畫面切換 + 強烈感官刺激極易引發多巴胺激增
+- 綜合：不建議觀看（高刺激），2 歲以下不建議
+
+現在請分析以下頻道，依照完全相同的格式輸出（只輸出結果，不要開場白）：
+
 頻道名稱：${channelName}
 訂閱人數：${Number(subscriberCount).toLocaleString()}
 Made for Kids 比率：${Math.round(madeForKidsRatio * 100)}%
 
-【頻道簡介】
-${channelDescription ? channelDescription.slice(0, 300) : '（無簡介）'}
+頻道簡介：
+${channelDescription ? channelDescription.slice(0, 300) : '（無）'}
 
-【最近影片標題（最多15部）】
+最近影片標題（最多 15 部）：
 ${videoTitles.slice(0, 15).map((t, i) => `${i + 1}. ${t}`).join('\n')}
 
-【影片說明摘要】
+影片說明摘要：
 ${videoDescriptions.slice(0, 3).map((d, i) => `[影片${i + 1}] ${d.slice(0, 150)}`).join('\n') || '（無）'}
 
-請輸出以下 JSON（不要其他文字）：
-{
-  "pacing":    { "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
-  "visual":    { "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
-  "auditory":  { "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
-  "realism":   { "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
-  "behavioral":{ "stars": <1-5>, "rating": <"優"|"良"|"普"|"不建議">, "reason": "<15-25字說明>" },
-  "overallStimulation": <"低刺激"|"中刺激"|"高刺激">,
-  "ageRange": "<建議適合年齡，例 '18個月-3歲' 或 '3歲以上'，無法判斷填 '待確認'>",
-  "guidelines": <["AAP"] 或 ["WHO"] 或 ["AAP","WHO"]>,
-  "recommendation": "<給家長的一句話建議，不超過30字，不加句號>"
-}`
+輸出格式（嚴格照以下順序，每行一個）：
+- 畫面節奏 ★...（優/良/普/不建議）：分析原因
+- 視覺環境 ★...（優/良/普/不建議）：分析原因
+- 聲音與互動 ★...（優/良/普/不建議）：分析原因
+- 敘事與真實性 ★...（優/良/普/不建議）：分析原因
+- 觀後反應 ★...（優/良/普/不建議）：分析原因
+- 綜合：X（Y刺激），Z歲
+- 給家長的建議：一句話（不超過 30 字，不加句號）`
 
     const result = await model.generateContent(prompt)
 
-    // Gemini 可能因 safety filter 擋掉（PROHIBITED_CONTENT），先檢查
     let text: string
     try {
       text = result.response.text().trim()
@@ -447,49 +463,71 @@ ${videoDescriptions.slice(0, 3).map((d, i) => `[影片${i + 1}] ${d.slice(0, 150
       return null
     }
 
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      console.error('Low stimulation: No JSON found in response:', text.slice(0, 200))
+    // ── 拿鐵媽媽文字格式 parser ──────────────────────────────────
+    // 規則：數「★」→ stars；(優)/(良)/(普)/(不建議) → rating；「：」後 → reason
+    const parseDim = (label: string): ScoreDimension | null => {
+      const lines = text.split('\n')
+      const line = lines.find(l => l.includes(label))
+      if (!line) return null
+
+      // 數實心星星 ★ (U+2605)
+      const starCount = (line.match(/★/g) || []).length
+      const stars = Math.max(1, Math.min(5, starCount || 1)) as 1 | 2 | 3 | 4 | 5
+
+      // 評等：支援全形（優）和半形(優)
+      const ratingMatch = line.match(/[（(](優|良|普|不建議)[）)]/)
+      const rating: ScoreDimension['rating'] = ratingMatch
+        ? (ratingMatch[1] as ScoreDimension['rating'])
+        : stars >= 5 ? '優' : stars >= 4 ? '良' : stars >= 3 ? '普' : '不建議'
+
+      // 取最後一個冒號後的原因（支援全形「：」和半形 ":"）
+      const colonIdx = Math.max(line.lastIndexOf('：'), line.lastIndexOf(':'))
+      const reason = colonIdx > -1 ? line.slice(colonIdx + 1).trim() : ''
+
+      return { stars, rating, reason }
+    }
+
+    const pacing     = parseDim('畫面節奏')
+    const visual     = parseDim('視覺環境')
+    const auditory   = parseDim('聲音與互動')
+    const realism    = parseDim('敘事與真實性')
+    const behavioral = parseDim('觀後反應')
+
+    if (!pacing || !visual || !auditory || !realism || !behavioral) {
+      console.error('Low stimulation: Failed to parse dimensions. Raw output:', text.slice(0, 500))
       return null
     }
 
-    let parsed: Record<string, unknown>
-    try {
-      parsed = JSON.parse(jsonMatch[0])
-    } catch {
-      console.error('Low stimulation: JSON parse failed:', jsonMatch[0].slice(0, 200))
-      return null
-    }
+    // 解析「綜合：」行 → overallStimulation + ageRange
+    const allLines = text.split('\n')
+    const summaryLine = allLines.find(l => /綜合[：:]/.test(l)) ?? ''
+    let overallStimulation: ChannelScore['overallStimulation'] = '中刺激'
+    if (summaryLine.includes('低刺激')) overallStimulation = '低刺激'
+    else if (summaryLine.includes('高刺激')) overallStimulation = '高刺激'
 
-    // 驗證必要欄位存在（修正：stars 用 typeof 檢查，避免 0 被 falsy 吃掉）
-    const requiredDims = ['pacing', 'visual', 'auditory', 'realism', 'behavioral']
-    for (const dim of requiredDims) {
-      const d = parsed[dim] as Record<string, unknown> | undefined
-      if (!d || typeof d.stars !== 'number' || typeof d.rating !== 'string') {
-        console.error(`Low stimulation: Missing or invalid dimension "${dim}":`, JSON.stringify(d))
-        return null
-      }
-      // reason 可選，給預設值
-      if (typeof d.reason !== 'string') {
-        d.reason = ''
-      }
-    }
+    const ageMatch = summaryLine.match(/[\d一二三四五六七八九十]+\s*(?:個月|歲)[^，。\n,]*/)
+    const ageRange = ageMatch ? ageMatch[0].trim() : '待確認'
+
+    // 解析「給家長的建議：」行
+    const recLine = allLines.find(l => l.includes('給家長的建議')) ?? ''
+    const recColon = Math.max(recLine.lastIndexOf('：'), recLine.lastIndexOf(':'))
+    const recommendation = recColon > -1
+      ? recLine.slice(recColon + 1).trim()
+      : '建議家長先觀看，確認內容適合後再與孩子共看'
 
     const partial: Omit<ChannelScore, 'overallRating'> = {
-      pacing:    parsed.pacing as ScoreDimension,
-      visual:    parsed.visual as ScoreDimension,
-      auditory:  parsed.auditory as ScoreDimension,
-      realism:   parsed.realism as ScoreDimension,
-      behavioral: parsed.behavioral as ScoreDimension,
-      overallStimulation: (['低刺激', '中刺激', '高刺激'].includes(parsed.overallStimulation as string)
-        ? parsed.overallStimulation as '低刺激' | '中刺激' | '高刺激'
-        : '中刺激'),
-      ageRange: typeof parsed.ageRange === 'string' ? parsed.ageRange : '待確認',
-      guidelines: Array.isArray(parsed.guidelines) ? parsed.guidelines as ('AAP' | 'WHO')[] : ['AAP', 'WHO'],
-      recommendation: typeof parsed.recommendation === 'string' ? parsed.recommendation : '建議家長陪同觀看',
+      pacing,
+      visual,
+      auditory,
+      realism,
+      behavioral,
+      overallStimulation,
+      ageRange,
+      guidelines: ['AAP', 'WHO'],
+      recommendation,
     }
 
-    // 套用自動降級規則（鐵則：server-side 計算，不依賴 AI）
+    // 套用自動降級規則（鐵則：server-side 計算，不依賴 AI 的綜合評等）
     return applyAutoDowngrade(partial)
   } catch (err) {
     console.error('Low stimulation analysis error:', err instanceof Error ? err.message : err)
