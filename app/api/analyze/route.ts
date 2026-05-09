@@ -274,7 +274,19 @@ ${warningComments.length > 0
 }`
 
   const result = await model.generateContent(prompt)
-  const text = result.response.text().trim()
+
+  // Gemini safety filter 可能擋掉某些頻道（如 Bluey），捕捉 PROHIBITED_CONTENT
+  let text: string
+  try {
+    text = result.response.text().trim()
+  } catch (textErr) {
+    const msg = textErr instanceof Error ? textErr.message : String(textErr)
+    if (msg.includes('PROHIBITED_CONTENT') || msg.includes('blocked')) {
+      throw new Error('AI 安全過濾器誤觸，此頻道暫時無法分析（已知問題，非有害內容）')
+    }
+    throw new Error(`AI 回應無法讀取：${msg}`)
+  }
+
   const jsonMatch = text.match(/\{[\s\S]*\}/)
   if (!jsonMatch) throw new Error('AI 回應格式異常')
 
@@ -409,34 +421,60 @@ ${videoDescriptions.slice(0, 3).map((d, i) => `[影片${i + 1}] ${d.slice(0, 150
 }`
 
     const result = await model.generateContent(prompt)
-    const text = result.response.text().trim()
+
+    // Gemini 可能因 safety filter 擋掉（PROHIBITED_CONTENT），先檢查
+    let text: string
+    try {
+      text = result.response.text().trim()
+    } catch (textErr) {
+      console.error('Low stimulation: Gemini response blocked or empty:', textErr)
+      return null
+    }
+
     const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) return null
+    if (!jsonMatch) {
+      console.error('Low stimulation: No JSON found in response:', text.slice(0, 200))
+      return null
+    }
 
-    const parsed = JSON.parse(jsonMatch[0])
+    let parsed: Record<string, unknown>
+    try {
+      parsed = JSON.parse(jsonMatch[0])
+    } catch (parseErr) {
+      console.error('Low stimulation: JSON parse failed:', jsonMatch[0].slice(0, 200))
+      return null
+    }
 
-    // 驗證必要欄位存在
+    // 驗證必要欄位存在（修正：stars 用 typeof 檢查，避免 0 被 falsy 吃掉）
     const requiredDims = ['pacing', 'visual', 'auditory', 'realism', 'behavioral']
     for (const dim of requiredDims) {
-      if (!parsed[dim]?.stars || !parsed[dim]?.rating || !parsed[dim]?.reason) return null
+      const d = parsed[dim] as Record<string, unknown> | undefined
+      if (!d || typeof d.stars !== 'number' || typeof d.rating !== 'string') {
+        console.error(`Low stimulation: Missing or invalid dimension "${dim}":`, JSON.stringify(d))
+        return null
+      }
+      // reason 可選，給預設值
+      if (typeof d.reason !== 'string') {
+        d.reason = ''
+      }
     }
 
     const partial: Omit<ChannelScore, 'overallRating'> = {
-      pacing:    parsed.pacing,
-      visual:    parsed.visual,
-      auditory:  parsed.auditory,
-      realism:   parsed.realism,
-      behavioral: parsed.behavioral,
-      overallStimulation: parsed.overallStimulation || '中刺激',
+      pacing:    parsed.pacing as ScoreDimension,
+      visual:    parsed.visual as ScoreDimension,
+      auditory:  parsed.auditory as ScoreDimension,
+      realism:   parsed.realism as ScoreDimension,
+      behavioral: parsed.behavioral as ScoreDimension,
+      overallStimulation: (parsed.overallStimulation as string) || '中刺激',
       ageRange: typeof parsed.ageRange === 'string' ? parsed.ageRange : '待確認',
-      guidelines: Array.isArray(parsed.guidelines) ? parsed.guidelines : ['AAP', 'WHO'],
+      guidelines: Array.isArray(parsed.guidelines) ? parsed.guidelines as ('AAP' | 'WHO')[] : ['AAP', 'WHO'],
       recommendation: typeof parsed.recommendation === 'string' ? parsed.recommendation : '建議家長陪同觀看',
     }
 
     // 套用自動降級規則（鐵則：server-side 計算，不依賴 AI）
     return applyAutoDowngrade(partial)
   } catch (err) {
-    console.error('Low stimulation analysis error:', err)
+    console.error('Low stimulation analysis error:', err instanceof Error ? err.message : err)
     return null
   }
 }
