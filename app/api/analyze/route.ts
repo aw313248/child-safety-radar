@@ -127,7 +127,7 @@ async function translateWarningComments(
   try {
     const genAI = new GoogleGenerativeAI(apiKey)
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
     })
     const prompt = `請把下列 YouTube 留言翻譯成繁體中文（台灣用語），每則留言獨立一行，只輸出翻譯結果、不要加編號或解釋。保留原文的語氣（可疑、讚美、警告都要翻出來）。如果原文已是中文，就原文照貼回來。
@@ -165,7 +165,7 @@ async function analyzeWithGemini(params: {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
   // 鎖死 temperature = 0，同頻道必給同分數（方針 2）
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
   })
 
@@ -342,7 +342,7 @@ function applyAutoDowngrade(score: Omit<ChannelScore, 'overallRating'>): Channel
 
 // ── 拿鐵媽媽 v1.0 低刺激 5 維度評分（AI） ───────────────────────
 // 使用拿鐵媽媽 v1.0 原版 prompt（@happy.3clatte 授權內部使用）
-// model: gemini-2.0-flash（1500 RPD 免費額度，適合結構化評分任務）
+// model: gemini-2.5-flash（production API key 只支援此版本）
 async function analyzeLowStimulation(params: {
   channelName: string
   channelDescription: string
@@ -355,7 +355,7 @@ async function analyzeLowStimulation(params: {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
     })
 
