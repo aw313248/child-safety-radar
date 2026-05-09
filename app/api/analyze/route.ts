@@ -456,7 +456,7 @@ ${videoDescriptions.slice(0, 3).map((d, i) => `[影片${i + 1}] ${d.slice(0, 150
     let parsed: Record<string, unknown>
     try {
       parsed = JSON.parse(jsonMatch[0])
-    } catch (parseErr) {
+    } catch {
       console.error('Low stimulation: JSON parse failed:', jsonMatch[0].slice(0, 200))
       return null
     }
@@ -481,7 +481,9 @@ ${videoDescriptions.slice(0, 3).map((d, i) => `[影片${i + 1}] ${d.slice(0, 150
       auditory:  parsed.auditory as ScoreDimension,
       realism:   parsed.realism as ScoreDimension,
       behavioral: parsed.behavioral as ScoreDimension,
-      overallStimulation: (parsed.overallStimulation as string) || '中刺激',
+      overallStimulation: (['低刺激', '中刺激', '高刺激'].includes(parsed.overallStimulation as string)
+        ? parsed.overallStimulation as '低刺激' | '中刺激' | '高刺激'
+        : '中刺激'),
       ageRange: typeof parsed.ageRange === 'string' ? parsed.ageRange : '待確認',
       guidelines: Array.isArray(parsed.guidelines) ? parsed.guidelines as ('AAP' | 'WHO')[] : ['AAP', 'WHO'],
       recommendation: typeof parsed.recommendation === 'string' ? parsed.recommendation : '建議家長陪同觀看',
