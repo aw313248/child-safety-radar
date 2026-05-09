@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai'
 import { getChannelInfo, getVideoComments, CommentThread } from '@/lib/youtube'
 import { AnalysisResult, RiskLevel, ScoreBreakdownItem, ChannelScore, ScoreDimension } from '@/types/analysis'
 import { authenticate, corsHeaders } from '@/lib/api-auth'
@@ -129,6 +129,12 @@ async function translateWarningComments(
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
+      safetySettings: [
+        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      ],
     })
     const prompt = `請把下列 YouTube 留言翻譯成繁體中文（台灣用語），每則留言獨立一行，只輸出翻譯結果、不要加編號或解釋。保留原文的語氣（可疑、讚美、警告都要翻出來）。如果原文已是中文，就原文照貼回來。
 
@@ -164,9 +170,17 @@ async function analyzeWithGemini(params: {
 }): Promise<{ summary: string; riskScore: number; recommendation: string; riskType?: string }> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
   // 鎖死 temperature = 0，同頻道必給同分數（方針 2）
+  // safetySettings 降低敏感度：我們分析的是兒童頻道 metadata，不是有害內容
+  // Bluey 等合法兒童節目被 PROHIBITED_CONTENT 擋是 false positive
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash',
     generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
+    safetySettings: [
+      { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+    ],
   })
 
   const {
@@ -357,6 +371,12 @@ async function analyzeLowStimulation(params: {
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
+      safetySettings: [
+        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+      ],
     })
 
     const { channelName, channelDescription, subscriberCount, videoTitles, videoDescriptions, madeForKidsRatio } = params
