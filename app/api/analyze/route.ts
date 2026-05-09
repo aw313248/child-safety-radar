@@ -290,15 +290,26 @@ ${warningComments.length > 0
   const result = await model.generateContent(prompt)
 
   // Gemini safety filter 可能擋掉某些頻道（如 Bluey），捕捉 PROHIBITED_CONTENT
+  // 嘗試從 candidates 直接取文字，繞過 .text() 的 safety check
   let text: string
   try {
     text = result.response.text().trim()
   } catch (textErr) {
-    const msg = textErr instanceof Error ? textErr.message : String(textErr)
-    if (msg.includes('PROHIBITED_CONTENT') || msg.includes('blocked')) {
-      throw new Error('AI 安全過濾器誤觸，此頻道暫時無法分析（已知問題，非有害內容）')
+    // .text() 會在 finishReason !== 'STOP' 時 throw
+    // 但 candidates 裡可能仍有可用的 partial text
+    const candidates = result.response.candidates
+    if (candidates?.[0]?.content?.parts?.[0]?.text) {
+      text = candidates[0].content.parts[0].text.trim()
+      console.warn('Gemini safety filter triggered but got partial text, using it')
+    } else {
+      const msg = textErr instanceof Error ? textErr.message : String(textErr)
+      const feedback = JSON.stringify(result.response.promptFeedback || {})
+      console.error('Gemini blocked completely:', msg, 'Feedback:', feedback)
+      if (msg.includes('PROHIBITED_CONTENT') || msg.includes('blocked')) {
+        throw new Error('AI 安全過濾器誤觸，此頻道暫時無法分析（已知問題，非有害內容）')
+      }
+      throw new Error(`AI 回應無法讀取：${msg}`)
     }
-    throw new Error(`AI 回應無法讀取：${msg}`)
   }
 
   const jsonMatch = text.match(/\{[\s\S]*\}/)
