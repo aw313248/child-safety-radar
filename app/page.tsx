@@ -571,10 +571,10 @@ export default function Home() {
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontSize: 15, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.025em' }}>
-              丟平板前，先讓熊熊看過
+              熊熊模式
             </p>
             <p style={{ fontSize: 14, color: 'rgba(43,24,16,0.65)', marginTop: 2, fontWeight: 500, lineHeight: 1.5 }}>
-              人工精選，直接給小孩看
+              人工精選 放心給小孩觀看
             </p>
           </div>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
