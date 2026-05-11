@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 const LAST_UPDATED = '2026-04-30'
-const CONTACT_EMAIL = 'cyuttkengineer@gmail.com'
+const CONTACT_EMAIL = 'carecubkids@gmail.com'
 
 export default function TermsPage() {
   return (
