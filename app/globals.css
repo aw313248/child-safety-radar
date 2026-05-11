@@ -2062,3 +2062,27 @@ html.candy button[title*="重新設定時間"] {
   .bear-loading { animation: none; }
   .bear-loading-bar { animation: none; width: 60%; }
 }
+
+/* ── Kids Detail View — Video Card ── */
+.video-card-play-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(43, 24, 16, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  backdrop-filter: blur(2px);
+}
+button.bee-card:hover .video-card-play-overlay {
+  opacity: 1;
+}
+button.bee-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink-hex);
+}
+button.bee-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink-hex);
+}
