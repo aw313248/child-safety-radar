@@ -9,6 +9,14 @@ import { getScanCount, incrementScanCount, decrementScanCount } from '@/lib/redi
 const FREE_SCANS = 2
 const UNLOCK_COOKIE = 'cc_unlocked'
 
+// BLOCK_NONE：分析兒童頻道 metadata 時合法內容（Bluey 等）容易被 false positive 擋掉
+const GEMINI_SAFETY_SETTINGS = [
+  { category: HarmCategory.HARM_CATEGORY_HARASSMENT,        threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,       threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+]
+
 // Cloudflare Turnstile server-side 驗證
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY
@@ -129,12 +137,7 @@ async function translateWarningComments(
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
-      safetySettings: [
-        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-      ],
+      safetySettings: GEMINI_SAFETY_SETTINGS,
     })
     const prompt = `請把下列 YouTube 留言翻譯成繁體中文（台灣用語），每則留言獨立一行，只輸出翻譯結果、不要加編號或解釋。保留原文的語氣（可疑、讚美、警告都要翻出來）。如果原文已是中文，就原文照貼回來。
 
@@ -169,18 +172,11 @@ async function analyzeWithGemini(params: {
   isLegitKidsChannel: boolean
 }): Promise<{ summary: string; riskScore: number; recommendation: string; riskType?: string }> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-  // 鎖死 temperature = 0，同頻道必給同分數（方針 2）
-  // safetySettings 降低敏感度：我們分析的是兒童頻道 metadata，不是有害內容
-  // Bluey 等合法兒童節目被 PROHIBITED_CONTENT 擋是 false positive
+  // temperature=0：同頻道必給同分數
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash',
     generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
-    safetySettings: [
-      { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-      { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-      { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-      { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-    ],
+    safetySettings: GEMINI_SAFETY_SETTINGS,
   })
 
   const {
@@ -289,26 +285,23 @@ ${warningComments.length > 0
 
   const result = await model.generateContent(prompt)
 
-  // Gemini safety filter 可能擋掉某些頻道（如 Bluey），捕捉 PROHIBITED_CONTENT
-  // 嘗試從 candidates 直接取文字，繞過 .text() 的 safety check
+  // .text() 在 finishReason !== 'STOP' 時 throw；candidates 裡可能有可用的 partial text
   let text: string
   try {
     text = result.response.text().trim()
   } catch (textErr) {
-    // .text() 會在 finishReason !== 'STOP' 時 throw
-    // 但 candidates 裡可能仍有可用的 partial text
-    const candidates = result.response.candidates
-    if (candidates?.[0]?.content?.parts?.[0]?.text) {
-      text = candidates[0].content.parts[0].text.trim()
-      console.warn('Gemini safety filter triggered but got partial text, using it')
+    const partialText = result.response.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+    if (partialText && partialText.length > 10) {
+      text = partialText
+      console.warn('Gemini safety filter triggered; using partial candidate text')
     } else {
       const msg = textErr instanceof Error ? textErr.message : String(textErr)
-      const feedback = JSON.stringify(result.response.promptFeedback || {})
-      console.error('Gemini blocked completely:', msg, 'Feedback:', feedback)
-      if (msg.includes('PROHIBITED_CONTENT') || msg.includes('blocked')) {
-        throw new Error('AI 安全過濾器誤觸，此頻道暫時無法分析（已知問題，非有害內容）')
-      }
-      throw new Error(`AI 回應無法讀取：${msg}`)
+      console.error('Gemini blocked completely:', msg, JSON.stringify(result.response.promptFeedback || {}))
+      throw new Error(
+        msg.includes('PROHIBITED_CONTENT') || msg.includes('blocked')
+          ? 'AI 安全過濾器誤觸，此頻道暫時無法分析（已知問題，非有害內容）'
+          : `AI 回應無法讀取：${msg}`
+      )
     }
   }
 
@@ -382,12 +375,7 @@ async function analyzeLowStimulation(params: {
     const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       generationConfig: { temperature: 0, topP: 0.1, topK: 1 },
-      safetySettings: [
-        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-      ],
+      safetySettings: GEMINI_SAFETY_SETTINGS,
     })
 
     const { channelName, channelDescription, subscriberCount, videoTitles, videoDescriptions, madeForKidsRatio } = params
