@@ -345,6 +345,52 @@ export default function Home() {
         {/* ── Result ── */}
         {result && !loading && (
           <div className="animate-slide-up" style={{ marginBottom: 28 }}>
+            {/* 再掃一個 CTA — 掃完立刻看到，不用滾動（解 Mia 動線斷點） */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 10 }}>
+              <button
+                onClick={() => {
+                  setResult(null); setUrl(''); setBlockedChannelId(null)
+                  requestAnimationFrame(() => {
+                    const el = document.getElementById('scan-input')
+                    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                    el?.focus()
+                  })
+                }}
+                className="glass-press"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 7,
+                  padding: '11px 18px',
+                  background: 'var(--honey-hex)',
+                  border: '2px solid var(--ink-hex)',
+                  borderRadius: 18,
+                  fontSize: 14, fontWeight: 900, letterSpacing: '-0.02em',
+                  color: 'var(--ink-hex)', cursor: 'pointer', fontFamily: 'inherit',
+                  boxShadow: '3px 3px 0 var(--ink-hex)',
+                  transition: 'transform 0.15s, box-shadow 0.15s',
+                }}
+              >
+                再掃一個頻道
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+              {!unlocked && remainingFree > 0 && (
+                <span style={{ fontSize: 12, color: 'rgba(43,24,16,0.50)', fontWeight: 500, flexShrink: 0 }}>
+                  還剩 {remainingFree} 次免費
+                </span>
+              )}
+              {!unlocked && remainingFree === 0 && (
+                <button
+                  onClick={() => setShowUnlock(true)}
+                  style={{
+                    fontSize: 12, fontWeight: 700, color: 'var(--terra-hex)',
+                    background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0,
+                  }}
+                >
+                  免費已用完 · 解鎖 →
+                </button>
+              )}
+            </div>
             <ResultCard result={result} onReset={() => { setResult(null); setUrl(''); setBlockedChannelId(null) }} />
           </div>
         )}
