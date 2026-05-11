@@ -18,7 +18,6 @@ const RISK_CONFIG = {
     label: '高風險',
     tagline: '不建議讓孩子觀看',
     badgeClass: 'badge-high',
-    barColor: 'var(--terra-hex)',
     scoreColor: 'var(--terra-hex)',
     headerBg: '#FFE8E0',
     icon: 'octagon-x' as const,
@@ -27,7 +26,6 @@ const RISK_CONFIG = {
     label: '注意觀察',
     tagline: '建議家長全程陪同',
     badgeClass: 'badge-medium',
-    barColor: 'var(--honey-deep)',
     scoreColor: 'var(--honey-deep)',
     headerBg: 'var(--honey-hex)',
     icon: 'eye' as const,
@@ -36,7 +34,6 @@ const RISK_CONFIG = {
     label: '目前安全',
     tagline: '相對安全，仍建議偶爾確認',
     badgeClass: 'badge-low',
-    barColor: 'var(--risk-green)',
     scoreColor: 'var(--risk-green)',
     headerBg: '#DCEAD1',
     icon: 'shield-check' as const,
@@ -45,7 +42,6 @@ const RISK_CONFIG = {
     label: '⚠️ 成人內容，不適合兒童',
     tagline: '含明確成人露骨元素，請勿讓孩子觀看',
     badgeClass: 'badge-high',
-    barColor: '#E07B00',
     scoreColor: '#E07B00',
     headerBg: '#FFF0DC',
     icon: 'octagon-x' as const,
@@ -381,33 +377,30 @@ export default function ResultCard({ result, onReset }: Props) {
         background: cfg.headerBg,
         borderRadius: 24,
       }}>
-        <div style={{ marginBottom: '20px' }}>
-          {/* 左側：標籤 + tagline */}
-          <div style={{ flex: 1, animation: 'stagger-in 0.4s var(--ease-out) forwards 0.05s', opacity: 0 }}>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              fontSize: '11px',
-              fontWeight: 900,
-              padding: '5px 12px',
-              borderRadius: 9999,
-              background: 'var(--ink-hex)',
-              color: cfg.scoreColor,
-              marginBottom: '12px',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              border: '2px solid var(--ink-hex)',
-            }}>
-              <RiskIcon name={cfg.icon} size={13} /> {displayLabel}
-            </div>
-            <p className="font-display" style={{ fontSize: 20, color: 'var(--ink-hex)', lineHeight: 1.2, letterSpacing: '-0.03em' }}>
-              {displayTagline}
-            </p>
-            {isOverstimulating && (
-              <p style={{ fontSize: 12, color: 'var(--ink-hex)', opacity: 0.65, marginTop: 8, lineHeight: 1.55, fontWeight: 500, letterSpacing: '-0.01em' }}>
-                快節奏 + 強聲光可能影響幼兒注意力，不建議長時間連續觀看
-              </p>
-            )}
+        <div style={{ marginBottom: '20px', animation: 'stagger-in 0.4s var(--ease-out) forwards 0.05s', opacity: 0 }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: '11px',
+            fontWeight: 900,
+            padding: '5px 12px',
+            borderRadius: 9999,
+            background: 'var(--ink-hex)',
+            color: cfg.scoreColor,
+            marginBottom: '12px',
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            border: '2px solid var(--ink-hex)',
+          }}>
+            <RiskIcon name={cfg.icon} size={13} /> {displayLabel}
           </div>
+          <p className="font-display" style={{ fontSize: 20, color: 'var(--ink-hex)', lineHeight: 1.2, letterSpacing: '-0.03em' }}>
+            {displayTagline}
+          </p>
+          {isOverstimulating && (
+            <p style={{ fontSize: 12, color: 'var(--ink-hex)', opacity: 0.65, marginTop: 8, lineHeight: 1.55, fontWeight: 500, letterSpacing: '-0.01em' }}>
+              快節奏 + 強聲光可能影響幼兒注意力，不建議長時間連續觀看
+            </p>
+          )}
         </div>
 
       </div>
