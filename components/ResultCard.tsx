@@ -2,19 +2,11 @@
 
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { AnalysisResult, ScoreBreakdownItem, ChannelScore, ScoreDimension } from '@/types/analysis'
+import { AnalysisResult, ChannelScore, ScoreDimension } from '@/types/analysis'
 import DiscussionReporter from './DiscussionReporter'
 import ShareQRModal from './ShareQRModal'
 import AddToKidsMode from './AddToKidsMode'
 import Mascot from './Mascot'
-
-const CATEGORY_LABEL: Record<ScoreBreakdownItem['category'], string> = {
-  ai: 'AI 分析',
-  comment: '留言訊號',
-  combo: '組合訊號',
-  blacklist: '黑名單',
-  adjustment: '修正',
-}
 
 interface Props {
   result: AnalysisResult
@@ -294,7 +286,6 @@ export default function ResultCard({ result, onReset }: Props) {
   const isOverstimulating = result.riskType === 'overstimulating' && result.riskLevel === 'medium'
   const displayLabel   = isOverstimulating ? '⚠️ 過度刺激爭議' : cfg.label
   const displayTagline = isOverstimulating ? '有過度刺激爭議，建議陪同觀看' : cfg.tagline
-  const [showBreakdown, setShowBreakdown] = useState(false)
   const [showQR, setShowQR] = useState(false)
   // distill：警示留言 + 異常標籤 + 熊爸熊媽建議 默認折疊，預設只看分數 + 摘要 + CTA
   const [showDetails, setShowDetails] = useState(false)
@@ -390,7 +381,7 @@ export default function ResultCard({ result, onReset }: Props) {
         background: cfg.headerBg,
         borderRadius: 24,
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: 14 }}>
+        <div style={{ marginBottom: '20px' }}>
           {/* 左側：標籤 + tagline */}
           <div style={{ flex: 1, animation: 'stagger-in 0.4s var(--ease-out) forwards 0.05s', opacity: 0 }}>
             <div style={{
@@ -417,144 +408,8 @@ export default function ResultCard({ result, onReset }: Props) {
               </p>
             )}
           </div>
-          {/* 右側：大數字評分 */}
-          <div style={{
-            textAlign: 'right', flexShrink: 0,
-            animation: 'stagger-in 0.4s var(--ease-out) forwards 0.12s', opacity: 0,
-          }}>
-            <div style={{
-              fontSize: '60px',
-              fontWeight: 900,
-              color: cfg.scoreColor,
-              lineHeight: 0.88,
-              letterSpacing: '-0.06em',
-              fontFamily: 'var(--font-heihei), sans-serif',
-            }}>
-              {result.riskScore}
-            </div>
-            <div style={{
-              fontSize: '12px', color: 'var(--ink-hex)',
-              marginTop: '5px', fontWeight: 700,
-              opacity: 0.5, letterSpacing: '-0.01em',
-            }}>
-              分 / 100
-            </div>
-          </div>
         </div>
 
-        <div style={{ background: 'rgba(43,24,16,0.12)', borderRadius: 99, height: 8, overflow: 'hidden', border: '2px solid var(--ink-hex)' }}>
-          <div style={{
-            height: '100%',
-            width: `${result.riskScore}%`,
-            background: cfg.barColor,
-            transition: 'width 1s var(--ease-out)',
-          }} />
-        </div>
-
-        {/* 評分依據展開按鈕 */}
-        {result.scoreBreakdown && result.scoreBreakdown.length > 0 && (
-          <>
-            <button
-              onClick={() => setShowBreakdown(!showBreakdown)}
-              style={{
-                marginTop: '14px',
-                width: '100%',
-                background: 'transparent',
-                border: 'none',
-                padding: '8px 0',
-                fontSize: '12px',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '4px',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {showBreakdown ? '收合' : '為什麼是這個分數？'}
-              <span style={{
-                display: 'inline-block',
-                transition: 'transform 0.2s var(--ease-out)',
-                transform: showBreakdown ? 'rotate(180deg)' : 'rotate(0)',
-                fontSize: '10px',
-              }}>▼</span>
-            </button>
-
-            {showBreakdown && (
-              <div className="animate-fade-scale-in" style={{
-                marginTop: '4px',
-                padding: '14px',
-                background: 'var(--surface-raised)',
-                borderRadius: 'var(--radius-md)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-              }}>
-                {result.scoreBreakdown.map((item, i) => {
-                  const isAdd = item.points >= 0
-                  return (
-                    <div key={i} style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      justifyContent: 'space-between',
-                      gap: '10px',
-                      paddingBottom: i < result.scoreBreakdown.length - 1 ? '8px' : 0,
-                      borderBottom: i < result.scoreBreakdown.length - 1 ? '1px solid var(--separator)' : 'none',
-                    }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{
-                          display: 'inline-block',
-                          fontSize: '10px',
-                          fontWeight: 600,
-                          padding: '1px 7px',
-                          borderRadius: 'var(--radius-pill)',
-                          background: 'rgba(60,60,67,0.08)',
-                          color: 'var(--text-secondary)',
-                          marginBottom: '3px',
-                          letterSpacing: '-0.01em',
-                        }}>
-                          {CATEGORY_LABEL[item.category]}
-                        </div>
-                        <p style={{
-                          fontSize: '12px',
-                          color: 'var(--text-primary)',
-                          lineHeight: 1.45,
-                          letterSpacing: '-0.01em',
-                        }}>
-                          {item.label}
-                        </p>
-                      </div>
-                      <div style={{
-                        fontWeight: 700,
-                        fontSize: '13px',
-                        color: isAdd ? (item.points >= 20 ? 'var(--risk-red)' : 'var(--risk-orange)') : 'var(--risk-green)',
-                        whiteSpace: 'nowrap',
-                        letterSpacing: '-0.02em',
-                      }}>
-                        {isAdd ? '+' : ''}{item.points}
-                      </div>
-                    </div>
-                  )
-                })}
-
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  paddingTop: '8px',
-                  marginTop: '4px',
-                  borderTop: '1.5px solid var(--separator)',
-                  fontWeight: 700,
-                }}>
-                  <span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>總分</span>
-                  <span style={{ fontSize: '16px', color: cfg.scoreColor, letterSpacing: '-0.02em' }}>
-                    {result.riskScore} / 100
-                  </span>
-                </div>
-              </div>
-            )}
-          </>
-        )}
       </div>
 
       {/* Channel info */}
