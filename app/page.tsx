@@ -52,7 +52,7 @@ export default function Home() {
   // 個人黑名單：若命中直接攔截，不發 API 請求
   const [blockedChannelId, setBlockedChannelId] = useState<string | null>(null)
   // YouTube 連結引導：第一次用的 Mia 流程引導
-  const [guideCollapsed, setGuideCollapsed] = useState(true)
+  const [guideCollapsed, setGuideCollapsed] = useState(false)
 
   // 動態 placeholder 輪播
   useEffect(() => {
