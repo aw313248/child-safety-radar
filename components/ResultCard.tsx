@@ -131,6 +131,7 @@ const StarRow = memo(function StarRow({ dim }: { dim: ScoreDimension }) {
 function LowStimCard({ score }: { score: ChannelScore }) {
   const banner = OVERALL_BANNER[score.overallRating]
   const dims = DIMENSION_ENTRIES
+  const [expandedDim, setExpandedDim] = useState<string | null>(null)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -165,25 +166,70 @@ function LowStimCard({ score }: { score: ChannelScore }) {
         </div>
       </div>
 
-      {/* ── 5 維度詳細 ── */}
+      {/* ── 5 維度折疊列表（Apple Health row 風格）── */}
       <div className="glass-card" style={{
         borderRadius: '0 0 20px 20px',
-        padding: '20px 20px 16px',
-        display: 'flex', flexDirection: 'column', gap: 16,
+        padding: '4px 20px 16px',
+        display: 'flex', flexDirection: 'column', gap: 0,
         border: '1px solid rgba(255,255,255,0.80)',
         borderTop: '1px solid rgba(43,24,16,0.07)',
       }}>
-        {dims.map(([key, label]) => (
-          <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{
-              fontSize: 12, fontWeight: 800,
-              color: 'var(--ink-hex)',
-              letterSpacing: '-0.01em',
-              opacity: 0.6,
-            }}>{label}</div>
-            <StarRow dim={score[key]} />
-          </div>
-        ))}
+        {dims.map(([key, label], idx) => {
+          const dim = score[key]
+          const isOpen = expandedDim === key
+          const ratingColor =
+            dim.rating === '優' ? 'var(--risk-green)' :
+            dim.rating === '良' ? '#4A8A6B' :
+            dim.rating === '普' ? 'var(--honey-deep)' : 'var(--adult-orange-hex)'
+          return (
+            <div key={key}>
+              {idx > 0 && <div style={{ height: 1, background: 'rgba(43,24,16,0.07)' }} />}
+              <button
+                onClick={() => setExpandedDim(isOpen ? null : key)}
+                aria-expanded={isOpen}
+                style={{
+                  width: '100%', background: 'none', border: 'none', cursor: 'pointer',
+                  padding: '12px 0', fontFamily: 'inherit',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                }}
+              >
+                {/* 維度名 */}
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', flex: 1, textAlign: 'left' }}>
+                  {label}
+                </span>
+                {/* 星星 */}
+                <div style={{ display: 'flex', gap: 1, flexShrink: 0 }}>
+                  {STAR_INDICES.map(n => (
+                    <span key={n} style={{ fontSize: 13, color: n <= dim.stars ? '#F2B84B' : 'rgba(43,24,16,0.15)', lineHeight: 1 }}>★</span>
+                  ))}
+                </div>
+                {/* 評等 chip */}
+                <span style={{
+                  fontSize: 11, fontWeight: 700, flexShrink: 0,
+                  padding: '2px 7px', borderRadius: 9999,
+                  color: ratingColor,
+                  background: `${ratingColor}18`,
+                  letterSpacing: '-0.01em',
+                }}>
+                  {dim.rating}
+                </span>
+                {/* Chevron */}
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+                  style={{ flexShrink: 0, color: 'rgba(43,24,16,0.30)', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+              {/* 展開：為什麼這樣評 */}
+              {isOpen && (
+                <div style={{ padding: '2px 0 14px', paddingLeft: 2 }}>
+                  <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.72)', letterSpacing: '-0.01em', lineHeight: 1.6 }}>
+                    {dim.reason}
+                  </p>
+                </div>
+              )}
+            </div>
+          )
+        })}
 
         {/* ── 刺激等級 + 適合年齡 ── */}
         <div style={{
