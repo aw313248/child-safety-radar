@@ -13,6 +13,13 @@ const RISK_STYLE = {
   adult_inappropriate: { label: '成人露骨內容',  color: '#E07B00' },
 }
 
+/** 左側顏色條 — 依 riskScore 區段決定顏色 */
+function riskBarColor(score: number): string {
+  if (score >= 70) return 'var(--risk-red)'
+  if (score >= 40) return 'var(--honey-hex)'
+  return 'var(--risk-green)'
+}
+
 export default function HistoryPage() {
   const [history, setHistory] = useState<AnalysisResult[]>([])
   const [mounted, setMounted] = useState(false)
@@ -30,12 +37,6 @@ export default function HistoryPage() {
       localStorage.removeItem(HISTORY_KEY)
       setHistory([])
     }
-  }
-
-  const removeItem = (url: string) => {
-    const updated = history.filter(h => h.channelUrl !== url)
-    setHistory(updated)
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(updated))
   }
 
   if (!mounted) return null
@@ -96,8 +97,17 @@ export default function HistoryPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {history.map((item, i) => {
               const style = RISK_STYLE[item.riskLevel]
+              const barColor = riskBarColor(item.riskScore)
               return (
-                <div key={item.channelUrl + i} className={`glass-list-item stagger-${Math.min(i + 1, 4)}`}>
+                <div key={item.channelUrl + i}
+                  className={`glass-list-item stagger-${Math.min(i + 1, 4)}`}
+                  style={{ position: 'relative', overflow: 'hidden', paddingLeft: 16 }}>
+
+                  {/* 左側顏色條 */}
+                  <div style={{
+                    position: 'absolute', left: 0, top: 0, bottom: 0,
+                    width: 4, background: barColor, borderRadius: '4px 0 0 4px',
+                  }} />
 
                   {/* 頻道頭像 */}
                   {item.channelThumbnail ? (
@@ -136,23 +146,14 @@ export default function HistoryPage() {
                     </p>
                   </div>
 
-                  {/* 操作按鈕 */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
-                    <a href={item.channelUrl} target="_blank" rel="noopener noreferrer" aria-label="前往頻道"
-                      className="glass-avatar"
-                      style={{ width: 32, height: 32, color: 'var(--text-primary)', textDecoration: 'none' }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M7 17L17 7" /><polyline points="7 7 17 7 17 17" />
-                      </svg>
-                    </a>
-                    <button onClick={() => removeItem(item.channelUrl)} aria-label="移除"
-                      className="glass-avatar"
-                      style={{ width: 32, height: 32, cursor: 'pointer', border: 'none', color: 'var(--text-tertiary)', fontFamily: 'inherit' }}>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                      </svg>
-                    </button>
-                  </div>
+                  {/* 查看評分 */}
+                  <a href={`/history/${encodeURIComponent(item.checkedAt)}`} aria-label="查看評分結果"
+                    className="glass-avatar"
+                    style={{ width: 32, height: 32, color: 'var(--text-primary)', textDecoration: 'none', flexShrink: 0 }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M7 17L17 7" /><polyline points="7 7 17 7 17 17" />
+                    </svg>
+                  </a>
                 </div>
               )
             })}
