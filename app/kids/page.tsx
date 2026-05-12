@@ -58,7 +58,324 @@ interface SafeVideo {
   id: string
   title: string
   thumbnail: string
+  duration?: string
+  publishedAt?: string
   madeForKids: boolean
+}
+
+// ── Helper functions ──────────────────────────────
+function formatDuration(iso: string): string {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
+  if (!m) return ''
+  const h = parseInt(m[1] || '0')
+  const min = parseInt(m[2] || '0')
+  const s = parseInt(m[3] || '0')
+  if (h > 0) return `${h}:${String(min).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+  return `${min}:${String(s).padStart(2,'0')}`
+}
+
+function formatRelativeDate(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime()
+  const days = Math.floor(diff / 86400000)
+  if (days === 0) return '今天'
+  if (days < 7) return `${days} 天前`
+  if (days < 30) return `${Math.floor(days / 7)} 週前`
+  if (days < 365) return `${Math.floor(days / 30)} 個月前`
+  return `${Math.floor(days / 365)} 年前`
+}
+
+// ── Channel Detail Sub-components ────────────────
+
+interface ChannelDetailHeaderProps {
+  ch: DisplayChannel
+  thumbSrc?: string
+}
+
+function ChannelDetailHeader({ ch, thumbSrc }: ChannelDetailHeaderProps) {
+  const overallRating = (ch as DisplayChannel & { overallRating?: string }).overallRating
+  let ratingLabel = ''
+  let ratingStyle: React.CSSProperties = {}
+  if (overallRating === '高度推薦') {
+    ratingLabel = '熊熊推薦'
+    ratingStyle = { background: 'var(--risk-green)', color: '#fff', border: '1.5px solid var(--ink-hex)' }
+  } else if (overallRating === '中度符合') {
+    ratingLabel = '可以看'
+    ratingStyle = { background: 'var(--honey-hex)', color: 'var(--ink-hex)', border: '1.5px solid var(--ink-hex)' }
+  } else if (overallRating === '不建議觀看') {
+    ratingLabel = '需留意'
+    ratingStyle = { background: 'var(--terra-hex)', color: '#fff', border: '1.5px solid var(--ink-hex)' }
+  }
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'flex-start', gap: 20,
+      background: 'rgba(255,255,255,0.55)',
+      backdropFilter: 'blur(28px) saturate(140%)',
+      WebkitBackdropFilter: 'blur(28px) saturate(140%)',
+      border: '1px solid rgba(255,255,255,0.70)',
+      borderRadius: 24,
+      padding: '20px 22px',
+      marginBottom: 20,
+    }}>
+      {/* 頻道 avatar */}
+      <div style={{ flexShrink: 0 }}>
+        {thumbSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={thumbSrc}
+            alt={ch.name}
+            style={{
+              width: 80, height: 80, borderRadius: 20,
+              border: '2px solid var(--border-default)',
+              objectFit: 'cover', display: 'block',
+            }}
+          />
+        ) : (
+          <Mascot pose="guard" size={80} />
+        )}
+      </div>
+      {/* 右側資訊 */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <h2 style={{
+          fontSize: 26, fontWeight: 900, letterSpacing: '-0.05em',
+          color: 'var(--ink-hex)', lineHeight: 1.1, marginBottom: 6,
+        }}>
+          {ch.name}
+        </h2>
+        <p style={{
+          fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)',
+          lineHeight: 1.55, marginBottom: 10,
+        }}>
+          {ch.description}
+        </p>
+        {/* Chip 列 */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+          {ch.ageGroups.length > 0 && (
+            <span style={{
+              fontSize: 11, fontWeight: 700, padding: '3px 10px',
+              borderRadius: 9999, background: 'rgba(142,202,230,0.35)',
+              border: '1.5px solid var(--sky-hex)', color: 'var(--ink-hex)',
+              letterSpacing: '0.02em',
+            }}>
+              {ch.ageGroups.join('、')} 歲
+            </span>
+          )}
+          <span style={{
+            fontSize: 11, fontWeight: 700, padding: '3px 10px',
+            borderRadius: 9999, background: 'rgba(255,183,3,0.18)',
+            border: '1.5px solid var(--honey-hex)', color: 'var(--ink-hex)',
+            letterSpacing: '0.01em',
+          }}>
+            {ch.source === 'curated' ? '官方精選' : '爸媽加的'}
+          </span>
+          {ratingLabel && (
+            <span style={{
+              fontSize: 11, fontWeight: 800, padding: '3px 10px',
+              borderRadius: 9999, letterSpacing: '0.02em',
+              ...ratingStyle,
+            }}>
+              {ratingLabel}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DetailLoadingState() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 20px 24px', gap: 16 }}>
+      <div className="bear-loading">
+        <Mascot pose="search" size={128} />
+      </div>
+      <div style={{ textAlign: 'center' }}>
+        <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em', marginBottom: 6 }}>
+          小析正在挑選安心影片
+        </p>
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', letterSpacing: '-0.01em' }}>
+          只留兒童認證 + 過濾標題關鍵字
+        </p>
+      </div>
+      {/* Skeleton cards */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,
+        width: '100%', marginTop: 8,
+      }}>
+        {[...Array(6)].map((_, i) => (
+          <div key={i} style={{
+            aspectRatio: '16/9', borderRadius: 16,
+            background: 'rgba(43,24,16,0.07)',
+            animation: 'bear-blink 2.4s ease-in-out infinite',
+            animationDelay: `${i * 0.18}s`,
+          }} />
+        ))}
+      </div>
+      <div style={{ width: 160, background: 'rgba(43,24,16,0.08)', borderRadius: 9999, overflow: 'hidden', marginTop: 4 }}>
+        <div className="bear-loading-bar" />
+      </div>
+    </div>
+  )
+}
+
+function DetailEmptyState({ onBack }: { onBack: () => void }) {
+  return (
+    <div style={{ textAlign: 'center', padding: '40px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+      <Mascot pose="think" size={120} />
+      <div>
+        <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em', marginBottom: 6 }}>
+          這個頻道最近沒有通過的影片
+        </p>
+        <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', letterSpacing: '-0.01em', lineHeight: 1.55 }}>
+          小析已過濾非兒童認證、標題含風險關鍵字的影片<br />
+          可能這個頻道近期主要發 Shorts 或廣告
+        </p>
+      </div>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 4 }}>
+        <button
+          onClick={onBack}
+          style={{
+            padding: '12px 22px', borderRadius: 14,
+            background: 'var(--honey-hex)',
+            border: '2px solid var(--ink-hex)',
+            boxShadow: '3px 3px 0 var(--ink-hex)',
+            color: 'var(--ink-hex)',
+            fontSize: 14, fontWeight: 800, fontFamily: 'inherit',
+            cursor: 'pointer', letterSpacing: '-0.01em',
+          }}
+        >
+          看其他頻道
+        </button>
+        <button
+          style={{
+            padding: '12px 22px', borderRadius: 14,
+            background: 'rgba(255,255,255,0.55)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            border: '1.5px solid rgba(43,24,16,0.18)',
+            color: 'var(--text-secondary)',
+            fontSize: 14, fontWeight: 700, fontFamily: 'inherit',
+            cursor: 'pointer', letterSpacing: '-0.01em',
+          }}
+        >
+          為什麼被篩掉？
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function DetailLoadedState({ videos, onPlay }: { videos: SafeVideo[]; onPlay: (id: string) => void }) {
+  return (
+    <div>
+      {/* 頂部計數 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+        <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em' }}>
+          {videos.length} 部安心影片
+        </span>
+        <span style={{
+          fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)',
+          padding: '2px 8px', borderRadius: 9999,
+          background: 'rgba(43,24,16,0.06)', letterSpacing: '-0.005em',
+        }}>
+          已過濾 Shorts 和廣告
+        </span>
+      </div>
+      {/* Video grid */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 14,
+      }}>
+        {videos.map(v => (
+          <button
+            key={v.id}
+            onClick={() => onPlay(v.id)}
+            className="bee-card"
+            style={{
+              textAlign: 'left', padding: 0, cursor: 'pointer', fontFamily: 'inherit',
+              width: '100%', borderRadius: 18,
+              border: '2px solid var(--ink-hex)',
+              boxShadow: '3px 3px 0 var(--ink-hex)',
+              background: 'rgba(255,255,255,0.60)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Thumbnail */}
+            <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden' }}>
+              {v.thumbnail && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={v.thumbnail}
+                  alt={v.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              )}
+              {/* madeForKids badge */}
+              {v.madeForKids && (
+                <span style={{
+                  position: 'absolute', top: 8, left: 8,
+                  background: 'var(--risk-green)', color: '#fff',
+                  padding: '3px 8px', borderRadius: 9999,
+                  fontSize: 10, fontWeight: 700, letterSpacing: '0.02em',
+                  border: '1.5px solid var(--ink-hex)',
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                }}>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                  兒童認證
+                </span>
+              )}
+              {/* 片長 badge */}
+              {v.duration && (
+                <span style={{
+                  position: 'absolute', bottom: 6, right: 6,
+                  background: 'rgba(0,0,0,0.72)', color: '#fff',
+                  padding: '2px 7px', borderRadius: 6,
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.01em',
+                  backdropFilter: 'blur(4px)',
+                }}>
+                  {formatDuration(v.duration)}
+                </span>
+              )}
+              {/* Play overlay */}
+              <div className="video-card-play-overlay">
+                <div style={{
+                  width: 48, height: 48, borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.22)',
+                  backdropFilter: 'blur(8px)',
+                  border: '2px solid rgba(255,255,255,0.7)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            {/* 標題 + 時間 */}
+            <div style={{ padding: '10px 12px 12px' }}>
+              <p style={{
+                fontSize: 13, fontWeight: 800, color: 'var(--ink-hex)',
+                letterSpacing: '-0.02em', lineHeight: 1.45,
+                display: '-webkit-box', WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                marginBottom: 4,
+              }}>
+                {v.title}
+              </p>
+              {v.publishedAt && (
+                <p style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-tertiary)' }}>
+                  {formatRelativeDate(v.publishedAt)}
+                </p>
+              )}
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default function KidsModePage() {
@@ -488,86 +805,30 @@ export default function KidsModePage() {
             window.location.href = '/'
           }}
         />
-        <div style={{ maxWidth: 960, margin: '0 auto', padding: '20px 16px 40px', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 960, margin: '0 auto', padding: '20px 16px 60px', position: 'relative', zIndex: 1 }}>
 
-          <button onClick={() => setSelectedChannel(null)} className="glass-back-btn" style={{ marginBottom: 18 }}>
+          <button onClick={() => setSelectedChannel(null)} className="glass-back-btn" style={{ marginBottom: 20 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
             </svg>
             回到頻道列表
           </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-            <div style={{ width: 72, flexShrink: 0 }}>
-              <ChannelAvatar
-                src={thumbs[selectedChannel.channelId]}
-                fallbackPose={selectedChannel.pose}
-                size={72}
-                alt={selectedChannel.name}
-              />
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--ink-hex)', lineHeight: 1.08 }}>
-                {selectedChannel.name}
-              </h1>
-              <p style={{ fontSize: 14, color: 'var(--text-secondary)', letterSpacing: '-0.005em', marginTop: 6, fontWeight: 500, lineHeight: 1.55 }}>
-                {selectedChannel.description}
-              </p>
-            </div>
-          </div>
+          {/* ChannelDetailHeader — 永遠顯示 */}
+          <ChannelDetailHeader
+            ch={selectedChannel}
+            thumbSrc={thumbs[selectedChannel.channelId]}
+          />
 
           {loadingVideos ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 20px 40px', gap: 16 }}>
-              <div className="bear-loading">
-                <Mascot pose="search" size={160} />
-              </div>
-              <p style={{ color: 'var(--text-secondary)', fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em' }}>
-                小析正在挑選安心影片⋯
-              </p>
-              <div style={{ width: 160, background: 'rgba(43,24,16,0.08)', borderRadius: 9999, overflow: 'hidden' }}>
-                <div className="bear-loading-bar" />
-              </div>
-            </div>
+            <DetailLoadingState />
           ) : videos.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-secondary)', fontSize: 14, fontWeight: 600 }}>
-              <div style={{ marginBottom: 12 }}><Mascot pose="think" size={140} /></div>
-              這個頻道暫時沒有通過篩選的影片
-            </div>
+            <DetailEmptyState onBack={() => setSelectedChannel(null)} />
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 14 }}>
-              {videos.map(v => (
-                <button key={v.id} onClick={() => setPlayingVideoId(v.id)}
-                  className="bee-card sticker-wobble"
-                  style={{ textAlign: 'left', padding: 10, cursor: 'pointer', fontFamily: 'inherit', width: '100%' }}>
-                  <div style={{ position: 'relative', aspectRatio: '16/9', borderRadius: 14, overflow: 'hidden', marginBottom: 10, background: 'var(--ink-05)', border: '2px solid var(--ink-hex)' }}>
-                    {v.thumbnail && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={v.thumbnail} alt={v.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                    )}
-                    {v.madeForKids && (
-                      <span style={{
-                        position: 'absolute', top: 8, left: 8,
-                        background: 'var(--risk-green)', color: '#fff',
-                        padding: '4px 10px', borderRadius: 9999,
-                        fontSize: 10, fontWeight: 700, letterSpacing: '0.02em',
-                        border: '1.5px solid var(--ink-hex)',
-                      }}>
-                        ✓ 兒童認證
-                      </span>
-                    )}
-                  </div>
-                  <p style={{
-                    fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)',
-                    letterSpacing: '-0.02em', lineHeight: 1.45,
-                    padding: '0 4px 4px',
-                    display: '-webkit-box', WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                  }}>
-                    {v.title}
-                  </p>
-                </button>
-              ))}
-            </div>
+            <DetailLoadedState
+              videos={videos}
+              onPlay={(id) => setPlayingVideoId(id)}
+            />
           )}
         </div>
       </main>

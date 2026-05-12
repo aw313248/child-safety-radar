@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, memo } from 'react'
 import { AnalysisResult, ChannelScore, ScoreDimension } from '@/types/analysis'
 import DiscussionReporter from './DiscussionReporter'
 import ShareQRModal from './ShareQRModal'
@@ -76,6 +76,9 @@ const DIMENSION_LABELS: Record<keyof Pick<ChannelScore, 'pacing'|'visual'|'audit
   behavioral:'觀後反應 (Behavioral)',
 }
 
+const DIMENSION_ENTRIES = Object.entries(DIMENSION_LABELS) as [keyof typeof DIMENSION_LABELS, string][]
+const STAR_INDICES = [1, 2, 3, 4, 5] as const
+
 const OVERALL_BANNER: Record<ChannelScore['overallRating'], { bg: string; text: string; headline: string }> = {
   '高度推薦': {
     bg: 'var(--risk-green)',
@@ -94,7 +97,7 @@ const OVERALL_BANNER: Record<ChannelScore['overallRating'], { bg: string; text: 
   },
 }
 
-function StarRow({ dim }: { dim: ScoreDimension }) {
+const StarRow = memo(function StarRow({ dim }: { dim: ScoreDimension }) {
   const filled = dim.stars
   const ratingColor =
     dim.rating === '優' ? 'var(--risk-green)' :
@@ -103,7 +106,7 @@ function StarRow({ dim }: { dim: ScoreDimension }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
       <div style={{ display: 'flex', gap: 2, flexShrink: 0, marginTop: 1 }}>
-        {[1,2,3,4,5].map(n => (
+        {STAR_INDICES.map(n => (
           <span key={n} style={{
             fontSize: 16,
             color: n <= filled ? '#F2B84B' : 'rgba(43,24,16,0.18)',
@@ -123,11 +126,11 @@ function StarRow({ dim }: { dim: ScoreDimension }) {
       }}>{dim.reason}</span>
     </div>
   )
-}
+})
 
 function LowStimCard({ score }: { score: ChannelScore }) {
   const banner = OVERALL_BANNER[score.overallRating]
-  const dims = Object.entries(DIMENSION_LABELS) as [keyof typeof DIMENSION_LABELS, string][]
+  const dims = DIMENSION_ENTRIES
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -282,6 +285,35 @@ export default function ResultCard({ result, onReset }: Props) {
   const isOverstimulating = result.riskType === 'overstimulating' && result.riskLevel === 'medium'
   const displayLabel   = isOverstimulating ? '⚠️ 過度刺激爭議' : cfg.label
   const displayTagline = isOverstimulating ? '有過度刺激爭議，建議陪同觀看' : cfg.tagline
+  const stalenessBlock = useMemo(() => {
+    const ageMs = Date.now() - new Date(result.checkedAt).getTime()
+    const ageDays = Math.floor(ageMs / 86_400_000)
+    const stale = ageDays >= 7
+    return (
+      <>
+        {stale && (
+          <div style={{
+            padding: '10px 14px', marginTop: 6,
+            background: 'rgba(242, 184, 75, 0.16)',
+            border: '1px solid rgba(217, 148, 34, 0.4)',
+            borderRadius: 12,
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--cc-gold-deep)', flexShrink: 0 }}>
+              <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>
+            </svg>
+            <p style={{ flex: 1, fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.5, fontWeight: 600 }}>
+              這是 {ageDays} 天前掃的，頻道內容可能變了，建議重新掃描
+            </p>
+          </div>
+        )}
+        <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
+          {new Date(result.checkedAt).toLocaleString('zh-TW')} · AI 輔助分析，僅供參考
+        </p>
+      </>
+    )
+  }, [result.checkedAt])
+
   const [showQR, setShowQR] = useState(false)
   // distill：警示留言 + 異常標籤 + 熊爸熊媽建議 默認折疊，預設只看分數 + 摘要 + CTA
   const [showDetails, setShowDetails] = useState(false)
@@ -296,7 +328,9 @@ export default function ResultCard({ result, onReset }: Props) {
         typeof item === 'string' ? item === result.channelId : item.channelId === result.channelId
       )
       setIsBlacklisted(inList)
-    } catch {}
+    } catch {
+      setIsBlacklisted(false)
+    }
   }, [result.channelId])
 
   const handleBlacklist = () => {
@@ -377,7 +411,7 @@ export default function ResultCard({ result, onReset }: Props) {
         background: cfg.headerBg,
         borderRadius: 24,
       }}>
-        <div style={{ marginBottom: '20px', animation: 'stagger-in 0.4s var(--ease-out) forwards 0.05s', opacity: 0 }}>
+        <div style={{ marginBottom: '20px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             fontSize: '11px',
@@ -710,34 +744,7 @@ export default function ResultCard({ result, onReset }: Props) {
       {/* ── 拿鐵媽媽 v1.0 低刺激評分卡 ── */}
       {result.channelScore && <LowStimCard score={result.channelScore} />}
 
-      {(() => {
-        const ageMs = Date.now() - new Date(result.checkedAt).getTime()
-        const ageDays = Math.floor(ageMs / 86_400_000)
-        const stale = ageDays >= 7
-        return (
-          <>
-            {stale && (
-              <div style={{
-                padding: '10px 14px', marginTop: 6,
-                background: 'rgba(242, 184, 75, 0.16)',
-                border: '1px solid rgba(217, 148, 34, 0.4)',
-                borderRadius: 12,
-                display: 'flex', alignItems: 'center', gap: 10,
-              }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--cc-gold-deep)', flexShrink: 0 }}>
-                  <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>
-                </svg>
-                <p style={{ flex: 1, fontSize: 12, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.5, fontWeight: 600 }}>
-                  這是 {ageDays} 天前掃的，頻道內容可能變了，建議重新掃描
-                </p>
-              </div>
-            )}
-            <p style={{ textAlign: 'center', fontSize: '11px', color: 'var(--text-tertiary)', letterSpacing: '-0.01em' }}>
-              {new Date(result.checkedAt).toLocaleString('zh-TW')} · AI 輔助分析，僅供參考
-            </p>
-          </>
-        )
-      })()}
+      {stalenessBlock}
     </div>
   )
 }
