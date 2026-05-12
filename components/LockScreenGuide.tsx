@@ -49,15 +49,6 @@ export default function LockScreenGuide({ onDone }: { onDone: () => void }) {
     }
   }, [])
 
-  // ESC 關閉，避免卡住
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onDone()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onDone])
-
   const handleClick = async () => {
     if (platform === 'android') {
       window.location.href = 'intent://#Intent;action=android.settings.ACCESSIBILITY_SETTINGS;end'
