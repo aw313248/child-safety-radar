@@ -741,6 +741,36 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {showQR && <ShareQRModal result={result} onClose={() => setShowQR(false)} />}
 
+      {/* ── 分數圖例 — 解 Mia「80 是危險還是安全？」信任崩潰 ── */}
+      {result.channelScore && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap',
+          padding: '10px 14px',
+          background: 'rgba(255,255,255,0.50)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          border: '1px solid rgba(43,24,16,0.08)',
+          borderRadius: 12,
+        }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(43,24,16,0.45)', marginRight: 2, flexShrink: 0 }}>
+            評分說明
+          </span>
+          {([
+            { range: '0–39', label: '低風險', color: 'var(--risk-green)', bg: 'rgba(94,166,75,0.14)' },
+            { range: '40–69', label: '中風險', color: '#8A6000', bg: 'rgba(242,184,75,0.28)' },
+            { range: '70–100', label: '高風險', color: 'var(--terra-hex)', bg: 'rgba(220,74,50,0.12)' },
+          ] as const).map(({ range, label, color, bg }) => (
+            <span key={range} style={{
+              fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 9999,
+              background: bg, color,
+              display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0,
+            }}>
+              {range} {label}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* ── 拿鐵媽媽 v1.0 低刺激評分卡 ── */}
       {result.channelScore && <LowStimCard score={result.channelScore} />}
 

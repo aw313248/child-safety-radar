@@ -6,10 +6,10 @@ import Mascot from './Mascot'
 const SCAN_COUNT_KEY = 'child_radar_scan_count'
 
 /**
- * 只顯示「真實的個人累計」，全是 localStorage 自家數據，零造假
- * - 0 次不顯示（避免空話 / 種子騙人）
- * - 1 次以上才出現「你已守護過 N 個頻道」
- * - 之後若接 Vercel KV 做真實全球聚合，再加另一條全站數字
+ * 個人累計守護數：只用真實 localStorage 數據，零造假
+ * - 0–4 次不顯示（數字太小反效果，Mia P0 驗證）
+ * - 5 次以上：換成情感層文案，不說「守護過 N 個頻道」
+ * - 之後若接 Vercel KV 做全站聚合，再加另一條全站數字
  */
 export default function SocialProof() {
   const [count, setCount] = useState<number | null>(null)
@@ -23,8 +23,8 @@ export default function SocialProof() {
     }
   }, [])
 
-  // 還沒掃 / SSR 階段 / 讀失敗 → 不顯示
-  if (count === null || count === 0) return null
+  // SSR / 讀失敗 / 掃不到 5 次 → 不顯示（避免小數字反效果）
+  if (count === null || count < 5) return null
 
   return (
     <div
@@ -36,7 +36,7 @@ export default function SocialProof() {
         border: '1px solid rgba(43,24,16,0.10)',
         borderRadius: 14,
       }}
-      aria-label={`你已經守護過 ${count} 個頻道`}
+      aria-label={`你已幫孩子把關 ${count} 個頻道`}
     >
       <span aria-hidden style={{
         width: 22, height: 22, borderRadius: '50%',
@@ -52,14 +52,14 @@ export default function SocialProof() {
         fontSize: 12, color: 'var(--ink-hex)',
         letterSpacing: '-0.01em', lineHeight: 1.5, fontWeight: 500,
       }}>
-        你已經守護過{' '}
+        你已幫孩子把關了{' '}
         <strong style={{
           fontWeight: 800,
           fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
         }}>
           {count}
         </strong>
-        {' '}個頻道
+        {' '}個頻道，那個不安感，少了一些
       </p>
     </div>
   )
