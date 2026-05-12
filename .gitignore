@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code local config（含 secrets / 本地設定不入 repo）
+.claude/
+CLAUDE.md

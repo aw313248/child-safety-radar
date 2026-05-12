@@ -11,6 +11,8 @@ import Mascot from './Mascot'
 interface Props {
   result: AnalysisResult
   onReset: () => void
+  // review 頁用：隱藏「評分有誤 / 補充討論」UGC 區塊（避免歷史回顧重複送 feedback）
+  reviewOnly?: boolean
 }
 
 const RISK_CONFIG = {
@@ -324,7 +326,7 @@ function LowStimCard({ score }: { score: ChannelScore }) {
   )
 }
 
-export default function ResultCard({ result, onReset }: Props) {
+export default function ResultCard({ result, onReset, reviewOnly = false }: Props) {
   // riskLevel 直接決定 config（adult_inappropriate 來自後端關鍵字偵測）
   const cfg = RISK_CONFIG[result.riskLevel] ?? RISK_CONFIG.high
   // overstimulating：覆寫 medium 文案（不改 config，只 override 顯示文字）
@@ -697,12 +699,15 @@ export default function ResultCard({ result, onReset }: Props) {
         riskLevel={result.riskLevel}
       />
 
-      {/* UGC：評分回報 + 討論補充 */}
-      <DiscussionReporter
-        channelName={result.channelName}
-        channelUrl={result.channelUrl}
-        riskScore={result.riskScore}
-      />
+      {/* UGC：評分回報 + 討論補充（review 頁不顯示） */}
+      {!reviewOnly && (
+        <DiscussionReporter
+          channelId={result.channelId}
+          channelName={result.channelName}
+          channelUrl={result.channelUrl}
+          riskScore={result.riskScore}
+        />
+      )}
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: '8px', paddingTop: '4px' }}>

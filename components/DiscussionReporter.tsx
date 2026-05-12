@@ -1,23 +1,114 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface Props {
+  channelId?: string
   channelName: string
   channelUrl: string
   riskScore: number
 }
 
-type Mode = 'idle' | 'report' | 'discussion'
+type Mode = 'idle' | 'rating_correction' | 'discussion'
 type Status = 'ready' | 'sending' | 'done' | 'error'
 
-export default function DiscussionReporter({ channelName, channelUrl, riskScore }: Props) {
+interface Discussion {
+  id: string
+  content: string
+  miaRating?: number
+  submittedAt: string
+}
+
+// 星等滑桿 1-5 — 鍵盤可調 + 點擊星星
+function StarSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ display: 'flex', gap: 6 }} role="radiogroup" aria-label="你覺得幾顆星">
+        {[1, 2, 3, 4, 5].map(n => (
+          <button
+            key={n}
+            type="button"
+            role="radio"
+            aria-checked={value === n}
+            onClick={() => onChange(n)}
+            style={{
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              padding: 4, fontFamily: 'inherit', lineHeight: 1,
+              minWidth: 36, minHeight: 36,
+            }}
+          >
+            <span style={{
+              fontSize: 26,
+              color: n <= value ? '#F2B84B' : 'rgba(43,24,16,0.20)',
+              transition: 'color 0.15s',
+            }}>★</span>
+          </button>
+        ))}
+      </div>
+      <span style={{
+        fontSize: 13, fontWeight: 700,
+        color: 'var(--ink-hex)', letterSpacing: '-0.01em',
+      }}>
+        {value > 0 ? `${value} / 5` : '尚未選擇'}
+      </span>
+    </div>
+  )
+}
+
+export default function DiscussionReporter({ channelId, channelName, channelUrl, riskScore }: Props) {
   const [mode, setMode] = useState<Mode>('idle')
   const [text, setText] = useState('')
+  const [rating, setRating] = useState(0)
   const [status, setStatus] = useState<Status>('ready')
+  const [showToast, setShowToast] = useState<string | null>(null)
+
+  // 討論列表
+  const [discussions, setDiscussions] = useState<Discussion[]>([])
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+  const [loadingList, setLoadingList] = useState(false)
+
+  const fetchDiscussions = useCallback(async (p: number, append: boolean) => {
+    if (!channelId) return
+    setLoadingList(true)
+    try {
+      const params = new URLSearchParams({ channelId, page: String(p), limit: '10' })
+      const res = await fetch(`/api/discussions?${params.toString()}`)
+      if (!res.ok) throw new Error()
+      const data = await res.json()
+      setDiscussions(prev => append ? [...prev, ...data.discussions] : data.discussions)
+      setHasMore(Boolean(data.hasMore))
+      setPage(p)
+    } catch {
+      // 安靜失敗 — Notion 可能沒接好，不嚇到使用者
+    } finally {
+      setLoadingList(false)
+    }
+  }, [channelId])
+
+  // 打開「補充討論」抽屜時拉留言
+  useEffect(() => {
+    if (mode === 'discussion' && discussions.length === 0) {
+      fetchDiscussions(1, false)
+    }
+  }, [mode, discussions.length, fetchDiscussions])
+
+  const reset = () => {
+    setMode('idle')
+    setText('')
+    setRating(0)
+    setStatus('ready')
+  }
 
   const submit = async () => {
-    if (!text.trim()) return
+    if (status === 'sending') return
+    const content = text.trim()
+    if (mode === 'rating_correction') {
+      if (rating < 1 || rating > 5) return
+      if (content.length < 3) return
+    } else {
+      if (content.length < 3) return
+    }
     setStatus('sending')
     try {
       const res = await fetch('/api/feedback', {
@@ -25,137 +116,310 @@ export default function DiscussionReporter({ channelName, channelUrl, riskScore 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: mode,
+          channelId: channelId || '',
           channelName,
           channelUrl,
           riskScore,
-          content: text.trim().slice(0, 1000),
+          miaRating: mode === 'rating_correction' ? rating : undefined,
+          miaComment: content.slice(0, 1000),
         }),
       })
       if (!res.ok) throw new Error()
       setStatus('done')
-      setText('')
-      setTimeout(() => { setMode('idle'); setStatus('ready') }, 2500)
+
+      if (mode === 'discussion') {
+        // 即時 append 到列表上方
+        const newItem: Discussion = {
+          id: `local-${Date.now()}`,
+          content,
+          submittedAt: new Date().toISOString(),
+        }
+        setDiscussions(prev => [newItem, ...prev])
+        setText('')
+        setShowToast('收到，已加入討論')
+        setStatus('ready')
+      } else {
+        setShowToast('感謝回饋，幫助 CareCub 變更準')
+        // 收起 accordion
+        setTimeout(() => { reset() }, 1500)
+      }
+      setTimeout(() => setShowToast(null), 3000)
     } catch {
       setStatus('error')
     }
   }
 
-  // 成功狀態
-  if (status === 'done') {
-    return (
-      <div className="stagger-4" style={{
-        background: 'rgba(22,163,74,0.06)',
-        border: '1px solid rgba(22,163,74,0.18)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '14px 16px',
-        textAlign: 'center',
-      }}>
-        <p style={{ fontSize: 14, color: 'var(--risk-green)', fontWeight: 600, letterSpacing: '-0.01em' }}>
-          收到了，謝謝你
-        </p>
-        <p style={{ fontSize: 14, color: 'var(--text-tertiary)', marginTop: 2, letterSpacing: '-0.01em' }}>
-          你的回饋會讓評分模型更準
-        </p>
-      </div>
-    )
-  }
-
-  // 輸入表單
-  if (mode !== 'idle') {
-    const placeholder = mode === 'report'
-      ? '這個頻道其實是⋯⋯，評分應該是⋯⋯'
-      : '貼 Threads / PTT / Dcard / 新聞連結（可多個，一行一個）'
-
-    return (
-      <div className="card stagger-4" style={{ padding: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
-            {mode === 'report' ? '回報評分有誤' : '補充家長討論'}
-          </p>
-          <button
-            onClick={() => { setMode('idle'); setText(''); setStatus('ready') }}
-            className="tap-target"
-            style={{
-              background: 'transparent', border: 'none', cursor: 'pointer',
-              fontSize: 14, color: 'var(--text-tertiary)', letterSpacing: '-0.01em',
-            }}
-          >
-            取消
-          </button>
-        </div>
-
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={placeholder}
-          rows={4}
-          maxLength={1000}
-          style={{
-            width: '100%',
-            background: 'var(--surface-raised)',
-            border: '1px solid var(--border-default)',
-            borderRadius: 'var(--radius-md)',
-            padding: '10px 12px',
-            fontFamily: 'inherit',
-            fontSize: 14,
-            color: 'var(--text-primary)',
-            letterSpacing: '-0.01em',
-            lineHeight: 1.5,
-            resize: 'vertical',
-            outline: 'none',
-          }}
-        />
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-          <span style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>
-            {text.length}/1000
-          </span>
-          <button
-            onClick={submit}
-            disabled={!text.trim() || status === 'sending'}
-            className="btn-primary"
-            style={{ width: 'auto', padding: '8px 16px', fontSize: 14 }}
-          >
-            {status === 'sending' ? '傳送中' : '送出'}
-          </button>
-        </div>
-
-        {status === 'error' && (
-          <p style={{ fontSize: 14, color: 'var(--risk-red)', marginTop: 8, letterSpacing: '-0.01em' }}>
-            送出失敗，請再試一次
-          </p>
-        )}
-      </div>
-    )
-  }
-
-  // 預設：兩顆按鈕
   return (
     <div className="stagger-4" style={{
-      background: 'rgba(15,23,42,0.025)',
-      border: '1px dashed var(--border-default)',
-      borderRadius: 'var(--radius-lg)',
-      padding: '14px 16px',
+      background: 'rgba(255,255,255,0.50)',
+      backdropFilter: 'blur(20px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+      border: '1px solid rgba(255,255,255,0.80)',
+      borderRadius: 20,
+      padding: mode === 'idle' ? '14px 16px' : '16px',
+      boxShadow: '0 2px 12px rgba(43,24,16,0.05), inset 0 1px 0 rgba(255,255,255,0.85)',
     }}>
-      <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5, letterSpacing: '-0.01em', marginBottom: 10, textAlign: 'center' }}>
-        覺得這次評分不準，或看過家長討論？
-      </p>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button
-          onClick={() => setMode('report')}
-          className="btn-secondary"
-          style={{ flex: 1, fontSize: 14, padding: '9px', letterSpacing: '-0.01em', minHeight: 44 }}
-        >
-          🚩 評分有誤
-        </button>
-        <button
-          onClick={() => setMode('discussion')}
-          className="btn-secondary"
-          style={{ flex: 1, fontSize: 14, padding: '9px', letterSpacing: '-0.01em', minHeight: 44 }}
-        >
-          💬 補充討論
-        </button>
-      </div>
+      {/* Toast */}
+      {showToast && (
+        <div style={{
+          marginBottom: 12,
+          padding: '10px 14px',
+          background: 'rgba(74,138,92,0.10)',
+          border: '1px solid rgba(74,138,92,0.25)',
+          borderRadius: 12,
+          fontSize: 13, fontWeight: 700,
+          color: 'var(--risk-green)', letterSpacing: '-0.01em',
+        }}>
+          {showToast}
+        </div>
+      )}
+
+      {/* idle：兩顆按鈕 */}
+      {mode === 'idle' && (
+        <>
+          <p style={{
+            fontSize: 13, color: 'rgba(43,24,16,0.65)',
+            lineHeight: 1.55, letterSpacing: '-0.01em',
+            marginBottom: 10, textAlign: 'center', fontWeight: 500,
+          }}>
+            覺得這次評分不準，或想看別的家長怎麼說，
+          </p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => setMode('rating_correction')}
+              style={{
+                flex: 1, fontSize: 13, fontWeight: 800, letterSpacing: '0.06em',
+                padding: '11px 9px', minHeight: 44,
+                background: 'rgba(255,255,255,0.70)',
+                border: '1.5px solid rgba(43,24,16,0.18)',
+                borderRadius: 14,
+                color: 'var(--ink-hex)',
+                cursor: 'pointer', fontFamily: 'inherit',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
+              </svg>
+              評分有誤
+            </button>
+            <button
+              onClick={() => setMode('discussion')}
+              style={{
+                flex: 1, fontSize: 13, fontWeight: 800, letterSpacing: '0.06em',
+                padding: '11px 9px', minHeight: 44,
+                background: 'rgba(255,255,255,0.70)',
+                border: '1.5px solid rgba(43,24,16,0.18)',
+                borderRadius: 14,
+                color: 'var(--ink-hex)',
+                cursor: 'pointer', fontFamily: 'inherit',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              補充討論
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* rating_correction：滑桿 + 文字框 */}
+      {mode === 'rating_correction' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.01em' }}>
+              你覺得這頻道整體幾顆星
+            </p>
+            <button onClick={reset} style={{
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              fontSize: 13, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em',
+              fontFamily: 'inherit', padding: 4,
+            }}>
+              取消
+            </button>
+          </div>
+
+          <StarSlider value={rating} onChange={setRating} />
+
+          <textarea
+            value={text}
+            onChange={e => setText(e.target.value)}
+            placeholder="為什麼這樣覺得，舉個例子幫評分模型變更準"
+            rows={3}
+            maxLength={1000}
+            style={{
+              width: '100%',
+              background: 'rgba(255,255,255,0.70)',
+              border: '1px solid rgba(43,24,16,0.15)',
+              borderRadius: 12,
+              padding: '10px 12px',
+              fontFamily: 'inherit',
+              fontSize: 13,
+              color: 'var(--ink-hex)',
+              letterSpacing: '-0.01em',
+              lineHeight: 1.55,
+              resize: 'vertical',
+              outline: 'none',
+            }}
+          />
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)', letterSpacing: '-0.01em' }}>
+              {text.length}/1000
+            </span>
+            <button
+              onClick={submit}
+              disabled={rating < 1 || text.trim().length < 3 || status === 'sending'}
+              style={{
+                background: rating > 0 && text.trim().length >= 3 ? 'var(--honey-hex)' : 'rgba(43,24,16,0.10)',
+                border: '2px solid var(--ink-hex)',
+                borderRadius: 14,
+                padding: '9px 18px',
+                fontSize: 13, fontWeight: 900, letterSpacing: '0.06em',
+                color: 'var(--ink-hex)',
+                cursor: rating > 0 && text.trim().length >= 3 && status !== 'sending' ? 'pointer' : 'not-allowed',
+                fontFamily: 'inherit',
+                opacity: rating > 0 && text.trim().length >= 3 ? 1 : 0.55,
+                boxShadow: rating > 0 && text.trim().length >= 3 ? '2px 2px 0 var(--ink-hex)' : 'none',
+                minHeight: 44,
+              }}
+            >
+              {status === 'sending' ? '送出中' : '送出'}
+            </button>
+          </div>
+
+          {status === 'error' && (
+            <p style={{ fontSize: 12, color: 'var(--terra-hex)', letterSpacing: '-0.01em', fontWeight: 600 }}>
+              送出失敗，再試一次
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* discussion：留言列表 + 新增 */}
+      {mode === 'discussion' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.01em' }}>
+              其他家長的討論
+            </p>
+            <button onClick={reset} style={{
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              fontSize: 13, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em',
+              fontFamily: 'inherit', padding: 4,
+            }}>
+              收起
+            </button>
+          </div>
+
+          {/* 留言列表 */}
+          {discussions.length === 0 && !loadingList && (
+            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', textAlign: 'center', padding: '14px 0' }}>
+              還沒有討論，當第一個分享
+            </p>
+          )}
+          {loadingList && discussions.length === 0 && (
+            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', textAlign: 'center', padding: '14px 0' }}>
+              載入中
+            </p>
+          )}
+          {discussions.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 320, overflowY: 'auto' }}>
+              {discussions.map(d => (
+                <div key={d.id} style={{
+                  padding: '10px 12px',
+                  background: 'rgba(255,255,255,0.65)',
+                  border: '1px solid rgba(43,24,16,0.08)',
+                  borderRadius: 12,
+                }}>
+                  <p style={{
+                    fontSize: 13, color: 'var(--ink-hex)',
+                    letterSpacing: '-0.005em', lineHeight: 1.55, fontWeight: 500,
+                    whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                  }}>
+                    {d.content}
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)', letterSpacing: '-0.01em', marginTop: 4 }}>
+                    {new Date(d.submittedAt).toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+          {hasMore && (
+            <button
+              onClick={() => fetchDiscussions(page + 1, true)}
+              disabled={loadingList}
+              style={{
+                alignSelf: 'center',
+                background: 'transparent', border: '1px solid rgba(43,24,16,0.18)',
+                borderRadius: 9999, padding: '6px 14px',
+                fontSize: 12, fontWeight: 700, color: 'var(--ink-hex)',
+                letterSpacing: '0.04em', cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >
+              {loadingList ? '載入中' : '載更多'}
+            </button>
+          )}
+
+          {/* 新增留言 */}
+          <div style={{
+            borderTop: '1px dashed rgba(43,24,16,0.12)',
+            paddingTop: 12,
+            display: 'flex', flexDirection: 'column', gap: 8,
+          }}>
+            <textarea
+              value={text}
+              onChange={e => setText(e.target.value)}
+              placeholder="貼 Threads / PTT / Dcard / 新聞連結，或寫下你的觀察"
+              rows={3}
+              maxLength={1000}
+              style={{
+                width: '100%',
+                background: 'rgba(255,255,255,0.70)',
+                border: '1px solid rgba(43,24,16,0.15)',
+                borderRadius: 12,
+                padding: '10px 12px',
+                fontFamily: 'inherit',
+                fontSize: 13, color: 'var(--ink-hex)',
+                letterSpacing: '-0.01em', lineHeight: 1.55,
+                resize: 'vertical', outline: 'none',
+              }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)' }}>
+                {text.length}/1000
+              </span>
+              <button
+                onClick={submit}
+                disabled={text.trim().length < 3 || status === 'sending'}
+                style={{
+                  background: text.trim().length >= 3 ? 'var(--honey-hex)' : 'rgba(43,24,16,0.10)',
+                  border: '2px solid var(--ink-hex)',
+                  borderRadius: 14,
+                  padding: '9px 18px',
+                  fontSize: 13, fontWeight: 900, letterSpacing: '0.06em',
+                  color: 'var(--ink-hex)',
+                  cursor: text.trim().length >= 3 && status !== 'sending' ? 'pointer' : 'not-allowed',
+                  fontFamily: 'inherit',
+                  opacity: text.trim().length >= 3 ? 1 : 0.55,
+                  boxShadow: text.trim().length >= 3 ? '2px 2px 0 var(--ink-hex)' : 'none',
+                  minHeight: 44,
+                }}
+              >
+                {status === 'sending' ? '送出中' : '送出討論'}
+              </button>
+            </div>
+            {status === 'error' && (
+              <p style={{ fontSize: 12, color: 'var(--terra-hex)', letterSpacing: '-0.01em', fontWeight: 600 }}>
+                送出失敗，再試一次
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
