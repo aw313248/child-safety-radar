@@ -51,6 +51,8 @@ export default function Home() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   // 個人黑名單：若命中直接攔截，不發 API 請求
   const [blockedChannelId, setBlockedChannelId] = useState<string | null>(null)
+  // YouTube 連結引導：第一次用的 Mia 流程引導
+  const [guideCollapsed, setGuideCollapsed] = useState(false)
 
   // 動態 placeholder 輪播
   useEffect(() => {
@@ -101,6 +103,7 @@ export default function Home() {
   useEffect(() => {
     setUnlocked(localStorage.getItem(STORAGE_KEY) === 'true')
     setScanCount(parseInt(localStorage.getItem(SCAN_COUNT_KEY) || '0', 10))
+    setGuideCollapsed(localStorage.getItem('cc_guide_collapsed') === 'true')
     try {
       const params = new URLSearchParams(window.location.search)
       const u = params.get('u')
@@ -502,6 +505,84 @@ export default function Home() {
                 {loading ? '' : '≈ 20 秒'}
               </span>
             </div>
+
+            {/* YouTube 連結引導 — Mia P0 痛點：第一次找連結流程引導 */}
+            {!loading && !guideCollapsed && (
+              <div style={{
+                marginTop: 12,
+                background: 'rgba(255,255,255,0.55)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(43,24,16,0.10)',
+                borderRadius: 14,
+                padding: '16px 18px',
+                position: 'relative',
+              }}>
+                {/* 收合按鈕 */}
+                <button
+                  aria-label="收合引導"
+                  onClick={() => {
+                    setGuideCollapsed(true)
+                    localStorage.setItem('cc_guide_collapsed', 'true')
+                  }}
+                  style={{
+                    position: 'absolute', top: 10, right: 12,
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    padding: 4, lineHeight: 1,
+                    color: 'rgba(43,24,16,0.35)',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+                <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em', marginBottom: 10 }}>
+                  第一次用？3 步驟拿頻道連結
+                </p>
+                <ol style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {[
+                    '打開 YouTube App',
+                    '點進你想檢查的「頻道頁面」（不是影片）',
+                    '複製分享連結貼回來',
+                  ].map((step, i) => (
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <span style={{
+                        flexShrink: 0,
+                        width: 22, height: 22, borderRadius: '50%',
+                        background: 'var(--cc-gold)',
+                        color: 'var(--ink-hex)',
+                        fontSize: 12, fontWeight: 800,
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      }}>{i + 1}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink-hex)', lineHeight: 1.55, paddingTop: 2 }}>
+                        {step}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            {/* 引導收合後的小字提示 */}
+            {!loading && guideCollapsed && (
+              <button
+                onClick={() => {
+                  setGuideCollapsed(false)
+                  localStorage.setItem('cc_guide_collapsed', 'false')
+                }}
+                style={{
+                  display: 'block', marginTop: 8,
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  padding: '2px 4px',
+                  fontSize: 12, fontWeight: 500,
+                  color: 'rgba(43,24,16,0.40)',
+                  fontFamily: 'inherit', letterSpacing: '-0.01em',
+                  textDecoration: 'underline', textUnderlineOffset: 2,
+                }}
+              >
+                再看一次怎麼拿連結
+              </button>
+            )}
 
             {/* 掃描進度 */}
             {loading && (
