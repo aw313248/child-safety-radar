@@ -1,7 +1,7 @@
 // 精選安心頻道清單
 //
 // ═══════════════════════════════════════════════════════════════════
-// ⛔ 硬規定：入庫前必須用 curl 驗證 UC ID ⛔
+// ⛔ 硬規定 1：入庫前必須用 curl 驗證 UC ID ⛔
 // ═══════════════════════════════════════════════════════════════════
 // 曾犯的錯：
 //   1. Little Baby Bum 填成遊戲實況頻道 UC（出現血腥內容）
@@ -12,6 +12,19 @@
 //   curl -sL "https://www.youtube.com/@HANDLE" -A "Mozilla/5.0" \
 //     | grep -oE '<meta property="og:title" content="[^"]+"'
 //   → UC ID 回傳的頻道名必須完全對得上才能入庫
+// ═══════════════════════════════════════════════════════════════════
+//
+// ═══════════════════════════════════════════════════════════════════
+// ⛔ 硬規定 2：每個入庫頻道必須先用 CareCub 自掃驗證 ⛔（2026-05-12 Oscar 鎖定）
+// ═══════════════════════════════════════════════════════════════════
+// Oscar 鐵則：「精選頻道要先透過我們自己的判定方法，先確定每個內容都適合
+// 上架後再上架」
+// 流程：
+//   1. UC ID curl 驗證 ✓（硬規定 1）
+//   2. 用 CareCub /api/analyze 自掃該頻道 → 取得 riskScore
+//   3. score < 70（低 / 中風險才符合） + 5 維度任一不能 < 3★（拿鐵媽媽自動降級鐵則）
+//   4. Oscar 親手 review 結果 + 推薦語 → 點頭才入庫
+//   5. 入庫後加 lastVerifiedAt comment 標記驗證日期
 // ═══════════════════════════════════════════════════════════════════
 
 export type AgeGroup = '0-3' | '3-6'
@@ -29,16 +42,21 @@ export interface CuratedChannel {
 }
 
 export const CURATED_CHANNELS: CuratedChannel[] = [
+  // CoComelon 移除（2026-05-12 Oscar 鎖定）— 評價兩極（媽媽圈長期爭議「高刺激」），
+  // 拿鐵媽媽 framework 自動降級不符合精選標準，待後續釐清前不放官方精選
   {
-    channelId: 'UCbCmjCuTUZos6Inko4u57UQ',
-    name: 'CoComelon',
-    handle: '@CoComelon',
-    description: 'JJ 一家人的日常歌曲，全世界訂閱最多的幼兒頻道',
+    channelId: 'UCAOtE1V7Ots4DjM8JLlrYgg', // 驗證：Peppa Pig - Official Channel
+    name: 'Peppa Pig',
+    handle: '@PeppaPigOfficial',
+    description: '英國原版 Peppa Pig 官方頻道，台灣媽媽熟悉的英式童趣，節奏溫和',
     ageGroups: ['0-3', '3-6'],
-    categories: ['song', 'cartoon'],
+    categories: ['cartoon', 'learn'],
     language: 'en',
-    emoji: '🍉',
+    emoji: '🐷',
   },
+  // TODO（2026-05-12 Oscar 提）：再加台灣兒童 YouTuber 中文頻道
+  // 候選：萬能阿曼（中文版）/ 其他台灣熱門兒童中文頻道
+  // 需 Oscar 提供確切 channel handle，curl 驗證 UC + CareCub 自掃通過後入庫
   {
     channelId: 'UCcdwLMPsaU2ezNSJU1nFoBQ',
     name: 'Pinkfong 碰碰狐',

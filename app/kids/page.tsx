@@ -888,7 +888,6 @@ export default function KidsModePage() {
               aria-label="睡前音樂"
               title="切換到睡前音樂模式"
               className="kids-action"
-              style={{ background: 'rgba(90,60,140,0.18)', borderColor: 'rgba(160,120,220,0.35)', color: '#c8a8f0' }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
