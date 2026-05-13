@@ -531,6 +531,8 @@ function TimeUpScreen({
   onExtend: (extraMin: number) => void
   onExit: () => void
 }) {
+  const isAnswerCorrect = input.trim() !== '' && parseInt(input, 10) === math.answer
+
   return (
     <div className="kids-timer-timeup" style={{
       position: 'fixed', inset: 0, zIndex: 9900,
@@ -641,25 +643,44 @@ function TimeUpScreen({
             }}
           />
 
+          {/* 提示：答對才能解鎖延長 */}
+          <p style={{
+            fontSize: 11,
+            color: 'rgba(43,24,16,0.55)',
+            textAlign: 'center',
+            marginBottom: 8,
+            letterSpacing: '0.02em',
+            opacity: isAnswerCorrect ? 0 : 1,
+            transition: 'opacity 0.25s ease',
+            userSelect: 'none',
+          }}>
+            先算對才能延長
+          </p>
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
             {[5, 10, 15].map(m => (
               <button
                 key={m}
+                disabled={!isAnswerCorrect}
                 onClick={() => onExtend(m)}
                 style={{
                   padding: '10px 4px',
-                  cursor: 'pointer',
+                  cursor: isAnswerCorrect ? 'pointer' : 'not-allowed',
                   fontFamily: 'inherit',
                   fontSize: 13, fontWeight: 800,
                   color: 'var(--ink-hex)',
-                  letterSpacing: '-0.02em',
-                  background: 'rgba(255, 255, 255, 0.55)',
-                  backdropFilter: 'blur(14px)',
-                  WebkitBackdropFilter: 'blur(14px)',
-                  border: '1px solid rgba(43, 24, 16, 0.22)',
+                  letterSpacing: '0.05em',
+                  opacity: isAnswerCorrect ? 1 : 0.35,
+                  background: isAnswerCorrect
+                    ? 'rgba(255, 255, 255, 0.55)'
+                    : 'rgba(43, 24, 16, 0.06)',
+                  backdropFilter: isAnswerCorrect ? 'blur(14px)' : 'none',
+                  WebkitBackdropFilter: isAnswerCorrect ? 'blur(14px)' : 'none',
+                  border: `1px solid ${isAnswerCorrect ? 'rgba(43,24,16,0.22)' : 'rgba(43,24,16,0.10)'}`,
                   borderRadius: 12,
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.55)',
-                  transition: 'background 0.15s, transform 0.12s',
+                  boxShadow: isAnswerCorrect ? 'inset 0 1px 0 rgba(255,255,255,0.55)' : 'none',
+                  transition: 'background 0.2s, opacity 0.2s, box-shadow 0.2s, transform 0.12s',
+                  animation: isAnswerCorrect ? 'extend-ready 0.32s ease' : 'none',
                 }}
               >
                 +{m} 分鐘
@@ -673,6 +694,11 @@ function TimeUpScreen({
               0%,100% { transform: translateX(0); }
               20%,60% { transform: translateX(-6px); }
               40%,80% { transform: translateX(6px); }
+            }
+            @keyframes extend-ready {
+              0%   { transform: scale(1); }
+              45%  { transform: scale(1.045); }
+              100% { transform: scale(1); }
             }
           `}</style>
         </div>
