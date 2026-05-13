@@ -32,6 +32,156 @@ const PLACEHOLDERS = [
   '把那個頻道連結貼這',
 ]
 
+// ── GuideIconRow：3 步驟拿連結引導（icon + hover/tap tooltip）────────────
+const GUIDE_STEPS = [
+  {
+    label: '打開 YouTube App',
+    // YouTube play button logo
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="2" y="5" width="20" height="14" rx="4" fill="#FF0000" />
+        <polygon points="10,9 16,12 10,15" fill="white" />
+      </svg>
+    ),
+  },
+  {
+    label: '點進「頻道頁面」（不是影片）',
+    // person / channel icon
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ink-hex)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+      </svg>
+    ),
+  },
+  {
+    label: '複製分享連結貼回來',
+    // share / arrow-up-from-square icon
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ink-hex)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
+        <polyline points="16 6 12 2 8 6" />
+        <line x1="12" y1="2" x2="12" y2="15" />
+      </svg>
+    ),
+  },
+]
+
+function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
+  const [activeIdx, setActiveIdx] = useState<number | null>(null)
+
+  return (
+    <div style={{
+      marginTop: 12,
+      background: 'rgba(255,255,255,0.55)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid rgba(43,24,16,0.10)',
+      borderRadius: 14,
+      padding: '14px 18px 16px',
+      position: 'relative',
+      textAlign: 'center',
+    }}>
+      {/* 收合 × */}
+      <button
+        aria-label="收合引導"
+        onClick={onCollapse}
+        style={{
+          position: 'absolute', top: 10, right: 12,
+          background: 'none', border: 'none', cursor: 'pointer',
+          padding: 4, lineHeight: 1,
+          color: 'rgba(43,24,16,0.35)',
+          fontFamily: 'inherit',
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
+      <p style={{ fontSize: 13, fontWeight: 700, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', marginBottom: 12 }}>
+        第一次用？怎麼拿頻道連結
+      </p>
+
+      {/* 3 icons row */}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', gap: 24 }}>
+        {GUIDE_STEPS.map((step, i) => (
+          <div key={i} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            {/* 步驟箭頭連接 */}
+            {i > 0 && (
+              <div style={{
+                position: 'absolute', left: -16, top: 14,
+                width: 8,
+                height: 1,
+                background: 'rgba(43,24,16,0.20)',
+              }} />
+            )}
+
+            {/* icon 按鈕 */}
+            <button
+              aria-label={step.label}
+              onMouseEnter={() => setActiveIdx(i)}
+              onMouseLeave={() => setActiveIdx(null)}
+              onFocus={() => setActiveIdx(i)}
+              onBlur={() => setActiveIdx(null)}
+              onClick={() => setActiveIdx(activeIdx === i ? null : i)}
+              style={{
+                background: activeIdx === i ? 'rgba(242,184,75,0.15)' : 'rgba(255,255,255,0.60)',
+                border: '1px solid rgba(43,24,16,0.10)',
+                borderRadius: 14,
+                width: 56, height: 56,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'background 0.15s, transform 0.15s',
+                transform: activeIdx === i ? 'translateY(-2px)' : 'none',
+                fontFamily: 'inherit',
+              }}
+            >
+              {step.icon}
+            </button>
+
+            {/* step number badge */}
+            <span style={{
+              width: 18, height: 18, borderRadius: '50%',
+              background: 'rgba(43,24,16,0.10)',
+              fontSize: 10, fontWeight: 800, color: 'var(--ink-hex)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>{i + 1}</span>
+
+            {/* tooltip — shows on hover/tap */}
+            {activeIdx === i && (
+              <div style={{
+                position: 'absolute', top: 70, left: '50%', transform: 'translateX(-50%)',
+                background: 'rgba(43,24,16,0.88)',
+                color: '#FFF',
+                fontSize: 11, fontWeight: 600, lineHeight: 1.45,
+                padding: '6px 10px',
+                borderRadius: 8,
+                maxWidth: 140,
+                whiteSpace: 'normal' as React.CSSProperties['whiteSpace'],
+                textAlign: 'center',
+                zIndex: 10,
+                pointerEvents: 'none',
+                letterSpacing: '-0.01em',
+              }}>
+                {step.label}
+                {/* arrow */}
+                <div style={{
+                  position: 'absolute', top: -5, left: '50%', transform: 'translateX(-50%)',
+                  width: 0, height: 0,
+                  borderLeft: '5px solid transparent',
+                  borderRight: '5px solid transparent',
+                  borderBottom: '5px solid rgba(43,24,16,0.88)',
+                }} />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   const [url, setUrl]             = useState('')
   const [loading, setLoading]     = useState(false)
@@ -552,62 +702,12 @@ export default function Home() {
               </span>
             </div>
 
-            {/* YouTube 連結引導 — Mia P0 痛點：第一次找連結流程引導 */}
+            {/* YouTube 連結引導 — Mia P0 痛點：圖示 + tooltip */}
             {!loading && !guideCollapsed && (
-              <div style={{
-                marginTop: 12,
-                background: 'rgba(255,255,255,0.55)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(43,24,16,0.10)',
-                borderRadius: 14,
-                padding: '16px 18px',
-                position: 'relative',
-              }}>
-                {/* 收合按鈕 */}
-                <button
-                  aria-label="收合引導"
-                  onClick={() => {
-                    setGuideCollapsed(true)
-                    localStorage.setItem('cc_guide_collapsed', 'true')
-                  }}
-                  style={{
-                    position: 'absolute', top: 10, right: 12,
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    padding: 4, lineHeight: 1,
-                    color: 'rgba(43,24,16,0.35)',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-                <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em', marginBottom: 10 }}>
-                  第一次用？3 步驟拿頻道連結
-                </p>
-                <ol style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {[
-                    '打開 YouTube App',
-                    '點進你想檢查的「頻道頁面」（不是影片）',
-                    '複製分享連結貼回來',
-                  ].map((step, i) => (
-                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                      <span style={{
-                        flexShrink: 0,
-                        width: 22, height: 22, borderRadius: '50%',
-                        background: 'var(--cc-gold)',
-                        color: 'var(--ink-hex)',
-                        fontSize: 12, fontWeight: 800,
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      }}>{i + 1}</span>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink-hex)', lineHeight: 1.55, paddingTop: 2 }}>
-                        {step}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+              <GuideIconRow onCollapse={() => {
+                setGuideCollapsed(true)
+                localStorage.setItem('cc_guide_collapsed', 'true')
+              }} />
             )}
             {/* 引導收合後的小字提示 */}
             {!loading && guideCollapsed && (
