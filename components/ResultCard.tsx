@@ -1,18 +1,17 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useEffect, useMemo, memo } from 'react'
-import { AnalysisResult, ChannelScore, ScoreDimension } from '@/types/analysis'
+import { useState, useEffect, useMemo } from 'react'
+import { AnalysisResult, ChannelScore } from '@/types/analysis'
 import DiscussionReporter from './DiscussionReporter'
 import ShareQRModal from './ShareQRModal'
 import AddToKidsMode from './AddToKidsMode'
 import Mascot from './Mascot'
+import { ratingToColor } from '@/lib/score-colors'
 
 interface Props {
   result: AnalysisResult
   onReset: () => void
-  // review 頁用：隱藏「評分有誤 / 補充討論」UGC 區塊（避免歷史回顧重複送 feedback）
-  reviewOnly?: boolean
 }
 
 const RISK_CONFIG = {
@@ -99,37 +98,6 @@ const OVERALL_BANNER: Record<ChannelScore['overallRating'], { bg: string; text: 
   },
 }
 
-const StarRow = memo(function StarRow({ dim }: { dim: ScoreDimension }) {
-  const filled = dim.stars
-  const ratingColor =
-    dim.rating === '優' ? 'var(--risk-green)' :
-    dim.rating === '良' ? '#4A8A6B' :
-    dim.rating === '普' ? 'var(--honey-deep)' : 'var(--adult-orange-hex)'
-  return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-      <div style={{ display: 'flex', gap: 2, flexShrink: 0, marginTop: 1 }}>
-        {STAR_INDICES.map(n => (
-          <span key={n} style={{
-            fontSize: 16,
-            color: n <= filled ? '#F2B84B' : 'rgba(43,24,16,0.18)',
-            lineHeight: 1,
-          }}>★</span>
-        ))}
-      </div>
-      <span style={{
-        fontSize: 12, fontWeight: 700,
-        color: ratingColor,
-        letterSpacing: '-0.01em',
-        flexShrink: 0,
-      }}>（{dim.rating}）</span>
-      <span style={{
-        fontSize: 13, color: 'rgba(43,24,16,0.72)',
-        letterSpacing: '-0.01em', lineHeight: 1.55,
-      }}>{dim.reason}</span>
-    </div>
-  )
-})
-
 function LowStimCard({ score }: { score: ChannelScore }) {
   const banner = OVERALL_BANNER[score.overallRating]
   const dims = DIMENSION_ENTRIES
@@ -179,10 +147,7 @@ function LowStimCard({ score }: { score: ChannelScore }) {
         {dims.map(([key, label], idx) => {
           const dim = score[key]
           const isOpen = expandedDim === key
-          const ratingColor =
-            dim.rating === '優' ? 'var(--risk-green)' :
-            dim.rating === '良' ? '#4A8A6B' :
-            dim.rating === '普' ? 'var(--honey-deep)' : 'var(--adult-orange-hex)'
+          const ratingColor = ratingToColor(dim.rating)
           return (
             <div key={key}>
               {idx > 0 && <div style={{ height: 1, background: 'rgba(43,24,16,0.07)' }} />}
@@ -326,13 +291,18 @@ function LowStimCard({ score }: { score: ChannelScore }) {
   )
 }
 
-export default function ResultCard({ result, onReset, reviewOnly = false }: Props) {
+export default function ResultCard({ result, onReset }: Props) {
   // riskLevel 直接決定 config（adult_inappropriate 來自後端關鍵字偵測）
   const cfg = RISK_CONFIG[result.riskLevel] ?? RISK_CONFIG.high
-  // overstimulating：覆寫 medium 文案（不改 config，只 override 顯示文字）
+  // Mia 第三輪 P0 fix（2026-05-13）：解結果頁三層結論矛盾
+  // Bluey case：AI riskType 抓爭議 → 顯示「⚠️ 過度刺激爭議」 vs 5 維度 framework 算「高度推薦」
+  // 兩個訊息打架，信任崩潰
+  // Fix：framework rating 為 single source of truth，「高度推薦」時不顯示 overstimulating 警告
   const isOverstimulating = result.riskType === 'overstimulating' && result.riskLevel === 'medium'
-  const displayLabel   = isOverstimulating ? '⚠️ 過度刺激爭議' : cfg.label
-  const displayTagline = isOverstimulating ? '有過度刺激爭議，建議陪同觀看' : cfg.tagline
+  const frameworkSaysHighlyRecommend = result.channelScore?.overallRating === '高度推薦'
+  const showOverstimulatingWarning = isOverstimulating && !frameworkSaysHighlyRecommend
+  const displayLabel   = showOverstimulatingWarning ? '⚠️ 過度刺激爭議' : cfg.label
+  const displayTagline = showOverstimulatingWarning ? '有過度刺激爭議，建議陪同觀看' : cfg.tagline
   const stalenessBlock = useMemo(() => {
     const ageMs = Date.now() - new Date(result.checkedAt).getTime()
     const ageDays = Math.floor(ageMs / 86_400_000)
@@ -478,7 +448,7 @@ export default function ResultCard({ result, onReset, reviewOnly = false }: Prop
           <p className="font-display" style={{ fontSize: 20, color: 'var(--ink-hex)', lineHeight: 1.2, letterSpacing: '-0.03em' }}>
             {displayTagline}
           </p>
-          {isOverstimulating && (
+          {showOverstimulatingWarning && (
             <p style={{ fontSize: 12, color: 'var(--ink-hex)', opacity: 0.65, marginTop: 8, lineHeight: 1.55, fontWeight: 500, letterSpacing: '-0.01em' }}>
               快節奏 + 強聲光可能影響幼兒注意力，不建議長時間連續觀看
             </p>
@@ -699,15 +669,13 @@ export default function ResultCard({ result, onReset, reviewOnly = false }: Prop
         riskLevel={result.riskLevel}
       />
 
-      {/* UGC：評分回報 + 討論補充（review 頁不顯示） */}
-      {!reviewOnly && (
-        <DiscussionReporter
-          channelId={result.channelId}
-          channelName={result.channelName}
-          channelUrl={result.channelUrl}
-          riskScore={result.riskScore}
-        />
-      )}
+      {/* UGC：評分回報 + 討論補充 */}
+      <DiscussionReporter
+        channelId={result.channelId}
+        channelName={result.channelName}
+        channelUrl={result.channelUrl}
+        riskScore={result.riskScore}
+      />
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: '8px', paddingTop: '4px' }}>

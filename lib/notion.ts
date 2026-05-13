@@ -121,69 +121,46 @@ export interface DiscussionItem {
 
 /**
  * 拉某個 channel 的「補充討論」（按時間 DESC）
- * Notion 用 cursor 分頁，這裡為了讓前端用「page=N」分頁，做簡單翻頁累加
+ * 直接傳 Notion cursor — 每次只發一次 API，前端持有 nextCursor 做下一頁
  */
 export async function listDiscussions(
   channelId: string,
-  page: number,
+  cursor: string | undefined,
   limit: number
-): Promise<{ discussions: DiscussionItem[]; hasMore: boolean }> {
+): Promise<{ discussions: DiscussionItem[]; nextCursor: string | null; hasMore: boolean }> {
   const notion = getNotionClient()
   const dataSourceId = await getDataSourceId()
   if (!notion || !dataSourceId) {
-    return { discussions: [], hasMore: false }
+    return { discussions: [], nextCursor: null, hasMore: false }
   }
 
-  let cursor: string | undefined = undefined
-  let collected: unknown[] = []
-  let hasMore = false
-  const target = page * limit
+  const pageSize = Math.min(100, Math.max(1, limit))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const res: any = await (notion as any).dataSources.query({
+    data_source_id: dataSourceId,
+    filter: {
+      and: [
+        { property: PROP.TYPE, select: { equals: 'discussion' } },
+        { property: PROP.CHANNEL_ID, rich_text: { equals: channelId } },
+      ],
+    },
+    sorts: [{ property: PROP.DATE, direction: 'descending' }],
+    page_size: pageSize,
+    ...(cursor ? { start_cursor: cursor } : {}),
+  })
 
-  while (collected.length < target) {
-    const remaining = target - collected.length
-    const pageSize = Math.min(100, Math.max(10, remaining))
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const res: any = await (notion as any).dataSources.query({
-      data_source_id: dataSourceId,
-      filter: {
-        and: [
-          { property: PROP.TYPE, select: { equals: 'discussion' } },
-          { property: PROP.CHANNEL_ID, rich_text: { equals: channelId } },
-        ],
-      },
-      sorts: [{ property: PROP.DATE, direction: 'descending' }],
-      page_size: pageSize,
-      start_cursor: cursor,
-    })
-    collected = collected.concat(res.results || [])
-    hasMore = Boolean(res.has_more)
-    if (!res.has_more) break
-    cursor = res.next_cursor || undefined
-  }
-
-  // 取第 page 頁的 limit 筆
-  const start = (page - 1) * limit
-  const slice = collected.slice(start, start + limit)
-
-  const discussions: DiscussionItem[] = slice.map((r): DiscussionItem => {
+  const discussions: DiscussionItem[] = (res.results ?? []).map((r: unknown): DiscussionItem => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const item = r as any
     const props = item.properties ?? {}
-    const comment = props[PROP.MIA_COMMENT]?.rich_text?.[0]?.plain_text ?? ''
-    const rating = props[PROP.MIA_RATING]?.number ?? undefined
-    const submittedAt = props[PROP.DATE]?.date?.start ?? new Date().toISOString()
     return {
       id: item.id,
-      content: comment,
-      miaRating: rating,
-      submittedAt,
+      content: props[PROP.MIA_COMMENT]?.rich_text?.[0]?.plain_text ?? '',
+      miaRating: props[PROP.MIA_RATING]?.number ?? undefined,
+      submittedAt: props[PROP.DATE]?.date?.start ?? new Date().toISOString(),
     }
   })
 
-  // hasMore：要嘛 Notion 還有 more，要嘛這頁之後 collected 還有剩
-  const localHasMore = collected.length > start + limit
-  return {
-    discussions,
-    hasMore: hasMore || localHasMore,
-  }
+  const hasMore = Boolean(res.has_more)
+  return { discussions, nextCursor: res.next_cursor ?? null, hasMore }
 }
