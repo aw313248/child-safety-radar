@@ -15,17 +15,13 @@ const CHANNEL_POSES: MascotPose[] = ['hi', 'thumbs-up', 'fly', 'search', 'guard'
 
 // 退出題庫 — +/-/× 混合，避免固定 a+b 被小孩背
 function makeExitMath(): { a: number; b: number; op: '+' | '-' | '×'; answer: number } {
+  // Oscar 鎖定：a/b 全個位數（1-9），不考家長兩位數心算
   const ops: Array<'+' | '-' | '×'> = ['+', '+', '-', '×']
   const op = ops[Math.floor(Math.random() * ops.length)]
-  if (op === '×') {
-    const a = 3 + Math.floor(Math.random() * 7), b = 2 + Math.floor(Math.random() * 6)
-    return { a, b, op, answer: a * b }
-  }
-  if (op === '-') {
-    const a = 12 + Math.floor(Math.random() * 18), b = 3 + Math.floor(Math.random() * Math.min(8, a - 1))
-    return { a, b, op, answer: a - b }
-  }
-  const a = 6 + Math.floor(Math.random() * 14), b = 7 + Math.floor(Math.random() * 14)
+  const a = 1 + Math.floor(Math.random() * 9) // 1-9
+  const b = 1 + Math.floor(Math.random() * 9) // 1-9
+  if (op === '×') return { a, b, op, answer: a * b }
+  if (op === '-') return { a: Math.max(a, b), b: Math.min(a, b), op, answer: Math.abs(a - b) }
   return { a, b, op: '+', answer: a + b }
 }
 function mascotForChannel(id: string): MascotPose {
