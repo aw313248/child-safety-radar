@@ -56,12 +56,14 @@ const GUIDE_STEPS = [
   },
   {
     label: '複製分享連結貼回來',
-    // share / arrow-up-from-square icon
+    // share-2：三節點水平分享（iOS/Android 原生分享手勢）
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--ink-hex)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
-        <polyline points="16 6 12 2 8 6" />
-        <line x1="12" y1="2" x2="12" y2="15" />
+        <circle cx="18" cy="5" r="3" />
+        <circle cx="6" cy="12" r="3" />
+        <circle cx="18" cy="19" r="3" />
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
       </svg>
     ),
   },
@@ -154,8 +156,8 @@ function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
                 position: 'absolute', top: 70, left: '50%', transform: 'translateX(-50%)',
                 background: 'rgba(43,24,16,0.88)',
                 color: '#FFF',
-                fontSize: 11, fontWeight: 600, lineHeight: 1.45,
-                padding: '6px 10px',
+                fontSize: 12, fontWeight: 600, lineHeight: 1.5,
+                padding: '7px 11px',
                 borderRadius: 8,
                 maxWidth: 140,
                 whiteSpace: 'normal' as React.CSSProperties['whiteSpace'],
