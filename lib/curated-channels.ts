@@ -39,6 +39,9 @@ export interface CuratedChannel {
   categories: Category[]
   language: 'zh' | 'en' | 'both'
   emoji: string
+  // ⛔ 硬規定 3：新增頻道必跑 thumbnail 抓取流程（見 docs/curated-channels-sop.md）
+  // curl "https://www.googleapis.com/youtube/v3/channels?part=snippet&id=UC_ID&key=$YOUTUBE_API_KEY" | jq '.items[0].snippet.thumbnails.high.url'
+  thumbnailUrl: string
 }
 
 export const CURATED_CHANNELS: CuratedChannel[] = [
@@ -53,6 +56,7 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     categories: ['cartoon', 'learn'],
     language: 'en',
     emoji: '🐷',
+    thumbnailUrl: 'https://yt3.ggpht.com/y2yFMr8cxL4DaG0OS6neuk-DsVK2wd4tgVc01prXyL60vJ8UCFRurpnfkVWcUFCBZo4WiDiI=s800-c-k-c0x00ffffff-no-rj',
   },
   // TODO（2026-05-12 Oscar 提）：再加台灣兒童 YouTuber 中文頻道
   // 候選：萬能阿曼（中文版）/ 其他台灣熱門兒童中文頻道
@@ -66,6 +70,7 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     categories: ['song'],
     language: 'both',
     emoji: '🦈',
+    thumbnailUrl: 'https://yt3.ggpht.com/HmRKCZ8IQxKJd39MJEVi34_zBOaQMTZVrDTgXLJ-hmT1ue0nKOHqkZLhZaGwaqjKS85uNR7glQ=s800-c-k-c0x00ffffff-no-rj',
   },
   {
     channelId: 'UCLsooMJoIpl_7ux2jvdPB-Q',
@@ -76,6 +81,7 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     categories: ['song', 'learn'],
     language: 'en',
     emoji: '🎵',
+    thumbnailUrl: 'https://yt3.ggpht.com/x7yHOvSWKX_olv_pgx1Ou4SsHI_eOg27sXy9jbNO15rHMG3y425LnmFIyoxDyvLA8Qi3k_0rWw=s800-c-k-c0x00ffffff-no-rj',
   },
   {
     channelId: 'UCepXGfvoX1evyA6lB553Y7Q',
@@ -86,6 +92,7 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     categories: ['song', 'cartoon'],
     language: 'zh',
     emoji: '🎤',
+    thumbnailUrl: 'https://yt3.ggpht.com/pW_6yLox-tTsTsWC_SvV4bCD0dqxptAwSfAdzayuBVOtdApZIb-CPA0I5yWutKP2Ei2abbpJfA=s800-c-k-c0x00ffffff-no-rj',
   },
   {
     channelId: 'UCBnZ16ahKA2DZ_T5W0FPUXg',
@@ -96,6 +103,7 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     categories: ['song'],
     language: 'en',
     emoji: '🎨',
+    thumbnailUrl: 'https://yt3.ggpht.com/9HW0sh3SxpygY7QohdMTkUfNToJHJR1M_C1UYevboxlesumkq84nMLo1RT0JI0NYb7dqv2kHUMM=s800-c-k-c0x00ffffff-no-rj',
   },
   // ── 台灣 0-6 歲精選 ──
   {
@@ -107,6 +115,7 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     categories: ['learn', 'cartoon'],
     language: 'zh',
     emoji: '🐯',
+    thumbnailUrl: 'https://yt3.ggpht.com/ytc/AIdro_k-nS3YvcpqhfuvfH5TRBOx43M_kJtf2UKUt34OUcVy_JM=s800-c-k-c0x00ffffff-no-rj',
   },
   // ── 0-6 歲全球熱門卡通 ──
   {
@@ -118,6 +127,7 @@ export const CURATED_CHANNELS: CuratedChannel[] = [
     categories: ['cartoon'],
     language: 'en',
     emoji: '🐕',
+    thumbnailUrl: 'https://yt3.ggpht.com/7Jlomy-7asRjE8WHiLbAqw-LJq5VdyRpBnXU7yxLi-lqXS_OSB5Kd7MLDv9ybsafyOdi5uzCCQ=s800-c-k-c0x00ffffff-no-rj',
   },
   // ── 待驗證：台灣爸媽常用頻道（需要 Oscar 手動查 channel ID 後填入） ──
   // 巧虎 Benesse TW：進 youtube.com/@shimajiro 找到 "browseId" 那串 UC ID

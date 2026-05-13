@@ -305,7 +305,7 @@ function SetupScreen({
               inputMode="numeric"
               value={customMin}
               onChange={e => setCustomMin(e.target.value.replace(/\D/g, '').slice(0, 3))}
-              placeholder="12"
+              placeholder=""
               style={{
                 width: '100%', minWidth: 0, maxWidth: 90,
                 border: 'none', outline: 'none',

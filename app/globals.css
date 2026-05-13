@@ -547,11 +547,10 @@ button:active .cta-arrow-nest,
 }
 
 body {
-  /* Mia P1 字型升級：圓潤 Nunito（英）+ Huninn（中）主，system font 降為 fallback */
-  font-family: var(--font-nunito), 'Huninn',
+  /* Mia R3 字型修正：Nunito（英）+ Noto Sans TC（中文內文辨識度），Huninn 保留大標 */
+  font-family: var(--font-nunito), var(--font-noto-tc),
                -apple-system, BlinkMacSystemFont, 'SF Pro Text',
-               'PingFang TC', 'Noto Sans TC',
-               'Microsoft JhengHei', sans-serif;
+               'PingFang TC', 'Microsoft JhengHei', sans-serif;
   color: var(--text-primary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;

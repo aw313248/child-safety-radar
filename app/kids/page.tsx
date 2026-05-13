@@ -41,10 +41,11 @@ type DisplayChannel = {
   pose: MascotPose
   ageGroups: AgeGroup[]
   source: 'curated' | 'user'
+  thumbnailUrl?: string  // 精選頻道：硬碼靜態 URL；爸媽加的：API 拿
 }
 
 function curatedToDisplay(c: CuratedChannel): DisplayChannel {
-  return { channelId: c.channelId, name: c.name, description: c.description, pose: mascotForChannel(c.channelId), ageGroups: c.ageGroups, source: 'curated' }
+  return { channelId: c.channelId, name: c.name, description: c.description, pose: mascotForChannel(c.channelId), ageGroups: c.ageGroups, source: 'curated', thumbnailUrl: c.thumbnailUrl }
 }
 function userToDisplay(c: UserChannel): DisplayChannel {
   // 優先用 user 自選的 mascotPose，舊資料 fallback 用 channelId 算 hash pose
@@ -382,8 +383,14 @@ export default function KidsModePage() {
   const [mounted, setMounted] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
   const [userChannels, setUserChannels] = useState<UserChannel[]>([])
-  // YouTube channel 真實頭像 map（從 /api/channel-thumbnails 拿）
-  const [thumbs, setThumbs] = useState<Record<string, string>>({})
+  // YouTube channel 真實頭像 map
+  // 精選頻道：硬碼靜態 URL（hardcoded in curated-channels.ts），不需 API
+  // 爸媽加的頻道：/api/channel-thumbnails fetch 補齊
+  const [thumbs, setThumbs] = useState<Record<string, string>>(() => {
+    const seed: Record<string, string> = {}
+    filterChannelsByAge('all').forEach(c => { if (c.thumbnailUrl) seed[c.channelId] = c.thumbnailUrl })
+    return seed
+  })
   const [selectedChannel, setSelectedChannel] = useState<DisplayChannel | null>(null)
   const [videos, setVideos] = useState<SafeVideo[]>([])
   const [loadingVideos, setLoadingVideos] = useState(false)
@@ -430,33 +437,30 @@ export default function KidsModePage() {
     const users = getUserChannels()
     setUserChannels(users)
 
-    // 一次性 batch fetch 所有 channel thumbnail（精選 + 爸媽加的）
-    // localStorage cache 24hr，避免每次進來都打 API
-    const allIds = [
-      ...filterChannelsByAge('all').map(c => c.channelId),
-      ...users.map(u => u.channelId),
-    ]
-    if (allIds.length === 0) return
+    // 精選頻道 thumbnail 已由 seed state 直接提供（硬碼靜態 URL）
+    // 只需 fetch 爸媽自加頻道的 thumbnail
+    const userIds = users.map(u => u.channelId)
+    if (userIds.length === 0) return
 
-    const CACHE_KEY = 'cc_channel_thumbs_v1'
+    const CACHE_KEY = 'cc_channel_thumbs_v2'  // v2 只存 user channel thumbs
     const CACHE_TTL = 24 * 60 * 60 * 1000
     try {
       const raw = localStorage.getItem(CACHE_KEY)
       if (raw) {
         const cached = JSON.parse(raw) as { ts: number; map: Record<string, string> }
         if (cached.ts && Date.now() - cached.ts < CACHE_TTL) {
-          setThumbs(cached.map)
+          setThumbs(prev => ({ ...prev, ...cached.map }))
           return
         }
       }
     } catch {}
 
-    const ids = Array.from(new Set(allIds)).join(',')
+    const ids = Array.from(new Set(userIds)).join(',')
     fetch(`/api/channel-thumbnails?ids=${encodeURIComponent(ids)}`, { cache: 'force-cache' })
       .then(r => r.ok ? r.json() : null)
       .then((map: Record<string, string> | null) => {
         if (!map) return
-        setThumbs(map)
+        setThumbs(prev => ({ ...prev, ...map }))
         try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), map })) } catch {}
       })
       .catch(() => {})
