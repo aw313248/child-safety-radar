@@ -4,22 +4,10 @@ import { useEffect, useState, use } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { AnalysisResult } from '@/types/analysis'
+import { RISK_STYLE } from '@/lib/risk-style'
+import { ratingToColor } from '@/lib/score-colors'
 
 const HISTORY_KEY = 'child_radar_history'
-
-const RISK_STYLE = {
-  high:                { label: '高風險',        color: 'var(--risk-red)' },
-  medium:              { label: '注意觀察',      color: 'var(--risk-orange)' },
-  low:                 { label: '目前安全',      color: 'var(--risk-green)' },
-  adult_inappropriate: { label: '成人露骨內容',  color: '#E07B00' },
-}
-
-const RATING_COLOR: Record<string, string> = {
-  '優':     'var(--risk-green)',
-  '良':     'var(--risk-green)',
-  '普':     'var(--risk-orange)',
-  '不建議': 'var(--risk-red)',
-}
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -155,10 +143,10 @@ export default function HistoryReviewPage({ params }: PageProps) {
                 <div style={{ width: 92, fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.01em', flexShrink: 0 }}>
                   {label}
                 </div>
-                <div style={{ flex: 1, fontSize: 14, fontWeight: 800, color: RATING_COLOR[data.rating] || 'var(--text-secondary)', letterSpacing: '0.05em' }}>
+                <div style={{ flex: 1, fontSize: 14, fontWeight: 800, color: ratingToColor(data.rating), letterSpacing: '0.05em' }}>
                   {'★'.repeat(data.stars)}<span style={{ opacity: 0.25 }}>{'★'.repeat(5 - data.stars)}</span>
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: RATING_COLOR[data.rating] || 'var(--text-secondary)', letterSpacing: '-0.01em', flexShrink: 0 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: ratingToColor(data.rating), letterSpacing: '-0.01em', flexShrink: 0 }}>
                   {data.rating}
                 </div>
               </div>

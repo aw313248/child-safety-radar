@@ -3,15 +3,9 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { AnalysisResult } from '@/types/analysis'
+import { RISK_STYLE } from '@/lib/risk-style'
 
 const HISTORY_KEY = 'child_radar_history'
-
-const RISK_STYLE = {
-  high:                { label: '高風險',        color: 'var(--risk-red)' },
-  medium:              { label: '注意觀察',      color: 'var(--risk-orange)' },
-  low:                 { label: '目前安全',      color: 'var(--risk-green)' },
-  adult_inappropriate: { label: '成人露骨內容',  color: '#E07B00' },
-}
 
 /** 左側顏色條 — 依 riskScore 區段決定顏色 */
 function riskBarColor(score: number): string {
