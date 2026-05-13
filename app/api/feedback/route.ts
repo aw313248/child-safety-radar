@@ -1,15 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
+import { createFeedbackPage, type FeedbackType } from '@/lib/notion'
 
-// 使用者回饋 endpoint
-// 支援兩種類型：
-//   - report：評分有誤回報
-//   - discussion：補充家長討論連結
+// 使用者回饋 endpoint（v2 — Notion DB 為主，webhook 為輔）
 //
-// 實作策略（零 DB 成本）：
-//   1. 記錄到 console（Vercel logs 可查）
-//   2. 若有設 FEEDBACK_WEBHOOK_URL（Discord / Slack / Make / Zapier 皆可），轉發
-//   3. Oscar 可之後接 Notion DB 或 Google Sheet
+// 新版 payload（v2）：
+//   {
+//     type: 'rating_correction' | 'discussion',
+//     channelId: string,
+//     channelName: string,
+//     miaRating?: number,  // 1-5, 只 rating_correction 有
+//     miaComment: string,
+//   }
+//
+// 舊版 payload（v1，向後相容）：
+//   {
+//     type: 'report' | 'discussion',
+//     channelName, channelUrl, riskScore,
+//     content,
+//   }
+//   → 內部 normalize 成 v2 後一樣寫進 Notion
 export async function POST(req: NextRequest) {
   // Rate limit：每 IP 每分鐘 3 次（避免洗版）
   const ip = getClientIp(req)
@@ -23,39 +33,68 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { type, channelName, channelUrl, riskScore, content } = body
+    const rawType: string = String(body.type || '')
+    // 向後相容舊 'report' → 'rating_correction'
+    let type: FeedbackType | null = null
+    if (rawType === 'rating_correction' || rawType === 'report') type = 'rating_correction'
+    else if (rawType === 'discussion') type = 'discussion'
 
-    // 基本驗證
-    if (!type || !['report', 'discussion'].includes(type)) {
+    if (!type) {
       return NextResponse.json({ error: 'type 錯誤' }, { status: 400 })
     }
-    if (!content || typeof content !== 'string' || content.trim().length < 3) {
+
+    // 接受 miaComment（v2）或 content（v1）
+    const rawComment = String(body.miaComment ?? body.content ?? '')
+    const comment = rawComment.trim()
+    if (comment.length < 3) {
       return NextResponse.json({ error: '內容不可為空' }, { status: 400 })
     }
-    if (content.length > 1000) {
+    if (comment.length > 1000) {
       return NextResponse.json({ error: '內容過長' }, { status: 400 })
     }
 
-    const payload = {
-      type,
-      channelName: String(channelName || '').slice(0, 200),
-      channelUrl: String(channelUrl || '').slice(0, 500),
-      riskScore: Number(riskScore) || 0,
-      content: content.trim(),
-      submittedAt: new Date().toISOString(),
-      ip: ip.slice(0, 20),
+    const channelId = String(body.channelId || '').slice(0, 200)
+    const channelName = String(body.channelName || '').slice(0, 200)
+    const channelUrl = String(body.channelUrl || '').slice(0, 500)
+    const miaRatingRaw = Number(body.miaRating)
+    const miaRating =
+      type === 'rating_correction' && miaRatingRaw >= 1 && miaRatingRaw <= 5
+        ? Math.round(miaRatingRaw)
+        : undefined
+    if (type === 'rating_correction' && !miaRating) {
+      return NextResponse.json({ error: '需要 1-5 星等' }, { status: 400 })
     }
 
-    // 1. Log to Vercel
-    console.log('[FEEDBACK]', JSON.stringify(payload))
+    // 1. 寫 Notion（主要儲存）— 失敗不 block，留 console + webhook 雙保險
+    let notionOk = false
+    try {
+      await createFeedbackPage({
+        type,
+        channelId,
+        channelName,
+        miaRating,
+        miaComment: comment,
+        ip: ip.slice(0, 20),
+      })
+      notionOk = true
+    } catch (err) {
+      console.error('[FEEDBACK] notion write failed:', err)
+    }
 
-    // 2. 轉發到 webhook（Discord / Slack / Make / Zapier 格式通用）
+    // 2. console log（Vercel logs 備援）
+    console.log('[FEEDBACK]', JSON.stringify({
+      type, channelId, channelName, miaRating,
+      miaComment: comment, submittedAt: new Date().toISOString(),
+      ip: ip.slice(0, 20), notionOk,
+    }))
+
+    // 3. 可選 webhook 轉發（Discord / Slack / Make / Zapier）
     const webhookUrl = process.env.FEEDBACK_WEBHOOK_URL
     if (webhookUrl) {
-      const typeLabel = type === 'report' ? '🚩 評分有誤回報' : '💬 家長討論補充'
-      const message = `**${typeLabel}**\n\n**頻道：** ${payload.channelName}\n**網址：** ${payload.channelUrl}\n**當前評分：** ${payload.riskScore}/100\n**內容：**\n${payload.content}\n\n_${payload.submittedAt}_`
-
-      // Discord 格式（Slack 也相容 content 欄位需換成 text）
+      const typeLabel = type === 'rating_correction' ? '🚩 評分有誤回報' : '💬 家長討論補充'
+      const ratingLine = miaRating ? `**家長評等：** ${miaRating} / 5\n` : ''
+      const urlLine = channelUrl ? `**網址：** ${channelUrl}\n` : ''
+      const message = `**${typeLabel}**\n\n**頻道：** ${channelName}\n**頻道 ID：** ${channelId}\n${urlLine}${ratingLine}**內容：**\n${comment}\n\n_${new Date().toISOString()}_`
       try {
         await fetch(webhookUrl, {
           method: 'POST',
@@ -64,11 +103,10 @@ export async function POST(req: NextRequest) {
         })
       } catch (err) {
         console.error('[FEEDBACK] webhook forward failed:', err)
-        // webhook 失敗不影響使用者，回傳 ok
       }
     }
 
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true, notionOk })
   } catch (err) {
     console.error('[FEEDBACK] error:', err)
     return NextResponse.json({ error: '伺服器錯誤' }, { status: 500 })
