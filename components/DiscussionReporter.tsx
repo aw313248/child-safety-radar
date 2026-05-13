@@ -12,6 +12,34 @@ interface Props {
 type Mode = 'idle' | 'rating_correction' | 'discussion'
 type Status = 'ready' | 'sending' | 'done' | 'error'
 
+// ── 共用 button 樣式 ──────────────────────────────────────────────
+const ghostButtonStyle: React.CSSProperties = {
+  flex: 1, fontSize: 13, fontWeight: 800, letterSpacing: '0.06em',
+  padding: '11px 9px', minHeight: 44,
+  background: 'rgba(255,255,255,0.70)',
+  border: '1.5px solid rgba(43,24,16,0.18)',
+  borderRadius: 14,
+  color: 'var(--ink-hex)',
+  cursor: 'pointer', fontFamily: 'inherit',
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+}
+
+function submitButtonStyle(enabled: boolean): React.CSSProperties {
+  return {
+    background: enabled ? 'var(--honey-hex)' : 'rgba(43,24,16,0.10)',
+    border: '2px solid var(--ink-hex)',
+    borderRadius: 14,
+    padding: '9px 18px',
+    fontSize: 13, fontWeight: 900, letterSpacing: '0.06em',
+    color: 'var(--ink-hex)',
+    cursor: enabled ? 'pointer' : 'not-allowed',
+    fontFamily: 'inherit',
+    opacity: enabled ? 1 : 0.55,
+    boxShadow: enabled ? '2px 2px 0 var(--ink-hex)' : 'none',
+    minHeight: 44,
+  }
+}
+
 interface Discussion {
   id: string
   content: string
@@ -64,21 +92,22 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
 
   // 討論列表
   const [discussions, setDiscussions] = useState<Discussion[]>([])
-  const [page, setPage] = useState(1)
+  const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(false)
   const [loadingList, setLoadingList] = useState(false)
 
-  const fetchDiscussions = useCallback(async (p: number, append: boolean) => {
+  const fetchDiscussions = useCallback(async (cursor: string | null, append: boolean) => {
     if (!channelId) return
     setLoadingList(true)
     try {
-      const params = new URLSearchParams({ channelId, page: String(p), limit: '10' })
+      const params = new URLSearchParams({ channelId, limit: '10' })
+      if (cursor) params.set('cursor', cursor)
       const res = await fetch(`/api/discussions?${params.toString()}`)
       if (!res.ok) throw new Error()
       const data = await res.json()
       setDiscussions(prev => append ? [...prev, ...data.discussions] : data.discussions)
+      setNextCursor(data.nextCursor ?? null)
       setHasMore(Boolean(data.hasMore))
-      setPage(p)
     } catch {
       // 安靜失敗 — Notion 可能沒接好，不嚇到使用者
     } finally {
@@ -89,7 +118,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
   // 打開「補充討論」抽屜時拉留言
   useEffect(() => {
     if (mode === 'discussion' && discussions.length === 0) {
-      fetchDiscussions(1, false)
+      fetchDiscussions(null, false)
     }
   }, [mode, discussions.length, fetchDiscussions])
 
@@ -185,37 +214,13 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
             覺得這次評分不準，或想看別的家長怎麼說，
           </p>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => setMode('rating_correction')}
-              style={{
-                flex: 1, fontSize: 13, fontWeight: 800, letterSpacing: '0.06em',
-                padding: '11px 9px', minHeight: 44,
-                background: 'rgba(255,255,255,0.70)',
-                border: '1.5px solid rgba(43,24,16,0.18)',
-                borderRadius: 14,
-                color: 'var(--ink-hex)',
-                cursor: 'pointer', fontFamily: 'inherit',
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              }}
-            >
+            <button onClick={() => setMode('rating_correction')} style={ghostButtonStyle}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
               </svg>
               評分有誤
             </button>
-            <button
-              onClick={() => setMode('discussion')}
-              style={{
-                flex: 1, fontSize: 13, fontWeight: 800, letterSpacing: '0.06em',
-                padding: '11px 9px', minHeight: 44,
-                background: 'rgba(255,255,255,0.70)',
-                border: '1.5px solid rgba(43,24,16,0.18)',
-                borderRadius: 14,
-                color: 'var(--ink-hex)',
-                cursor: 'pointer', fontFamily: 'inherit',
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              }}
-            >
+            <button onClick={() => setMode('discussion')} style={ghostButtonStyle}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
@@ -272,19 +277,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
             <button
               onClick={submit}
               disabled={rating < 1 || text.trim().length < 3 || status === 'sending'}
-              style={{
-                background: rating > 0 && text.trim().length >= 3 ? 'var(--honey-hex)' : 'rgba(43,24,16,0.10)',
-                border: '2px solid var(--ink-hex)',
-                borderRadius: 14,
-                padding: '9px 18px',
-                fontSize: 13, fontWeight: 900, letterSpacing: '0.06em',
-                color: 'var(--ink-hex)',
-                cursor: rating > 0 && text.trim().length >= 3 && status !== 'sending' ? 'pointer' : 'not-allowed',
-                fontFamily: 'inherit',
-                opacity: rating > 0 && text.trim().length >= 3 ? 1 : 0.55,
-                boxShadow: rating > 0 && text.trim().length >= 3 ? '2px 2px 0 var(--ink-hex)' : 'none',
-                minHeight: 44,
-              }}
+              style={submitButtonStyle(rating > 0 && text.trim().length >= 3 && status !== 'sending')}
             >
               {status === 'sending' ? '送出中' : '送出'}
             </button>
@@ -350,7 +343,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
           )}
           {hasMore && (
             <button
-              onClick={() => fetchDiscussions(page + 1, true)}
+              onClick={() => fetchDiscussions(nextCursor, true)}
               disabled={loadingList}
               style={{
                 alignSelf: 'center',
@@ -395,19 +388,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
               <button
                 onClick={submit}
                 disabled={text.trim().length < 3 || status === 'sending'}
-                style={{
-                  background: text.trim().length >= 3 ? 'var(--honey-hex)' : 'rgba(43,24,16,0.10)',
-                  border: '2px solid var(--ink-hex)',
-                  borderRadius: 14,
-                  padding: '9px 18px',
-                  fontSize: 13, fontWeight: 900, letterSpacing: '0.06em',
-                  color: 'var(--ink-hex)',
-                  cursor: text.trim().length >= 3 && status !== 'sending' ? 'pointer' : 'not-allowed',
-                  fontFamily: 'inherit',
-                  opacity: text.trim().length >= 3 ? 1 : 0.55,
-                  boxShadow: text.trim().length >= 3 ? '2px 2px 0 var(--ink-hex)' : 'none',
-                  minHeight: 44,
-                }}
+                style={submitButtonStyle(text.trim().length >= 3 && status !== 'sending')}
               >
                 {status === 'sending' ? '送出中' : '送出討論'}
               </button>
