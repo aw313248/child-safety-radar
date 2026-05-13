@@ -548,7 +548,7 @@ button:active .cta-arrow-nest,
 
 body {
   /* Mia P1 字型升級：圓潤 Nunito（英）+ Huninn（中）主，system font 降為 fallback */
-  font-family: var(--font-nunito), 'Huninn',
+  font-family: var(--font-nunito), var(--font-huninn),
                -apple-system, BlinkMacSystemFont, 'SF Pro Text',
                'PingFang TC', 'Noto Sans TC',
                'Microsoft JhengHei', sans-serif;
@@ -578,13 +578,13 @@ body {
    中文要用 900 才有 Busy Bee Honey 的主視覺衝擊感
    ══════════════════════════════════════════════════ */
 .font-display {
-  font-family: 'Huninn', 'PingFang TC', 'Noto Sans TC', sans-serif;
+  font-family: var(--font-huninn), 'PingFang TC', 'Noto Sans TC', sans-serif;
   font-weight: 900;
   letter-spacing: -0.055em;
   line-height: 0.95;
 }
 .font-display-accent {
-  font-family: 'Huninn', 'PingFang TC', sans-serif;
+  font-family: var(--font-huninn), 'PingFang TC', sans-serif;
   font-weight: 900;
   letter-spacing: -0.04em;
   color: var(--honey-hex);
@@ -594,7 +594,7 @@ body {
 
 /* 超大 hero 級 — 直接用 clamp 隨裝置放大 */
 .font-hero {
-  font-family: 'Huninn', 'PingFang TC', sans-serif;
+  font-family: var(--font-huninn), 'PingFang TC', sans-serif;
   font-weight: 900;
   font-size: clamp(44px, 13vw, 82px);
   letter-spacing: -0.065em;
