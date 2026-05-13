@@ -1,16 +1,19 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
-import { Noto_Sans_TC } from 'next/font/google'
+import { Nunito } from 'next/font/google'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import './globals.css'
 
-// 黑體 display — 中文必須用超黑 (900) 才有 Busy Bee Honey 那種主視覺衝擊力
-const notoSansTC = Noto_Sans_TC({
+// 圓潤英文 — Nunito（next/font/google 內建支援），Mia P1 字型升級
+const nunito = Nunito({
   subsets: ['latin'],
-  weight: ['400', '500', '700', '900'],
-  variable: '--font-heihei',
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-nunito',
   display: 'swap',
 })
+
+// 圓潤中文 — Huninn（justfont 粉圓開源版）走 Google Fonts CDN
+// next/font/google 14.2 還沒 cache Huninn，用 <link> tag 載入，css 用 'Huninn' string 引用
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -137,8 +140,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-TW" className={notoSansTC.variable}>
+    <html lang="zh-TW" className={nunito.variable}>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Huninn&display=swap"
+          rel="stylesheet"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
