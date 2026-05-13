@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
-import { Nunito } from 'next/font/google'
+import { Nunito, Noto_Sans_TC } from 'next/font/google'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import './globals.css'
 
@@ -9,6 +9,15 @@ const nunito = Nunito({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '800', '900'],
   variable: '--font-nunito',
+  display: 'swap',
+})
+
+// 高辨識度中文內文 — Noto Sans TC（繁體，400/500/700/900）
+// Huninn 保留在大標，內文回歸可讀性（Mia R3 回饋）
+const notoSansTC = Noto_Sans_TC({
+  subsets: ['latin'],
+  weight: ['400', '500', '700', '900'],
+  variable: '--font-noto-tc',
   display: 'swap',
 })
 
@@ -140,7 +149,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-TW" className={nunito.variable}>
+    <html lang="zh-TW" className={`${nunito.variable} ${notoSansTC.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
