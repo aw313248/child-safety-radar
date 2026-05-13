@@ -17,13 +17,6 @@ export const SLEEP_PLAYLISTS: SleepPlaylist[] = [
     emoji: '🌙',
   },
   {
-    id: 'cocomelon-lullaby',
-    playlistId: 'PLyuESFz6eTHlXP8IBWvxe5zNXWbkpxnWW',
-    name: 'CoComelon 搖籃曲',
-    description: '小孩最熟悉的旋律，睡前放最安心',
-    emoji: '⭐',
-  },
-  {
     id: 'looloo-mozart',
     playlistId: 'PLshBxGt78uB2tSkGRNCY3vGHBI5T2gfXb',
     name: '莫札特睡眠音樂',
