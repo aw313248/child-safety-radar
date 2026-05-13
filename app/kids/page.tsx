@@ -569,7 +569,12 @@ export default function KidsModePage() {
     return (
       <main style={{
         position: 'fixed', inset: 0,
-        background: 'linear-gradient(180deg, #0d0a1a 0%, #1a0f2e 50%, #0a1628 100%)',
+        // 暖米白底 + 細微 ink 漸層：夜晚感但對齊 CareCub 品牌暖色系
+        background: 'var(--paper-hex)',
+        backgroundImage: [
+          'radial-gradient(ellipse 70% 55% at 50% 0%,  rgba(43,24,16,0.08), transparent 60%)',
+          'radial-gradient(ellipse 55% 40% at 50% 100%, rgba(43,24,16,0.12), transparent 65%)',
+        ].join(','),
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         <KidsTimer
@@ -582,80 +587,78 @@ export default function KidsModePage() {
           }}
         />
 
-        {/* 星星背景 */}
-        <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
-          {[...Array(24)].map((_, i) => (
-            <div key={i} style={{
-              position: 'absolute',
-              width: i % 3 === 0 ? 3 : 2,
-              height: i % 3 === 0 ? 3 : 2,
-              borderRadius: '50%',
-              background: '#fff',
-              opacity: 0.3 + (i % 5) * 0.1,
-              top: `${5 + (i * 37) % 85}%`,
-              left: `${3 + (i * 61) % 94}%`,
-              animation: `bear-blink ${2 + (i % 4)}s ease-in-out infinite`,
-              animationDelay: `${(i * 0.4) % 3}s`,
-            }} />
-          ))}
-        </div>
-
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 20px 20px', position: 'relative', zIndex: 1, gap: 24 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 20px 28px', gap: 24 }}>
 
           {!selectedPlaylist ? (
             <>
-              <div className="bear-loading" style={{ marginBottom: 4 }}>
-                <Mascot pose="sleep" size={140} />
+              {/* 月亮 SVG icon（取代系統 emoji）*/}
+              <div className="bear-loading" style={{ marginBottom: 0 }}>
+                <Mascot pose="sleep" size={120} />
               </div>
+
               <div style={{ textAlign: 'center' }}>
-                <h2 style={{ fontSize: 26, fontWeight: 900, color: '#fff', letterSpacing: '-0.04em', marginBottom: 6 }}>
+                <h2 className="font-display" style={{ fontSize: 32, color: 'var(--ink-hex)', marginBottom: 8 }}>
                   睡前音樂
                 </h2>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', letterSpacing: '-0.01em', fontWeight: 500 }}>
+                <p style={{ fontSize: 14, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', fontWeight: 500 }}>
                   選一個，放著就好
                 </p>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 360 }}>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 360 }}>
                 {SLEEP_PLAYLISTS.map(pl => (
                   <button
                     key={pl.id}
                     onClick={() => setSelectedPlaylist(pl)}
                     style={{
-                      display: 'flex', alignItems: 'center', gap: 16,
-                      padding: '16px 20px', borderRadius: 20,
-                      background: 'rgba(255,255,255,0.08)',
-                      border: '1px solid rgba(255,255,255,0.15)',
+                      display: 'flex', alignItems: 'center', gap: 14,
+                      padding: '14px 18px', borderRadius: 18,
+                      background: 'rgba(255,255,255,0.65)',
                       backdropFilter: 'blur(20px)',
                       WebkitBackdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(43,24,16,0.10)',
+                      boxShadow: '0 2px 12px rgba(43,24,16,0.06)',
                       cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
-                      transition: 'background 0.2s',
+                      transition: 'background 0.15s, transform 0.1s',
                     }}
                   >
-                    <span style={{ fontSize: 32, flexShrink: 0 }}>{pl.emoji}</span>
-                    <div>
-                      <p style={{ fontSize: 15, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', marginBottom: 3 }}>
+                    {/* music note SVG（取代 emoji）*/}
+                    <div style={{
+                      width: 40, height: 40, flexShrink: 0,
+                      background: 'rgba(242,184,75,0.15)',
+                      borderRadius: 12,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--honey-deep)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <path d="M9 18V5l12-2v13" />
+                        <circle cx="6" cy="18" r="3" />
+                        <circle cx="18" cy="16" r="3" />
+                      </svg>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em', marginBottom: 2 }}>
                         {pl.name}
                       </p>
-                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 500, letterSpacing: '-0.005em' }}>
+                      <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.50)', fontWeight: 500, letterSpacing: '-0.005em' }}>
                         {pl.description}
                       </p>
                     </div>
-                    <svg style={{ marginLeft: 'auto', flexShrink: 0, opacity: 0.4 }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg style={{ flexShrink: 0, color: 'rgba(43,24,16,0.25)' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="9 18 15 12 9 6" />
                     </svg>
                   </button>
                 ))}
               </div>
+
               <button
                 onClick={() => setSleepMode(false)}
-                style={{
-                  marginTop: 8, padding: '10px 24px', borderRadius: 9999,
-                  background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-                  color: 'rgba(255,255,255,0.7)', cursor: 'pointer',
-                  fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
-                }}
+                className="glass-back-btn"
+                style={{ marginTop: 4 }}
               >
-                ← 返回頻道
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                返回頻道
               </button>
             </>
           ) : (
@@ -663,22 +666,23 @@ export default function KidsModePage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, alignSelf: 'stretch' }}>
                 <button
                   onClick={() => setSelectedPlaylist(null)}
-                  style={{
-                    padding: '8px 16px', borderRadius: 9999,
-                    background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.18)',
-                    color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
-                  }}
+                  className="glass-back-btn"
                 >
-                  ← 換一首
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                  換一首
                 </button>
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>
-                  {selectedPlaylist.emoji} {selectedPlaylist.name}
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink-hex)', letterSpacing: '-0.01em' }}>
+                  {selectedPlaylist.name}
                 </span>
               </div>
+
               <div style={{
                 width: '100%', maxWidth: 560,
                 aspectRatio: '16/9', borderRadius: 20, overflow: 'hidden',
-                boxShadow: '0 24px 60px rgba(0,0,0,0.6)',
+                boxShadow: '0 16px 48px rgba(43,24,16,0.18)',
+                border: '1px solid rgba(43,24,16,0.08)',
               }}>
                 {/* key=playlistId → playlist 換時強制 remount，iOS Safari iframe 不殘留聲音 */}
                 <iframe
@@ -688,12 +692,13 @@ export default function KidsModePage() {
                   style={{ width: '100%', height: '100%', border: 0 }}
                 />
               </div>
+
               <div style={{ textAlign: 'center' }}>
                 <div className="bear-loading" style={{ display: 'inline-block' }}>
-                  <Mascot pose="sleep" size={80} />
+                  <Mascot pose="sleep" size={72} />
                 </div>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 8, fontWeight: 500 }}>
-                  晚安，好夢 🌙
+                <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.40)', marginTop: 8, fontWeight: 500, letterSpacing: '-0.01em' }}>
+                  晚安，好夢
                 </p>
               </div>
             </>
