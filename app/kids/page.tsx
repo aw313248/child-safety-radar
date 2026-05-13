@@ -680,7 +680,9 @@ export default function KidsModePage() {
                 aspectRatio: '16/9', borderRadius: 20, overflow: 'hidden',
                 boxShadow: '0 24px 60px rgba(0,0,0,0.6)',
               }}>
+                {/* key=playlistId → playlist 換時強制 remount，iOS Safari iframe 不殘留聲音 */}
                 <iframe
+                  key={selectedPlaylist.playlistId}
                   src={`https://www.youtube-nocookie.com/embed/videoseries?list=${selectedPlaylist.playlistId}&autoplay=1&rel=0&modestbranding=1&iv_load_policy=3&fs=0&playsinline=1&controls=1`}
                   allow="autoplay; encrypted-media"
                   style={{ width: '100%', height: '100%', border: 0 }}
