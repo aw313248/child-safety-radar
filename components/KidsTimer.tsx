@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Mascot, { MascotPose } from './Mascot'
+import { pickEducationText, EducationEntry } from '@/lib/parentEducationTexts'
 
 // localStorage keys
 const TIMER_MIN_KEY = 'peekkids_timer_minutes'  // 預設分鐘數
@@ -526,6 +527,9 @@ function TimeUpScreen({
 }) {
   const isAnswerCorrect = input.trim() !== '' && parseInt(input, 10) === math.answer
 
+  // 每次 TimeUpScreen mount 抽一段家長教育文本（同 session 不重複）
+  const [educationEntry] = useState<EducationEntry>(() => pickEducationText())
+
   return (
     <div className="kids-timer-timeup" style={{
       position: 'fixed', inset: 0, zIndex: 9900,
@@ -573,6 +577,52 @@ function TimeUpScreen({
             50%     { transform: scale(1.035); }
           }
         `}</style>
+
+        {/* ── 家長教育 section ── */}
+        <div style={{
+          textAlign: 'left',
+          padding: '12px 14px',
+          marginBottom: 14,
+          maxWidth: 320,
+          margin: '0 auto 14px',
+          background: 'rgba(255,255,255,0.38)',
+          border: '1px solid rgba(43,24,16,0.10)',
+          borderRadius: 14,
+        }}>
+          <p style={{
+            fontSize: 13,
+            color: 'rgba(43,24,16,0.85)',
+            lineHeight: 1.65,
+            letterSpacing: '-0.01em',
+            marginBottom: 6,
+            fontFamily: 'var(--font-noto-tc), "Noto Sans TC", "PingFang TC", sans-serif',
+          }}>
+            {educationEntry.text}
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <span style={{
+              fontSize: 11,
+              color: 'rgba(43,24,16,0.55)',
+              letterSpacing: '0.01em',
+            }}>
+              — {educationEntry.source}
+            </span>
+            <a
+              href={educationEntry.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontSize: 11,
+                color: 'var(--honey-deep, #B87A00)',
+                textDecoration: 'underline',
+                letterSpacing: '0.01em',
+                flexShrink: 0,
+              }}
+            >
+              查看出處
+            </a>
+          </div>
+        </div>
 
         {/* 爸媽延長區 — liquid glass 暖奶油，跟其他 modal 同套 */}
         <div style={{

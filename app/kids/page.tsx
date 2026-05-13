@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { CuratedChannel, AgeGroup, filterChannelsByAge } from '@/lib/curated-channels'
 import { getUserChannels, removeUserChannel, UserChannel } from '@/lib/user-channels'
 import { SLEEP_PLAYLISTS, SleepPlaylist } from '@/lib/sleep-playlists'
+import { EducationEntry, pickEducationText } from '@/lib/parentEducationTexts'
 import KidsTimer from '@/components/KidsTimer'
 import Mascot, { MascotPose } from '@/components/Mascot'
 import ChannelAvatar from '@/components/ChannelAvatar'
@@ -401,6 +402,7 @@ export default function KidsModePage() {
   const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null)
   const [exitInput, setExitInput] = useState('')
   const [exitError, setExitError] = useState(false)
+  const [educationEntry, setEducationEntry] = useState<EducationEntry | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const allowLeaveRef = useRef(false)
 
@@ -490,7 +492,7 @@ export default function KidsModePage() {
     if (!mounted || showGuide) return
     const lockState = { peekkidsLock: true }
     window.history.pushState(lockState, '', window.location.href)
-    const onPopState = () => { window.history.pushState(lockState, '', window.location.href); (() => { setExitMath(makeExitMath()); setShowExitConfirm(true) })() }
+    const onPopState = () => { window.history.pushState(lockState, '', window.location.href); (() => { setExitMath(makeExitMath()); setShowExitConfirm(true); setEducationEntry(pickEducationText()) })() }
     window.addEventListener('popstate', onPopState)
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
       if (allowLeaveRef.current) return
@@ -927,7 +929,7 @@ export default function KidsModePage() {
               <span>時間</span>
             </button>
             <button
-              onClick={() => (() => { setExitMath(makeExitMath()); setShowExitConfirm(true) })()}
+              onClick={() => (() => { setExitMath(makeExitMath()); setShowExitConfirm(true); setEducationEntry(pickEducationText()) })()}
               aria-label="回首頁"
               title="回首頁（需要爸媽算數學）"
               className="kids-action kids-action--danger"
@@ -1151,9 +1153,57 @@ export default function KidsModePage() {
             <h3 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--ink-hex)', marginBottom: 6 }}>
               大人才能離開
             </h3>
-            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.66)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 20, fontWeight: 500 }}>
+            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.66)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 16, fontWeight: 500 }}>
               小朋友請去找爸爸媽媽<br />答對下面這題就會回首頁
             </p>
+
+            {/* ── 家長教育 section ── */}
+            {educationEntry && (
+              <div style={{
+                textAlign: 'left',
+                padding: '12px 14px',
+                marginBottom: 16,
+                maxWidth: 320,
+                margin: '0 auto 16px',
+                background: 'rgba(255,255,255,0.38)',
+                border: '1px solid rgba(43,24,16,0.10)',
+                borderRadius: 14,
+              }}>
+                <p style={{
+                  fontSize: 13,
+                  color: 'rgba(43,24,16,0.85)',
+                  lineHeight: 1.65,
+                  letterSpacing: '-0.01em',
+                  marginBottom: 6,
+                  fontFamily: 'var(--font-noto-tc), "Noto Sans TC", "PingFang TC", sans-serif',
+                }}>
+                  {educationEntry.text}
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span style={{
+                    fontSize: 11,
+                    color: 'rgba(43,24,16,0.55)',
+                    letterSpacing: '0.01em',
+                  }}>
+                    — {educationEntry.source}
+                  </span>
+                  <a
+                    href={educationEntry.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontSize: 11,
+                      color: 'var(--honey-deep, #B87A00)',
+                      textDecoration: 'underline',
+                      letterSpacing: '0.01em',
+                      flexShrink: 0,
+                    }}
+                  >
+                    查看出處
+                  </a>
+                </div>
+              </div>
+            )}
 
             <div style={{
               padding: '20px 16px 16px', marginBottom: exitError ? 8 : 16,
