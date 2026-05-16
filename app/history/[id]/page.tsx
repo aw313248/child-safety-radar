@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { AnalysisResult } from '@/types/analysis'
@@ -9,12 +9,13 @@ import { ratingToColor } from '@/lib/score-colors'
 
 const HISTORY_KEY = 'child_radar_history'
 
+// Next.js 14 客戶端頁面 params 是普通物件，不是 Promise（Promise 是 Next.js 15+）
 interface PageProps {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 export default function HistoryReviewPage({ params }: PageProps) {
-  const { id } = use(params)
+  const { id } = params
   const [item, setItem] = useState<AnalysisResult | null>(null)
   const [mounted, setMounted] = useState(false)
 
@@ -24,11 +25,15 @@ export default function HistoryReviewPage({ params }: PageProps) {
       const checkedAt = decodeURIComponent(id)
       const raw = localStorage.getItem(HISTORY_KEY)
       if (raw) {
-        const history: AnalysisResult[] = JSON.parse(raw)
-        const found = history.find(h => h.checkedAt === checkedAt)
-        if (found) setItem(found)
+        const parsed = JSON.parse(raw)
+        if (Array.isArray(parsed)) {
+          const found = parsed.find((h: AnalysisResult) => h && h.checkedAt === checkedAt)
+          if (found) setItem(found)
+        }
       }
-    } catch {}
+    } catch (err) {
+      console.error('[history/[id]] localStorage parse failed', err)
+    }
   }, [id])
 
   if (!mounted) return null
