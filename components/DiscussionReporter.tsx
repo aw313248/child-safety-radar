@@ -47,6 +47,26 @@ interface Discussion {
   submittedAt: string
 }
 
+// Mia 第四輪 P2 #7：空狀態示範討論（真實媽媽視角語氣，標明示範）
+// 不影響真實 Notion 留言抓取，真實留言會顯示在示範下方
+const DEMO_DISCUSSIONS: { id: string; author: string; content: string }[] = [
+  {
+    id: 'demo-1',
+    author: '小米媽',
+    content: '我家小孩 4 歲，看 Bluey 還算靜得下來，但看完還是會跳上跳下，我都搭配戶外活動',
+  },
+  {
+    id: 'demo-2',
+    author: '阿珊',
+    content: 'Peppa Pig 國語版口音真的很怪，後來改看英文原版反而學了一些字',
+  },
+  {
+    id: 'demo-3',
+    author: '小綠媽',
+    content: '拿鐵媽媽那篇 5 維度真的有用，我用她的框架自己評估後再給孩子看',
+  },
+]
+
 // 星等滑桿 1-5 — 鍵盤可調 + 點擊星星
 function StarSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   return (
@@ -323,10 +343,35 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
           </div>
 
           {/* 留言列表 */}
+          {/* Mia 第四輪 P2 #7：空狀態顯示 3 筆示範討論，不阻擋真實留言 */}
           {discussions.length === 0 && !loadingList && (
-            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', textAlign: 'center', padding: '14px 0' }}>
-              還沒有討論，當第一個分享
-            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)', letterSpacing: '0.01em', fontWeight: 600 }}>
+                示範討論 · 等真實討論累積中
+              </p>
+              {DEMO_DISCUSSIONS.map(d => (
+                <div key={d.id} style={{
+                  padding: '10px 12px',
+                  background: 'rgba(255,255,255,0.45)',
+                  border: '1px dashed rgba(43,24,16,0.15)',
+                  borderRadius: 12,
+                }}>
+                  <p style={{
+                    fontSize: 13, color: 'rgba(43,24,16,0.78)',
+                    letterSpacing: '-0.005em', lineHeight: 1.55, fontWeight: 500,
+                    whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                  }}>
+                    {d.content}
+                  </p>
+                  <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)', letterSpacing: '-0.01em', marginTop: 4 }}>
+                    — {d.author}（示範）
+                  </p>
+                </div>
+              ))}
+              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', textAlign: 'center', padding: '8px 0 4px' }}>
+                成為第一個真實分享
+              </p>
+            </div>
           )}
           {loadingList && discussions.length === 0 && (
             <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', textAlign: 'center', padding: '14px 0' }}>
