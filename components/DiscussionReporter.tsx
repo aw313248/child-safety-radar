@@ -17,7 +17,7 @@ const ghostButtonStyle: React.CSSProperties = {
   flex: 1, fontSize: 13, fontWeight: 800, letterSpacing: '0.06em',
   padding: '11px 9px', minHeight: 44,
   background: 'rgba(255,255,255,0.70)',
-  border: '1.5px solid rgba(43,24,16,0.18)',
+  border: '1.5px solid rgba(var(--ink-rgb), 0.18)',
   borderRadius: 14,
   color: 'var(--ink-hex)',
   cursor: 'pointer', fontFamily: 'inherit',
@@ -26,7 +26,7 @@ const ghostButtonStyle: React.CSSProperties = {
 
 function submitButtonStyle(enabled: boolean): React.CSSProperties {
   return {
-    background: enabled ? 'var(--honey-hex)' : 'rgba(43,24,16,0.10)',
+    background: enabled ? 'var(--honey-hex)' : 'rgba(var(--ink-rgb), 0.10)',
     border: '2px solid var(--ink-hex)',
     borderRadius: 14,
     padding: '9px 18px',
@@ -90,7 +90,7 @@ function StarSlider({ value, onChange }: { value: number; onChange: (v: number) 
           >
             <span style={{
               fontSize: 26,
-              color: n <= value ? '#F2B84B' : 'rgba(43,24,16,0.20)',
+              color: n <= value ? '#F2B84B' : 'rgba(var(--ink-rgb), 0.20)',
               transition: 'color 0.15s',
             }}>★</span>
           </button>
@@ -210,7 +210,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
       border: '1px solid rgba(255,255,255,0.80)',
       borderRadius: 20,
       padding: mode === 'idle' ? '14px 16px' : '16px',
-      boxShadow: '0 2px 12px rgba(43,24,16,0.05), inset 0 1px 0 rgba(255,255,255,0.85)',
+      boxShadow: '0 2px 12px rgba(var(--ink-rgb), 0.05), inset 0 1px 0 rgba(255,255,255,0.85)',
     }}>
       {/* Toast — Mia 第四輪 P1 #4：300ms 漸入 + 2 秒自動消失 */}
       {showToast && (
@@ -242,7 +242,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
       {mode === 'idle' && (
         <>
           <p style={{
-            fontSize: 13, color: 'rgba(43,24,16,0.65)',
+            fontSize: 13, color: 'rgba(var(--ink-rgb), 0.65)',
             lineHeight: 1.55, letterSpacing: '-0.01em',
             marginBottom: 10, textAlign: 'center', fontWeight: 500,
           }}>
@@ -274,7 +274,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
             </p>
             <button onClick={reset} style={{
               background: 'transparent', border: 'none', cursor: 'pointer',
-              fontSize: 13, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em',
+              fontSize: 13, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '-0.01em',
               fontFamily: 'inherit', padding: 4,
             }}>
               取消
@@ -292,7 +292,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
             style={{
               width: '100%',
               background: 'rgba(255,255,255,0.70)',
-              border: '1px solid rgba(43,24,16,0.15)',
+              border: '1px solid rgba(var(--ink-rgb), 0.15)',
               borderRadius: 12,
               padding: '10px 12px',
               fontFamily: 'inherit',
@@ -306,7 +306,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
           />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)', letterSpacing: '-0.01em' }}>
+            <span style={{ fontSize: 11, color: 'rgba(var(--ink-rgb), 0.45)', letterSpacing: '-0.01em' }}>
               {text.length}/1000
             </span>
             <button
@@ -335,7 +335,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
             </p>
             <button onClick={reset} style={{
               background: 'transparent', border: 'none', cursor: 'pointer',
-              fontSize: 13, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em',
+              fontSize: 13, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '-0.01em',
               fontFamily: 'inherit', padding: 4,
             }}>
               收起
@@ -346,35 +346,35 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
           {/* Mia 第四輪 P2 #7：空狀態顯示 3 筆示範討論，不阻擋真實留言 */}
           {discussions.length === 0 && !loadingList && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)', letterSpacing: '0.01em', fontWeight: 600 }}>
+              <p style={{ fontSize: 11, color: 'rgba(var(--ink-rgb), 0.45)', letterSpacing: '0.01em', fontWeight: 600 }}>
                 示範討論 · 等真實討論累積中
               </p>
               {DEMO_DISCUSSIONS.map(d => (
                 <div key={d.id} style={{
                   padding: '10px 12px',
                   background: 'rgba(255,255,255,0.45)',
-                  border: '1px dashed rgba(43,24,16,0.15)',
+                  border: '1px dashed rgba(var(--ink-rgb), 0.15)',
                   borderRadius: 12,
                 }}>
                   <p style={{
-                    fontSize: 13, color: 'rgba(43,24,16,0.78)',
+                    fontSize: 13, color: 'rgba(var(--ink-rgb), 0.78)',
                     letterSpacing: '-0.005em', lineHeight: 1.55, fontWeight: 500,
                     whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                   }}>
                     {d.content}
                   </p>
-                  <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)', letterSpacing: '-0.01em', marginTop: 4 }}>
+                  <p style={{ fontSize: 11, color: 'rgba(var(--ink-rgb), 0.45)', letterSpacing: '-0.01em', marginTop: 4 }}>
                     — {d.author}（示範）
                   </p>
                 </div>
               ))}
-              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', textAlign: 'center', padding: '8px 0 4px' }}>
+              <p style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '-0.01em', textAlign: 'center', padding: '8px 0 4px' }}>
                 成為第一個真實分享
               </p>
             </div>
           )}
           {loadingList && discussions.length === 0 && (
-            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', textAlign: 'center', padding: '14px 0' }}>
+            <p style={{ fontSize: 13, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '-0.01em', textAlign: 'center', padding: '14px 0' }}>
               載入中
             </p>
           )}
@@ -384,7 +384,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
                 <div key={d.id} style={{
                   padding: '10px 12px',
                   background: 'rgba(255,255,255,0.65)',
-                  border: '1px solid rgba(43,24,16,0.08)',
+                  border: '1px solid rgba(var(--ink-rgb), 0.08)',
                   borderRadius: 12,
                 }}>
                   <p style={{
@@ -394,7 +394,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
                   }}>
                     {d.content}
                   </p>
-                  <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)', letterSpacing: '-0.01em', marginTop: 4 }}>
+                  <p style={{ fontSize: 11, color: 'rgba(var(--ink-rgb), 0.45)', letterSpacing: '-0.01em', marginTop: 4 }}>
                     {new Date(d.submittedAt).toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -407,7 +407,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
               disabled={loadingList}
               style={{
                 alignSelf: 'center',
-                background: 'transparent', border: '1px solid rgba(43,24,16,0.18)',
+                background: 'transparent', border: '1px solid rgba(var(--ink-rgb), 0.18)',
                 borderRadius: 9999, padding: '6px 14px',
                 fontSize: 12, fontWeight: 700, color: 'var(--ink-hex)',
                 letterSpacing: '0.04em', cursor: 'pointer', fontFamily: 'inherit',
@@ -419,7 +419,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
 
           {/* 新增留言 */}
           <div style={{
-            borderTop: '1px dashed rgba(43,24,16,0.12)',
+            borderTop: '1px dashed rgba(var(--ink-rgb), 0.12)',
             paddingTop: 12,
             display: 'flex', flexDirection: 'column', gap: 8,
           }}>
@@ -432,7 +432,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
               style={{
                 width: '100%',
                 background: 'rgba(255,255,255,0.70)',
-                border: '1px solid rgba(43,24,16,0.15)',
+                border: '1px solid rgba(var(--ink-rgb), 0.15)',
                 borderRadius: 12,
                 padding: '10px 12px',
                 fontFamily: 'inherit',
@@ -442,7 +442,7 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
               }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 11, color: 'rgba(43,24,16,0.45)' }}>
+              <span style={{ fontSize: 11, color: 'rgba(var(--ink-rgb), 0.45)' }}>
                 {text.length}/1000
               </span>
               <button

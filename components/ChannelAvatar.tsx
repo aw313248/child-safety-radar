@@ -32,7 +32,7 @@ export default function ChannelAvatar({ src, fallbackPose, size = 92, alt = '' }
       borderRadius: '50%',
       background: 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)',
       border: '2.5px solid var(--ink-hex)',
-      boxShadow: '0 10px 22px -10px rgba(43, 24, 16, 0.4)',
+      boxShadow: '0 10px 22px -10px rgba(var(--ink-rgb), 0.4)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       overflow: 'hidden',
       position: 'relative',

@@ -76,7 +76,7 @@ export default function CaseLibrary() {
           background: 'rgba(255,255,255,0.45)',
           backdropFilter: 'blur(14px)',
           WebkitBackdropFilter: 'blur(14px)',
-          border: '1px solid rgba(43,24,16,0.12)',
+          border: '1px solid rgba(var(--ink-rgb), 0.12)',
           borderRadius: open ? '16px 16px 0 0' : 16,
           cursor: 'pointer', fontFamily: 'inherit',
           transition: 'border-radius 0.2s',
@@ -96,13 +96,13 @@ export default function CaseLibrary() {
 
       {open && (
         <div style={{
-          border: '1px solid rgba(43,24,16,0.12)',
+          border: '1px solid rgba(var(--ink-rgb), 0.12)',
           borderTop: 'none',
           borderRadius: '0 0 16px 16px',
           overflow: 'hidden',
         }}>
           {/* Cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, background: 'rgba(43,24,16,0.06)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, background: 'rgba(var(--ink-rgb), 0.06)' }}>
             {CASES.map((c) => (
               <article
                 key={c.name}
@@ -119,7 +119,7 @@ export default function CaseLibrary() {
                     {c.statusLabel} · {c.year}
                   </span>
                 </div>
-                <p style={{ fontSize: 14, color: 'rgba(43,24,16,0.5)', letterSpacing: '-0.01em', marginBottom: 5 }}>
+                <p style={{ fontSize: 14, color: 'rgba(var(--ink-rgb), 0.5)', letterSpacing: '-0.01em', marginBottom: 5 }}>
                   {c.meta}
                 </p>
                 <p style={{ fontSize: 14, color: 'var(--ink-hex)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 8, fontWeight: 500, opacity: 0.75 }}>
@@ -138,11 +138,11 @@ export default function CaseLibrary() {
           </div>
 
           {/* Stat footer */}
-          <div style={{ padding: '10px 16px', background: 'rgba(43,24,16,0.03)', textAlign: 'center' }}>
-            <p style={{ fontSize: 14, color: 'rgba(43,24,16,0.5)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
+          <div style={{ padding: '10px 16px', background: 'rgba(var(--ink-rgb), 0.03)', textAlign: 'center' }}>
+            <p style={{ fontSize: 14, color: 'rgba(var(--ink-rgb), 0.5)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
               2017 年 YouTube 下架 <strong style={{ color: 'var(--ink-hex)', fontWeight: 700 }}>15 萬支影片</strong>、終止 <strong style={{ color: 'var(--ink-hex)', fontWeight: 700 }}>270 個頻道</strong>
               <a href="https://en.wikipedia.org/wiki/Elsagate" target="_blank" rel="noopener noreferrer"
-                style={{ color: 'rgba(43,24,16,0.35)', textDecoration: 'none', marginLeft: 6 }}>
+                style={{ color: 'rgba(var(--ink-rgb), 0.35)', textDecoration: 'none', marginLeft: 6 }}>
                 來源 →
               </a>
             </p>

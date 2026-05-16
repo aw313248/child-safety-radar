@@ -54,7 +54,7 @@ export default function UnlockModal({ onUnlocked, onClose, pendingFromCheckout =
         onClick={onClose}
         style={{
           position: 'absolute', inset: 0,
-          background: 'rgba(43,24,16,0.55)',
+          background: 'rgba(var(--ink-rgb), 0.55)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
         }}
@@ -72,13 +72,13 @@ export default function UnlockModal({ onUnlocked, onClose, pendingFromCheckout =
           padding: '8px 22px 28px',
           width: '100%',
           maxWidth: 480,
-          boxShadow: '0 -10px 40px -8px rgba(43,24,16,0.35)',
+          boxShadow: '0 -10px 40px -8px rgba(var(--ink-rgb), 0.35)',
         }}
       >
         {/* Drag handle */}
         <div style={{
           width: 44, height: 5,
-          background: 'rgba(43,24,16,0.22)',
+          background: 'rgba(var(--ink-rgb), 0.22)',
           borderRadius: 99,
           margin: '8px auto 18px',
         }} />
@@ -150,7 +150,7 @@ export default function UnlockModal({ onUnlocked, onClose, pendingFromCheckout =
               : <>還有想掃的頻道嗎？<br />解鎖無限掃描</>}
           </h2>
           <p style={{
-            fontSize: 13, color: 'rgba(43,24,16,0.72)',
+            fontSize: 13, color: 'rgba(var(--ink-rgb), 0.72)',
             letterSpacing: '-0.005em', lineHeight: 1.6, fontWeight: 500,
           }}>
             {pendingFromCheckout
@@ -177,12 +177,12 @@ export default function UnlockModal({ onUnlocked, onClose, pendingFromCheckout =
               <span style={{ fontSize: 32, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.04em', lineHeight: 1 }}>
                 NT$99
               </span>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(43,24,16,0.7)' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(var(--ink-rgb), 0.7)' }}>
                 /月
               </span>
             </div>
             <p style={{
-              fontSize: 11, fontWeight: 600, color: 'rgba(43,24,16,0.72)',
+              fontSize: 11, fontWeight: 600, color: 'rgba(var(--ink-rgb), 0.72)',
               letterSpacing: '-0.005em', marginTop: 4,
             }}>
               = 每天 NT$3.3，比一杯手搖便宜
@@ -237,11 +237,11 @@ export default function UnlockModal({ onUnlocked, onClose, pendingFromCheckout =
             padding: '10px 14px',
             marginBottom: 14,
             background: 'transparent',
-            color: 'rgba(43,24,16,0.7)',
+            color: 'rgba(var(--ink-rgb), 0.7)',
             fontSize: 12, fontWeight: 600,
             letterSpacing: '-0.005em',
             textDecoration: 'none',
-            border: '1.5px dashed rgba(43,24,16,0.3)',
+            border: '1.5px dashed rgba(var(--ink-rgb), 0.3)',
             borderRadius: 12,
             fontFamily: 'inherit',
           }}
@@ -254,7 +254,7 @@ export default function UnlockModal({ onUnlocked, onClose, pendingFromCheckout =
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexWrap: 'wrap', gap: '4px 12px',
-          fontSize: 11, color: 'rgba(43,24,16,0.55)', fontWeight: 500,
+          fontSize: 11, color: 'rgba(var(--ink-rgb), 0.55)', fontWeight: 500,
           letterSpacing: '-0.005em',
           marginBottom: 16, lineHeight: 1.6,
         }}>
@@ -270,7 +270,7 @@ export default function UnlockModal({ onUnlocked, onClose, pendingFromCheckout =
             style={{
               display: 'block', margin: '0 auto',
               background: 'transparent', border: 'none',
-              fontSize: 12, color: 'rgba(43,24,16,0.55)',
+              fontSize: 12, color: 'rgba(var(--ink-rgb), 0.55)',
               fontWeight: 600, cursor: 'pointer',
               fontFamily: 'inherit', textDecoration: 'underline',
               textUnderlineOffset: 3,
@@ -281,11 +281,11 @@ export default function UnlockModal({ onUnlocked, onClose, pendingFromCheckout =
         ) : (
           <div className="animate-fade-scale-in">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-              <div style={{ flex: 1, height: 1, background: 'rgba(43,24,16,0.18)' }} />
-              <span style={{ fontSize: 11, color: 'rgba(43,24,16,0.55)', fontWeight: 600, letterSpacing: '-0.005em' }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(var(--ink-rgb), 0.18)' }} />
+              <span style={{ fontSize: 11, color: 'rgba(var(--ink-rgb), 0.55)', fontWeight: 600, letterSpacing: '-0.005em' }}>
                 輸入授權碼
               </span>
-              <div style={{ flex: 1, height: 1, background: 'rgba(43,24,16,0.18)' }} />
+              <div style={{ flex: 1, height: 1, background: 'rgba(var(--ink-rgb), 0.18)' }} />
             </div>
             <input
               type="text"

@@ -28,12 +28,12 @@ export default function TermsPage() {
       }}>
         <Link href="/" style={{
           fontWeight: 800, fontSize: 15,
-          color: '#2B1810', textDecoration: 'none',
+          color: 'var(--ink-hex)', textDecoration: 'none',
           letterSpacing: '-0.02em',
         }}>
           ← CareCub
         </Link>
-        <span style={{ fontSize: 13, color: '#2B1810', opacity: 0.6 }}>
+        <span style={{ fontSize: 13, color: 'var(--ink-hex)', opacity: 0.6 }}>
           服務條款
         </span>
       </header>
@@ -45,12 +45,12 @@ export default function TermsPage() {
       }}>
         <h1 style={{
           fontSize: 28, fontWeight: 900,
-          color: '#2B1810', letterSpacing: '-0.04em',
+          color: 'var(--ink-hex)', letterSpacing: '-0.04em',
           marginBottom: 8,
         }}>
           服務條款
         </h1>
-        <p style={{ fontSize: 13, color: '#2B1810', opacity: 0.5, marginBottom: 40 }}>
+        <p style={{ fontSize: 13, color: 'var(--ink-hex)', opacity: 0.5, marginBottom: 40 }}>
           最後更新：{LAST_UPDATED}
         </p>
 
@@ -87,7 +87,7 @@ export default function TermsPage() {
             </li>
             <li>
               <strong>退款政策</strong>：購買後如有問題，請在 7 天內寄信至
-              <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: '#D99422', fontWeight: 700 }}>
+              <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: 'var(--cc-gold-deep, #D99422)', fontWeight: 700 }}>
                 {' '}{CONTACT_EMAIL}
               </a>，我們將依實際情況處理
             </li>
@@ -139,7 +139,7 @@ export default function TermsPage() {
         <Section title="8. 隱私權">
           <p>
             本服務的資料收集與處理方式，詳見
-            <Link href="/privacy" style={{ color: '#D99422', fontWeight: 700, marginLeft: 4 }}>
+            <Link href="/privacy" style={{ color: 'var(--cc-gold-deep, #D99422)', fontWeight: 700, marginLeft: 4 }}>
               隱私權政策
             </Link>
           </p>
@@ -155,18 +155,18 @@ export default function TermsPage() {
         <Section title="10. 聯絡我們">
           <p>
             對本條款有任何問題，請寄信至：
-            <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: '#D99422', fontWeight: 700 }}>
+            <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: 'var(--cc-gold-deep, #D99422)', fontWeight: 700 }}>
               {' '}{CONTACT_EMAIL}
             </a>
           </p>
         </Section>
 
         {/* Back link */}
-        <div style={{ marginTop: 48, paddingTop: 24, borderTop: '1px dashed rgba(43,24,16,0.14)' }}>
+        <div style={{ marginTop: 48, paddingTop: 24, borderTop: '1px dashed rgba(var(--ink-rgb), 0.14)' }}>
           <Link href="/" style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             fontSize: 14, fontWeight: 700,
-            color: '#2B1810', textDecoration: 'none',
+            color: 'var(--ink-hex)', textDecoration: 'none',
             padding: '10px 16px',
             border: '2px solid #2B1810',
             borderRadius: 12,
@@ -176,9 +176,9 @@ export default function TermsPage() {
           <Link href="/privacy" style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             fontSize: 14, fontWeight: 700,
-            color: '#2B1810', textDecoration: 'none',
+            color: 'var(--ink-hex)', textDecoration: 'none',
             padding: '10px 16px',
-            border: '2px solid rgba(43,24,16,0.3)',
+            border: '2px solid rgba(var(--ink-rgb), 0.3)',
             borderRadius: 12,
             marginLeft: 12,
           }}>
@@ -197,16 +197,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <section style={{ marginBottom: 40 }}>
       <h2 style={{
         fontSize: 17, fontWeight: 800,
-        color: '#2B1810', letterSpacing: '-0.02em',
+        color: 'var(--ink-hex)', letterSpacing: '-0.02em',
         marginBottom: 12,
         paddingBottom: 6,
-        borderBottom: '2px solid rgba(43,24,16,0.1)',
+        borderBottom: '2px solid rgba(var(--ink-rgb), 0.1)',
       }}>
         {title}
       </h2>
       <div style={{
         fontSize: 14.5, lineHeight: 1.75,
-        color: '#2B1810',
+        color: 'var(--ink-hex)',
       }}>
         {children}
       </div>
@@ -222,7 +222,7 @@ function Callout({ emoji, children }: { emoji: string; children: React.ReactNode
       borderRadius: 12,
       padding: '12px 16px',
       fontSize: 14, lineHeight: 1.7,
-      color: '#2B1810',
+      color: 'var(--ink-hex)',
       marginTop: 12,
       display: 'flex', gap: 10,
     }}>
