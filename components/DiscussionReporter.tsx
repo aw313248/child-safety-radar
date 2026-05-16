@@ -58,6 +58,9 @@ function StarSlider({ value, onChange }: { value: number; onChange: (v: number) 
             type="button"
             role="radio"
             aria-checked={value === n}
+            aria-label={`${n} 星`}
+            name="rating"
+            value={n}
             onClick={() => onChange(n)}
             style={{
               background: 'transparent', border: 'none', cursor: 'pointer',
@@ -165,14 +168,15 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
         }
         setDiscussions(prev => [newItem, ...prev])
         setText('')
-        setShowToast('收到，已加入討論')
+        setShowToast('✓ 謝謝你的回饋，我們會持續改進')
         setStatus('ready')
       } else {
-        setShowToast('感謝回饋，幫助 CareCub 變更準')
+        setShowToast('✓ 謝謝你的回饋，我們會持續改進')
         // 收起 accordion
         setTimeout(() => { reset() }, 1500)
       }
-      setTimeout(() => setShowToast(null), 3000)
+      // Mia 第四輪 P1 #4：toast 2 秒自動消失（原本 3 秒）
+      setTimeout(() => setShowToast(null), 2000)
     } catch {
       setStatus('error')
     }
@@ -188,20 +192,31 @@ export default function DiscussionReporter({ channelId, channelName, channelUrl,
       padding: mode === 'idle' ? '14px 16px' : '16px',
       boxShadow: '0 2px 12px rgba(43,24,16,0.05), inset 0 1px 0 rgba(255,255,255,0.85)',
     }}>
-      {/* Toast */}
+      {/* Toast — Mia 第四輪 P1 #4：300ms 漸入 + 2 秒自動消失 */}
       {showToast && (
-        <div style={{
-          marginBottom: 12,
-          padding: '10px 14px',
-          background: 'rgba(74,138,92,0.10)',
-          border: '1px solid rgba(74,138,92,0.25)',
-          borderRadius: 12,
-          fontSize: 13, fontWeight: 700,
-          color: 'var(--risk-green)', letterSpacing: '-0.01em',
-        }}>
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            marginBottom: 12,
+            padding: '10px 14px',
+            background: 'rgba(74,138,92,0.10)',
+            border: '1px solid rgba(74,138,92,0.25)',
+            borderRadius: 12,
+            fontSize: 13, fontWeight: 700,
+            color: 'var(--risk-green)', letterSpacing: '-0.01em',
+            animation: 'cc-toast-fade-in 0.3s ease-out',
+          }}
+        >
           {showToast}
         </div>
       )}
+      <style jsx>{`
+        @keyframes cc-toast-fade-in {
+          from { opacity: 0; transform: translateY(-4px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
 
       {/* idle：兩顆按鈕 */}
       {mode === 'idle' && (
