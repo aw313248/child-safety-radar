@@ -3,7 +3,21 @@ import { Analytics } from '@vercel/analytics/react'
 import { Nunito, Noto_Sans_TC } from 'next/font/google'
 import localFont from 'next/font/local'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import CurtainThemeToggle from '@/components/ui/curtain-theme-toggle'
 import './globals.css'
+
+// 預載 dark mode preference，避免初次載入閃白
+// 在 React hydrate 前同步讀 localStorage / prefers-color-scheme
+const themeBootstrap = `
+(function() {
+  try {
+    var stored = localStorage.getItem('carecub-theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var theme = stored === 'light' || stored === 'dark' ? stored : (prefersDark ? 'dark' : 'light');
+    if (theme === 'dark') document.documentElement.classList.add('dark');
+  } catch (e) {}
+})();
+`
 
 // 圓潤英文 — Nunito（next/font/google 內建支援），Mia P1 字型升級
 const nunito = Nunito({
@@ -161,6 +175,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -168,6 +183,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <ErrorBoundary>{children}</ErrorBoundary>
+        <CurtainThemeToggle variant="icon" />
         <Analytics />
       </body>
     </html>
