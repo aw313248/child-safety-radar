@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 import { Nunito, Noto_Sans_TC } from 'next/font/google'
+import localFont from 'next/font/local'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import './globals.css'
 
@@ -21,8 +22,15 @@ const notoSansTC = Noto_Sans_TC({
   display: 'swap',
 })
 
-// 圓潤中文 — Huninn（justfont 粉圓開源版）走 Google Fonts CDN
-// next/font/google 14.2 還沒 cache Huninn，用 <link> tag 載入，css 用 'Huninn' string 引用
+// 圓潤中文 — Huninn（justfont 粉圓開源版）self-host woff2
+// Mia 第四輪 P0 #2：原本走 Google Fonts CDN <link> 載不到 → 大標 fallback Nunito 失去圓潤感
+// 改 next/font/local，build 時內嵌字型，--font-huninn variable 給 globals.css 用
+const huninn = localFont({
+  src: '../public/fonts/Huninn.woff2',
+  variable: '--font-huninn',
+  display: 'swap',
+  weight: '400 900',
+})
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -149,14 +157,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-TW" className={`${nunito.variable} ${notoSansTC.variable}`}>
+    <html lang="zh-TW" className={`${nunito.variable} ${notoSansTC.variable} ${huninn.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Huninn&display=swap"
-          rel="stylesheet"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

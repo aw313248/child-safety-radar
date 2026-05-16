@@ -291,6 +291,14 @@ function LowStimCard({ score }: { score: ChannelScore }) {
   )
 }
 
+// Mia 第四輪 P0 #3：framework rating → header label/tagline 映射
+// channelScore 存在時，framework 是 single source of truth，header 直接用 framework 結論
+const FRAMEWORK_HEADER: Record<NonNullable<AnalysisResult['channelScore']>['overallRating'], { label: string; tagline: string; icon: 'shield-check' | 'eye' | 'octagon-x' }> = {
+  '高度推薦':   { label: '高度推薦', tagline: '符合低刺激標準，可放心讓孩子觀看',           icon: 'shield-check' },
+  '中度符合':   { label: '中度符合', tagline: '有部分指標需注意，建議家長陪同觀看',         icon: 'eye' },
+  '不建議觀看': { label: '不建議觀看', tagline: '高頻刺激內容，AAP 不建議 2 歲以下單獨觀看', icon: 'octagon-x' },
+}
+
 export default function ResultCard({ result, onReset }: Props) {
   // riskLevel 直接決定 config（adult_inappropriate 來自後端關鍵字偵測）
   const cfg = RISK_CONFIG[result.riskLevel] ?? RISK_CONFIG.high
@@ -301,8 +309,24 @@ export default function ResultCard({ result, onReset }: Props) {
   const isOverstimulating = result.riskType === 'overstimulating' && result.riskLevel === 'medium'
   const frameworkSaysHighlyRecommend = result.channelScore?.overallRating === '高度推薦'
   const showOverstimulatingWarning = isOverstimulating && !frameworkSaysHighlyRecommend
-  const displayLabel   = showOverstimulatingWarning ? '⚠️ 過度刺激爭議' : cfg.label
-  const displayTagline = showOverstimulatingWarning ? '有過度刺激爭議，建議陪同觀看' : cfg.tagline
+
+  // Mia 第四輪 P0 #3：頂部 header 改 framework rating 為主結論（adult_inappropriate 例外仍走 riskLevel）
+  // 之前頂部「注意觀察」+ AI「過度刺激」+ 底部 framework「高度推薦」三層打架
+  // 現在頂部直接讀 framework rating，AI summary 改 secondary tone（label「AI 補充說明」）
+  const useFrameworkHeader = !!result.channelScore && result.riskLevel !== 'adult_inappropriate'
+  const fwHeader = useFrameworkHeader && result.channelScore
+    ? FRAMEWORK_HEADER[result.channelScore.overallRating]
+    : null
+
+  const displayLabel   = showOverstimulatingWarning
+    ? '⚠️ 過度刺激爭議'
+    : (fwHeader?.label ?? cfg.label)
+  const displayTagline = showOverstimulatingWarning
+    ? '有過度刺激爭議，建議陪同觀看'
+    : (fwHeader?.tagline ?? cfg.tagline)
+  const displayIcon = showOverstimulatingWarning
+    ? cfg.icon
+    : (fwHeader?.icon ?? cfg.icon)
   const stalenessBlock = useMemo(() => {
     const ageMs = Date.now() - new Date(result.checkedAt).getTime()
     const ageDays = Math.floor(ageMs / 86_400_000)
@@ -443,7 +467,7 @@ export default function ResultCard({ result, onReset }: Props) {
             textTransform: 'uppercase',
             border: '2px solid var(--ink-hex)',
           }}>
-            <RiskIcon name={cfg.icon} size={13} /> {displayLabel}
+            <RiskIcon name={displayIcon} size={13} /> {displayLabel}
           </div>
           <p className="font-display" style={{ fontSize: 20, color: 'var(--ink-hex)', lineHeight: 1.2, letterSpacing: '-0.03em' }}>
             {displayTagline}
@@ -490,9 +514,30 @@ export default function ResultCard({ result, onReset }: Props) {
             </div>
           </div>
         </div>
+        {/* Mia 第四輪 P0 #3：useFrameworkHeader 時 AI summary 降級為 secondary 補充 */}
+        {/* 加 label「AI 補充說明（非結論）」，避免被當第二個主結論 */}
+        {useFrameworkHeader && (
+          <p style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
+            color: 'rgba(43,24,16,0.45)', textTransform: 'uppercase',
+            marginBottom: 6,
+          }}>
+            AI 補充說明 · 非結論
+          </p>
+        )}
         <p style={{ fontSize: '13px', color: 'var(--ink-hex)', lineHeight: 1.7, letterSpacing: '-0.005em', fontWeight: 500, opacity: 0.8 }}>
           {result.aiSummary}
         </p>
+        {useFrameworkHeader && (
+          <p style={{
+            fontSize: 11, color: 'rgba(43,24,16,0.50)',
+            letterSpacing: '-0.005em', lineHeight: 1.55,
+            marginTop: 8, paddingTop: 8,
+            borderTop: '1px dashed rgba(43,24,16,0.10)',
+          }}>
+            最終結論以上方 framework 評等為準（拿鐵媽媽 5 維度 + AAP/WHO）
+          </p>
+        )}
       </div>
 
       {/* 折疊：警示留言 / 異常標籤 / 建議 默認收起，使用者按了才展開（distill） */}
