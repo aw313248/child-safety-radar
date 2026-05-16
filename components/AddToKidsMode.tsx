@@ -135,7 +135,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
             padding: '6px 12px',
             background: 'rgba(255,255,255,0.6)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(43,24,16,0.18)',
+            border: '1px solid rgba(var(--ink-rgb), 0.18)',
             borderRadius: 9999,
             fontSize: 11, fontWeight: 700, color: 'var(--ink-hex)',
             letterSpacing: '-0.01em', cursor: 'pointer', fontFamily: 'inherit',
@@ -181,7 +181,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
           onClick={() => setShowModal(false)}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(43,24,16,0.45)',
+            background: 'rgba(var(--ink-rgb), 0.45)',
             backdropFilter: 'blur(14px)',
             WebkitBackdropFilter: 'blur(14px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
@@ -198,8 +198,8 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
               maxWidth: 380, width: '100%',
               boxShadow:
                 'inset 0 1px 0 rgba(255,255,255,0.7),' +
-                ' inset 0 -1px 0 rgba(43,24,16,0.06),' +
-                ' 0 30px 60px -20px rgba(43,24,16,0.30)',
+                ' inset 0 -1px 0 rgba(var(--ink-rgb), 0.06),' +
+                ' 0 30px 60px -20px rgba(var(--ink-rgb), 0.30)',
             }}
           >
             <div style={{ textAlign: 'center', marginBottom: 18 }}>
@@ -217,14 +217,14 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
               <h3 style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--ink-hex)', marginBottom: 4 }}>
                 加入熊熊守護模式
               </h3>
-              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.66)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
+              <p style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.66)', letterSpacing: '-0.01em', lineHeight: 1.5 }}>
                 「{channelName}」會出現在熊熊頁面<br />
                 小孩只能看你驗證過的頻道
               </p>
             </div>
 
             {/* 年齡 */}
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(43,24,16,0.55)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
               適合年齡
             </p>
             <div style={{
@@ -254,7 +254,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
             </div>
 
             {/* 選熊熊 pose 取代 emoji pool */}
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(43,24,16,0.55)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 8 }}>
               選個熊熊
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6, marginBottom: 20 }}>
@@ -266,7 +266,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
                   style={{
                     aspectRatio: '1',
                     borderRadius: 12,
-                    border: pose === p ? '2px solid var(--ink-hex)' : '1px solid rgba(43,24,16,0.18)',
+                    border: pose === p ? '2px solid var(--ink-hex)' : '1px solid rgba(var(--ink-rgb), 0.18)',
                     background: pose === p
                       ? 'radial-gradient(circle at 35% 30%, #FFF6E6 0%, #F2B84B 65%, #D99422 100%)'
                       : 'rgba(255,255,255,0.5)',
@@ -286,7 +286,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
               border: '1px solid rgba(217, 148, 34, 0.3)',
               borderRadius: 12, padding: '10px 12px', marginBottom: 14,
             }}>
-              <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.7)', letterSpacing: '-0.01em', lineHeight: 1.55, fontWeight: 600 }}>
+              <p style={{ fontSize: 11, color: 'rgba(var(--ink-rgb), 0.7)', letterSpacing: '-0.01em', lineHeight: 1.55, fontWeight: 600 }}>
                 你加入的頻道由你自己負責，CareCub 會持續用標題黑名單再幫你把關一次
               </p>
             </div>
@@ -300,7 +300,7 @@ export default function AddToKidsMode({ channelId, channelName, channelThumbnail
                   background: 'rgba(255,255,255,0.55)',
                   backdropFilter: 'blur(14px)',
                   color: 'var(--ink-hex)',
-                  border: '1px solid rgba(43,24,16,0.18)', cursor: 'pointer',
+                  border: '1px solid rgba(var(--ink-rgb), 0.18)', cursor: 'pointer',
                   fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
                   fontFamily: 'inherit',
                 }}

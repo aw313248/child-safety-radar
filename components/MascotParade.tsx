@@ -46,7 +46,7 @@ export default function MascotParade({ size = 80, speed = 28, className }: Props
             style={{
               width: size, height: size,
               flex: '0 0 auto',
-              filter: 'drop-shadow(0 6px 12px rgba(43, 24, 16, 0.18))',
+              filter: 'drop-shadow(0 6px 12px rgba(var(--ink-rgb), 0.18))',
             }}
           >
             <Image

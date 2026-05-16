@@ -203,13 +203,13 @@ function DetailLoadingState() {
         {[...Array(6)].map((_, i) => (
           <div key={i} style={{
             aspectRatio: '16/9', borderRadius: 16,
-            background: 'rgba(43,24,16,0.07)',
+            background: 'rgba(var(--ink-rgb), 0.07)',
             animation: 'bear-blink 2.4s ease-in-out infinite',
             animationDelay: `${i * 0.18}s`,
           }} />
         ))}
       </div>
-      <div style={{ width: 160, background: 'rgba(43,24,16,0.08)', borderRadius: 9999, overflow: 'hidden', marginTop: 4 }}>
+      <div style={{ width: 160, background: 'rgba(var(--ink-rgb), 0.08)', borderRadius: 9999, overflow: 'hidden', marginTop: 4 }}>
         <div className="bear-loading-bar" />
       </div>
     </div>
@@ -250,7 +250,7 @@ function DetailEmptyState({ onBack }: { onBack: () => void }) {
             background: 'rgba(255,255,255,0.55)',
             backdropFilter: 'blur(14px)',
             WebkitBackdropFilter: 'blur(14px)',
-            border: '1.5px solid rgba(43,24,16,0.18)',
+            border: '1.5px solid rgba(var(--ink-rgb), 0.18)',
             color: 'var(--text-secondary)',
             fontSize: 14, fontWeight: 700, fontFamily: 'inherit',
             cursor: 'pointer', letterSpacing: '-0.01em',
@@ -274,7 +274,7 @@ function DetailLoadedState({ videos, onPlay }: { videos: SafeVideo[]; onPlay: (i
         <span style={{
           fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)',
           padding: '2px 8px', borderRadius: 9999,
-          background: 'rgba(43,24,16,0.06)', letterSpacing: '-0.005em',
+          background: 'rgba(var(--ink-rgb), 0.06)', letterSpacing: '-0.005em',
         }}>
           已過濾 Shorts 和廣告
         </span>
@@ -574,8 +574,8 @@ export default function KidsModePage() {
         // 暖米白底 + 細微 ink 漸層：夜晚感但對齊 CareCub 品牌暖色系
         background: 'var(--paper-hex)',
         backgroundImage: [
-          'radial-gradient(ellipse 70% 55% at 50% 0%,  rgba(43,24,16,0.08), transparent 60%)',
-          'radial-gradient(ellipse 55% 40% at 50% 100%, rgba(43,24,16,0.12), transparent 65%)',
+          'radial-gradient(ellipse 70% 55% at 50% 0%,  rgba(var(--ink-rgb), 0.08), transparent 60%)',
+          'radial-gradient(ellipse 55% 40% at 50% 100%, rgba(var(--ink-rgb), 0.12), transparent 65%)',
         ].join(','),
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
@@ -602,7 +602,7 @@ export default function KidsModePage() {
                 <h2 className="font-display" style={{ fontSize: 32, color: 'var(--ink-hex)', marginBottom: 8 }}>
                   睡前音樂
                 </h2>
-                <p style={{ fontSize: 14, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', fontWeight: 500 }}>
+                <p style={{ fontSize: 14, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '-0.01em', fontWeight: 500 }}>
                   選一個，放著就好
                 </p>
               </div>
@@ -618,8 +618,8 @@ export default function KidsModePage() {
                       background: 'rgba(255,255,255,0.65)',
                       backdropFilter: 'blur(20px)',
                       WebkitBackdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(43,24,16,0.10)',
-                      boxShadow: '0 2px 12px rgba(43,24,16,0.06)',
+                      border: '1px solid rgba(var(--ink-rgb), 0.10)',
+                      boxShadow: '0 2px 12px rgba(var(--ink-rgb), 0.06)',
                       cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
                       transition: 'background 0.15s, transform 0.1s',
                     }}
@@ -641,11 +641,11 @@ export default function KidsModePage() {
                       <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em', marginBottom: 2 }}>
                         {pl.name}
                       </p>
-                      <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.50)', fontWeight: 500, letterSpacing: '-0.005em' }}>
+                      <p style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.50)', fontWeight: 500, letterSpacing: '-0.005em' }}>
                         {pl.description}
                       </p>
                     </div>
-                    <svg style={{ flexShrink: 0, color: 'rgba(43,24,16,0.25)' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg style={{ flexShrink: 0, color: 'rgba(var(--ink-rgb), 0.25)' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="9 18 15 12 9 6" />
                     </svg>
                   </button>
@@ -683,8 +683,8 @@ export default function KidsModePage() {
               <div style={{
                 width: '100%', maxWidth: 560,
                 aspectRatio: '16/9', borderRadius: 20, overflow: 'hidden',
-                boxShadow: '0 16px 48px rgba(43,24,16,0.18)',
-                border: '1px solid rgba(43,24,16,0.08)',
+                boxShadow: '0 16px 48px rgba(var(--ink-rgb), 0.18)',
+                border: '1px solid rgba(var(--ink-rgb), 0.08)',
               }}>
                 {/* key=playlistId → playlist 換時強制 remount，iOS Safari iframe 不殘留聲音 */}
                 <iframe
@@ -699,7 +699,7 @@ export default function KidsModePage() {
                 <div className="bear-loading" style={{ display: 'inline-block' }}>
                   <Mascot pose="sleep" size={72} />
                 </div>
-                <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.40)', marginTop: 8, fontWeight: 500, letterSpacing: '-0.01em' }}>
+                <p style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.40)', marginTop: 8, fontWeight: 500, letterSpacing: '-0.01em' }}>
                   晚安，好夢
                 </p>
               </div>
@@ -989,7 +989,7 @@ export default function KidsModePage() {
         )}
         {curated.length > 0 && (
           <p style={{
-            fontSize: 12, color: 'rgba(43,24,16,0.6)',
+            fontSize: 12, color: 'rgba(var(--ink-rgb), 0.6)',
             letterSpacing: '-0.005em', fontWeight: 500,
             marginTop: -8, marginBottom: 14, paddingLeft: 4,
           }}>
@@ -1058,7 +1058,7 @@ export default function KidsModePage() {
                       background: 'rgba(255,255,255,0.6)',
                       backdropFilter: 'blur(10px)',
                       WebkitBackdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(43,24,16,0.18)',
+                      border: '1px solid rgba(var(--ink-rgb), 0.18)',
                       cursor: 'pointer', fontFamily: 'inherit',
                       fontSize: 12, color: 'var(--ink-hex)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -1093,7 +1093,7 @@ export default function KidsModePage() {
             <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em', marginBottom: 6 }}>
               目前沒有已驗證的頻道
             </p>
-            <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.7)', letterSpacing: '-0.01em', lineHeight: 1.6, fontWeight: 500 }}>
+            <p style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.7)', letterSpacing: '-0.01em', lineHeight: 1.6, fontWeight: 500 }}>
               回 CareCub 首頁掃描你想給小孩看的頻道，<br />
               非高風險就能點「加入熊熊守護模式」
             </p>
@@ -1115,7 +1115,7 @@ export default function KidsModePage() {
           onClick={() => { setShowExitConfirm(false); setExitInput(''); setExitError(false) }}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
-            background: 'rgba(43, 24, 16, 0.45)',
+            background: 'rgba(var(--ink-rgb), 0.45)',
             backdropFilter: 'blur(14px)',
             WebkitBackdropFilter: 'blur(14px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
@@ -1133,8 +1133,8 @@ export default function KidsModePage() {
               textAlign: 'center',
               boxShadow:
                 'inset 0 1px 0 rgba(255,255,255,0.7),' +
-                ' inset 0 -1px 0 rgba(43,24,16,0.06),' +
-                ' 0 30px 60px -20px rgba(43,24,16,0.30)',
+                ' inset 0 -1px 0 rgba(var(--ink-rgb), 0.06),' +
+                ' 0 30px 60px -20px rgba(var(--ink-rgb), 0.30)',
             }}
           >
             <div style={{
@@ -1153,7 +1153,7 @@ export default function KidsModePage() {
             <h3 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--ink-hex)', marginBottom: 6 }}>
               大人才能離開
             </h3>
-            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.66)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 16, fontWeight: 500 }}>
+            <p style={{ fontSize: 13, color: 'rgba(var(--ink-rgb), 0.66)', letterSpacing: '-0.01em', lineHeight: 1.55, marginBottom: 16, fontWeight: 500 }}>
               小朋友請去找爸爸媽媽<br />答對下面這題就會回首頁
             </p>
 
@@ -1166,12 +1166,12 @@ export default function KidsModePage() {
                 maxWidth: 320,
                 margin: '0 auto 16px',
                 background: 'rgba(255,255,255,0.38)',
-                border: '1px solid rgba(43,24,16,0.10)',
+                border: '1px solid rgba(var(--ink-rgb), 0.10)',
                 borderRadius: 14,
               }}>
                 <p style={{
                   fontSize: 13,
-                  color: 'rgba(43,24,16,0.85)',
+                  color: 'rgba(var(--ink-rgb), 0.85)',
                   lineHeight: 1.65,
                   letterSpacing: '-0.01em',
                   marginBottom: 6,
@@ -1182,7 +1182,7 @@ export default function KidsModePage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{
                     fontSize: 11,
-                    color: 'rgba(43,24,16,0.55)',
+                    color: 'rgba(var(--ink-rgb), 0.55)',
                     letterSpacing: '0.01em',
                   }}>
                     — {educationEntry.source}
@@ -1260,7 +1260,7 @@ export default function KidsModePage() {
                   backdropFilter: 'blur(14px)',
                   WebkitBackdropFilter: 'blur(14px)',
                   color: 'var(--ink-hex)',
-                  border: '1px solid rgba(43,24,16,0.18)',
+                  border: '1px solid rgba(var(--ink-rgb), 0.18)',
                   cursor: 'pointer', fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em', fontFamily: 'inherit',
                 }}
               >
@@ -1273,9 +1273,9 @@ export default function KidsModePage() {
                   flex: 1, padding: '14px 8px', borderRadius: 14,
                   background: exitInput
                     ? 'linear-gradient(135deg, #F2B84B 0%, #D99422 100%)'
-                    : 'rgba(43,24,16,0.06)',
-                  color: exitInput ? 'var(--ink-hex)' : 'rgba(43,24,16,0.38)',
-                  border: exitInput ? '1px solid var(--cc-gold-deep)' : '1px solid rgba(43,24,16,0.12)',
+                    : 'rgba(var(--ink-rgb), 0.06)',
+                  color: exitInput ? 'var(--ink-hex)' : 'rgba(var(--ink-rgb), 0.38)',
+                  border: exitInput ? '1px solid var(--cc-gold-deep)' : '1px solid rgba(var(--ink-rgb), 0.12)',
                   cursor: exitInput ? 'pointer' : 'not-allowed',
                   fontSize: 13, fontWeight: 800, letterSpacing: '-0.01em', fontFamily: 'inherit',
                   boxShadow: exitInput ? 'inset 0 1px 0 rgba(255,255,255,0.55), 0 4px 14px rgba(242,184,75,0.35)' : 'none',
@@ -1294,7 +1294,7 @@ export default function KidsModePage() {
           onClick={() => setRemoveTarget(null)}
           style={{
             position: 'fixed', inset: 0, zIndex: 250,
-            background: 'rgba(43,24,16,0.45)',
+            background: 'rgba(var(--ink-rgb), 0.45)',
             backdropFilter: 'blur(14px)',
             WebkitBackdropFilter: 'blur(14px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
@@ -1311,13 +1311,13 @@ export default function KidsModePage() {
               maxWidth: 340, width: '100%',
               boxShadow:
                 'inset 0 1px 0 rgba(255,255,255,0.7),' +
-                ' 0 24px 48px -16px rgba(43,24,16,0.28)',
+                ' 0 24px 48px -16px rgba(var(--ink-rgb), 0.28)',
             }}
           >
             <h3 style={{ fontSize: 17, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.02em', marginBottom: 6 }}>
               要移除這個頻道嗎？
             </h3>
-            <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.7)', letterSpacing: '-0.005em', marginBottom: 18, fontWeight: 500 }}>
+            <p style={{ fontSize: 13, color: 'rgba(var(--ink-rgb), 0.7)', letterSpacing: '-0.005em', marginBottom: 18, fontWeight: 500 }}>
               「{removeTarget.name}」會從熊熊守護模式拿掉
             </p>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -1327,7 +1327,7 @@ export default function KidsModePage() {
                   flex: 1, padding: 12, borderRadius: 12,
                   background: 'rgba(255,255,255,0.55)',
                   backdropFilter: 'blur(14px)',
-                  border: '1px solid rgba(43,24,16,0.18)',
+                  border: '1px solid rgba(var(--ink-rgb), 0.18)',
                   color: 'var(--ink-hex)', cursor: 'pointer',
                   fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
                 }}

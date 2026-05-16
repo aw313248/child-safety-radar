@@ -33,7 +33,7 @@ export default function SocialProof() {
         display: 'flex', alignItems: 'center', gap: 10,
         padding: '10px 14px', marginBottom: 18,
         background: 'rgba(242,184,75,0.10)',
-        border: '1px solid rgba(43,24,16,0.10)',
+        border: '1px solid rgba(var(--ink-rgb), 0.10)',
         borderRadius: 14,
       }}
       aria-label={`你已幫孩子把關 ${count} 個頻道`}

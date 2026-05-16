@@ -17,6 +17,7 @@
 
   /* ─── 核心三色 ─── */
   --ink:         58, 40, 32;        /* 主色：深可可咖啡（取代純黑） */
+  --ink-rgb:     43, 24, 16;        /* 對應 --ink-hex #2B1810 的純 RGB（給 inline rgba() 用） */
   --paper:       243, 238, 221;     /* 紙面：奶油米（暖色偏黃，降藍光） */
   --honey:       255, 183, 3;       /* accent：蜂蜜黃（高飽和升級） */
   --stone:       210, 221, 194;     /* 舊相容：豆沙綠 */
@@ -135,6 +136,287 @@
   --amber:          var(--stone-hex);
   --shadow-raised:  var(--shadow-lift);
   --shadow-btn:     0 4px 12px rgba(var(--ink), 0.18);
+}
+
+/* ══════════════════════════════════════════════════
+   Dark Mode — 暖咖啡深 + 米色光（保留 CareCub 暖色 identity）
+   trigger：documentElement.classList.add("dark")
+   配色策略：不純黑白，沿用蜂蜜/磚紅/豆沙做反轉
+   ══════════════════════════════════════════════════ */
+.dark {
+  /* 核心三色反轉 — 暖咖啡深底 + 米色文字 */
+  --ink:         223, 216, 198;       /* 反轉：暖米色當主色 */
+  --ink-rgb:     223, 216, 198;       /* 反轉：給 inline rgba(var(--ink-rgb), ...) 用 */
+  --paper:       31, 24, 21;          /* 紙面：暖咖啡深 */
+  --honey:       255, 215, 138;       /* accent：略提亮蜂蜜 */
+  --stone:       142, 156, 130;       /* 豆沙偏深 */
+
+  /* 固定 hex */
+  --ink-hex:     #DFD8C6;             /* 暖米色（主文字 / 線條） */
+  --paper-hex:   #1F1815;             /* 暖咖啡深底 */
+  --honey-hex:   #FFD78A;             /* 略提亮蜂蜜 */
+  --honey-deep:  #E5B560;             /* hover 色 */
+  --stone-hex:   #8E9C82;
+  --card-hex:    #2A211B;             /* 卡片底色（比 paper 略亮） */
+  --sky-hex:     #6FA8C2;
+  --terra-hex:   #D8716A;             /* 略提亮對比 */
+
+  /* 系統風險色 — 略提亮提高可讀性 */
+  --risk-red:    #D8716A;
+  --risk-orange: #E5B560;
+  --risk-green:  #6BB389;
+  --adult-orange-hex: #E59446;
+  --adult-orange-soft: rgba(229,148,70,0.18);
+
+  /* Text — 反向 alpha */
+  --text-primary:   rgba(223, 216, 198, 1);
+  --text-secondary: rgba(223, 216, 198, 0.72);
+  --text-tertiary:  rgba(223, 216, 198, 0.45);
+  --text-quaternary: rgba(223, 216, 198, 0.28);
+
+  /* Opacity ladder — 反向（米色 over 深底） */
+  --ink-05:  rgba(223, 216, 198, 0.07);
+  --ink-08:  rgba(223, 216, 198, 0.10);
+  --ink-10:  rgba(223, 216, 198, 0.14);
+  --ink-20:  rgba(223, 216, 198, 0.22);
+  --ink-40:  rgba(223, 216, 198, 0.40);
+  --ink-80:  rgba(223, 216, 198, 0.78);
+
+  --stone-20: rgba(142, 156, 130, 0.22);
+  --stone-40: rgba(142, 156, 130, 0.40);
+  --stone-60: rgba(142, 156, 130, 0.62);
+  --stone-80: rgba(142, 156, 130, 0.82);
+
+  --honey-20: rgba(255, 215, 138, 0.22);
+  --honey-40: rgba(255, 215, 138, 0.40);
+  --honey-60: rgba(255, 215, 138, 0.62);
+  --honey-80: rgba(255, 215, 138, 0.82);
+
+  /* Borders — 暗底要更顯 */
+  --border-hair:    rgba(223, 216, 198, 0.08);
+  --border-soft:    rgba(223, 216, 198, 0.14);
+  --border-default: rgba(223, 216, 198, 0.22);
+
+  /* Shadows — 暗底改用深陰影 */
+  --shadow-hair:  0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-card:  0 2px 10px rgba(0, 0, 0, 0.30), 0 1px 3px rgba(0, 0, 0, 0.22);
+  --shadow-lift:  0 16px 40px -12px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.30);
+
+  /* Sticker shadow — 改用暖米色陰影 */
+  --sticker-shadow:        3px 3px 0 #0E0908;
+  --sticker-shadow-hover:  5px 5px 0 #0E0908;
+  --sticker-shadow-active: 1px 1px 0 #0E0908;
+  --sticker-shadow-lg:     6px 6px 0 rgba(0, 0, 0, 0.85);
+
+  /* Atmospheric shadow */
+  --atm-shadow-card:  0 14px 36px -16px rgba(0, 0, 0, 0.65), 0 3px 10px rgba(0, 0, 0, 0.35);
+  --atm-shadow-tray:  inset 0 0 0 1px rgba(223, 216, 198, 0.08), 0 1px 0 rgba(223, 216, 198, 0.06), 0 22px 40px -28px rgba(0, 0, 0, 0.55);
+
+  /* CC 系列（給 CaseLibrary / RecentHighRisk 用） */
+  --cc-gold-deep: #C9962E;
+
+  /* 舊 var 相容 */
+  --bg:             var(--paper-hex);
+  --surface:        var(--card-hex);
+  --surface-raised: var(--card-hex);
+  --forest:         var(--ink-hex);
+  --forest-mid:     rgba(223, 216, 198, 0.85);
+  --separator:      var(--border-hair);
+  --border-strong:  var(--border-default);
+  --amber:          var(--stone-hex);
+  --shadow-raised:  var(--shadow-lift);
+  --shadow-btn:     0 4px 12px rgba(0, 0, 0, 0.50);
+}
+
+/* dark body 漸層 — cocoa 暖色取代 honey 漸層 */
+.dark body {
+  background-color: var(--paper-hex);
+  background-image:
+    radial-gradient(ellipse 75% 60% at 8%  5%,  rgba(229, 181, 96, 0.18), transparent 55%),
+    radial-gradient(ellipse 65% 55% at 92% 92%, rgba(142, 156, 130, 0.14), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 90% 8%,  rgba(216, 113, 106, 0.10), transparent 58%),
+    radial-gradient(ellipse 48% 40% at 10% 88%, rgba(255, 215, 138, 0.10), transparent 52%);
+}
+
+/* dark mode 下 glass / bee-card — 深色玻璃 recalibrate
+   blur 24→28，saturate 170→130（暗底飽和過頭會糊掉） */
+.dark .bee-card {
+  background: rgba(42, 33, 27, 0.55);
+  backdrop-filter: blur(28px) saturate(130%);
+  -webkit-backdrop-filter: blur(28px) saturate(130%);
+  border: 1px solid rgba(223, 216, 198, 0.12);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(223, 216, 198, 0.06);
+}
+.dark .bee-card-flat {
+  background: rgba(42, 33, 27, 0.42);
+  backdrop-filter: blur(20px) saturate(125%);
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
+  border: 1px solid rgba(223, 216, 198, 0.10);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
+}
+.dark .bee-card-honey {
+  background: linear-gradient(135deg, rgba(255, 215, 138, 0.32), rgba(229, 181, 96, 0.24));
+  border: 1px solid rgba(255, 215, 138, 0.32);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  color: var(--ink-hex);
+}
+.dark .bee-card-honey,
+.dark .bee-card-honey * {
+  --text-primary: var(--ink-hex);
+  --text-secondary: rgba(223, 216, 198, 0.78);
+}
+.dark button.bee-card:hover,
+.dark a.bee-card:hover,
+.dark button.bee-card-honey:hover,
+.dark a.bee-card-honey:hover {
+  box-shadow:
+    0 20px 56px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(223, 216, 198, 0.10);
+}
+
+/* dark kids-glass-* 玻璃 pill — recalibrate */
+.dark .kids-glass-pill {
+  background: rgba(42, 33, 27, 0.55);
+  backdrop-filter: blur(24px) saturate(130%);
+  -webkit-backdrop-filter: blur(24px) saturate(130%);
+  border: 1px solid rgba(223, 216, 198, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(223, 216, 198, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20),
+    0 1px 2px rgba(0, 0, 0, 0.32);
+}
+.dark .kids-glass-pill:hover {
+  background: rgba(42, 33, 27, 0.72);
+}
+.dark .kids-glass-pill[aria-pressed="true"] {
+  background: rgba(255, 215, 138, 0.32) !important;
+  border-color: rgba(255, 215, 138, 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+}
+.dark .kids-glass-row {
+  background: rgba(42, 33, 27, 0.45);
+  backdrop-filter: blur(22px) saturate(130%);
+  -webkit-backdrop-filter: blur(22px) saturate(130%);
+  border: 1px solid rgba(223, 216, 198, 0.10);
+}
+.dark .kids-glass-row:hover {
+  background: rgba(42, 33, 27, 0.62);
+}
+.dark .kids-glass-cta {
+  background: rgba(42, 33, 27, 0.55);
+  backdrop-filter: blur(20px) saturate(125%);
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
+  border: 1px solid rgba(223, 216, 198, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(223, 216, 198, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.32);
+}
+.dark .kids-glass-cta[data-active="true"] {
+  background: linear-gradient(135deg, rgba(255, 215, 138, 0.78), rgba(229, 181, 96, 0.62));
+  border-color: rgba(255, 215, 138, 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 4px 14px rgba(0, 0, 0, 0.42);
+}
+
+/* dark kids-action — 右上 floating action */
+.dark .kids-action {
+  background: rgba(42, 33, 27, 0.55);
+  backdrop-filter: blur(28px) saturate(130%);
+  -webkit-backdrop-filter: blur(28px) saturate(130%);
+  border: 1px solid rgba(223, 216, 198, 0.14);
+  color: var(--ink-hex);
+  box-shadow:
+    inset 0 1px 0 rgba(223, 216, 198, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20),
+    0 1px 2px rgba(0, 0, 0, 0.32);
+}
+.dark .kids-action:hover {
+  background: rgba(42, 33, 27, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(223, 216, 198, 0.10),
+    0 5px 14px rgba(0, 0, 0, 0.45);
+}
+.dark .kids-action--primary {
+  background: linear-gradient(135deg, rgba(255, 215, 138, 0.55), rgba(229, 181, 96, 0.42));
+  border-color: rgba(255, 215, 138, 0.32);
+}
+.dark .kids-action--primary:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 138, 0.68), rgba(229, 181, 96, 0.54));
+}
+.dark .kids-action--danger {
+  background: linear-gradient(135deg, rgba(216, 113, 106, 0.65), rgba(150, 60, 55, 0.55));
+  color: #FFF6E6;
+  border-color: rgba(150, 60, 55, 0.42);
+}
+.dark .kids-action--danger:hover {
+  background: linear-gradient(135deg, rgba(216, 113, 106, 0.80), rgba(150, 60, 55, 0.72));
+}
+
+/* dark 下 ::selection 改用暗色背景 + 蜂蜜文字 */
+.dark ::selection {
+  background: rgba(255, 215, 138, 0.32);
+  color: var(--ink-hex);
+}
+
+/* dark bee-segmented — 改用反向色 */
+.dark .bee-segmented {
+  background: rgba(42, 33, 27, 0.62);
+  border-color: rgba(223, 216, 198, 0.32);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.62);
+}
+.dark .bee-segmented__item--active {
+  background: var(--honey-hex);
+  color: var(--paper-hex);
+}
+
+/* dark btn-pill — 反轉前景背景 */
+.dark .btn-pill {
+  background: var(--ink-hex);
+  color: var(--paper-hex);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+.dark .btn-pill:hover:not(:disabled) {
+  background: #F5EFE0;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+}
+.dark .btn-pill-honey {
+  background: var(--honey-hex);
+  color: var(--paper-hex);
+  box-shadow: 0 4px 16px rgba(255, 215, 138, 0.28);
+}
+.dark .btn-pill-honey:hover:not(:disabled) {
+  background: var(--honey-deep);
+  box-shadow: 0 8px 22px rgba(255, 215, 138, 0.42);
+}
+
+/* dark retro-badge */
+.dark .retro-badge {
+  background: var(--sky-hex);
+  color: var(--paper-hex);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* dark hero-split */
+.dark .hero-split__left {
+  background: var(--honey-hex);
+  color: var(--paper-hex);
+}
+.dark .hero-split__right {
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255, 215, 138, 0.18), transparent 60%),
+    linear-gradient(135deg, #2A211B 0%, #1F1815 100%);
+}
+
+/* dark sticker / hero shadow — 用深色 */
+.dark .hero-split {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }

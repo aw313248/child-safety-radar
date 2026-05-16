@@ -208,7 +208,7 @@ export default function HistoryPage() {
                   {/* ── Inline expand panel ── */}
                   {isExpanded && (
                     <div style={{
-                      borderTop: '1px solid rgba(43,24,16,0.08)',
+                      borderTop: '1px solid rgba(var(--ink-rgb), 0.08)',
                       padding: '14px 20px 16px',
                       background: 'rgba(255,246,230,0.45)',
                     }}>
@@ -233,7 +233,7 @@ export default function HistoryPage() {
                                   {[1,2,3,4,5].map(n => (
                                     <svg key={n} width="10" height="10" viewBox="0 0 24 24"
                                       fill={n <= dim.stars ? dimColor : 'none'}
-                                      stroke={n <= dim.stars ? dimColor : 'rgba(43,24,16,0.2)'}
+                                      stroke={n <= dim.stars ? dimColor : 'rgba(var(--ink-rgb), 0.2)'}
                                       strokeWidth="2">
                                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                                     </svg>
@@ -257,7 +257,7 @@ export default function HistoryPage() {
                       {summarySnippet && (
                         <p style={{
                           fontSize: 13,
-                          color: 'rgba(43,24,16,0.85)',
+                          color: 'rgba(var(--ink-rgb), 0.85)',
                           lineHeight: 1.65,
                           letterSpacing: '-0.01em',
                           marginBottom: 10,

@@ -102,7 +102,7 @@ export default function LoadingFacts() {
         WebkitBackdropFilter: 'blur(20px) saturate(150%)',
         border: '1px solid rgba(255, 255, 255, 0.6)',
         borderRadius: 16,
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7), 0 1px 2px rgba(43,24,16,0.04)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7), 0 1px 2px rgba(var(--ink-rgb), 0.04)',
         overflow: 'hidden',
       }}
     >
@@ -111,7 +111,7 @@ export default function LoadingFacts() {
         display: 'flex', alignItems: 'center', gap: 6,
         marginBottom: 8,
         fontSize: 12, fontWeight: 700,
-        color: 'rgba(43,24,16,0.55)',
+        color: 'rgba(var(--ink-rgb), 0.55)',
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
       }}>
@@ -143,7 +143,7 @@ export default function LoadingFacts() {
         </p>
         <p style={{
           fontSize: 12, fontWeight: 600,
-          color: 'rgba(43,24,16,0.5)',
+          color: 'rgba(var(--ink-rgb), 0.5)',
           letterSpacing: '-0.005em',
           display: 'flex', alignItems: 'center', gap: 4,
         }}>
@@ -162,7 +162,7 @@ export default function LoadingFacts() {
             width: i === idx ? 14 : 5,
             height: 5,
             borderRadius: 99,
-            background: i === idx ? 'var(--cc-gold-deep)' : 'rgba(43,24,16,0.18)',
+            background: i === idx ? 'var(--cc-gold-deep)' : 'rgba(var(--ink-rgb), 0.18)',
             transition: 'width 0.3s cubic-bezier(0.22,1,0.36,1), background 0.3s',
           }} />
         ))}

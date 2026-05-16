@@ -142,7 +142,7 @@ function LowStimCard({ score }: { score: ChannelScore }) {
         padding: '4px 20px 16px',
         display: 'flex', flexDirection: 'column', gap: 0,
         border: '1px solid rgba(255,255,255,0.80)',
-        borderTop: '1px solid rgba(43,24,16,0.07)',
+        borderTop: '1px solid rgba(var(--ink-rgb), 0.07)',
       }}>
         {dims.map(([key, label], idx) => {
           const dim = score[key]
@@ -150,7 +150,7 @@ function LowStimCard({ score }: { score: ChannelScore }) {
           const ratingColor = ratingToColor(dim.rating)
           return (
             <div key={key}>
-              {idx > 0 && <div style={{ height: 1, background: 'rgba(43,24,16,0.07)' }} />}
+              {idx > 0 && <div style={{ height: 1, background: 'rgba(var(--ink-rgb), 0.07)' }} />}
               <button
                 onClick={() => setExpandedDim(isOpen ? null : key)}
                 aria-expanded={isOpen}
@@ -161,13 +161,13 @@ function LowStimCard({ score }: { score: ChannelScore }) {
                 }}
               >
                 {/* 維度名 */}
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', flex: 1, textAlign: 'left' }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '-0.01em', flex: 1, textAlign: 'left' }}>
                   {label}
                 </span>
                 {/* 星星 */}
                 <div style={{ display: 'flex', gap: 1, flexShrink: 0 }}>
                   {STAR_INDICES.map(n => (
-                    <span key={n} style={{ fontSize: 13, color: n <= dim.stars ? '#F2B84B' : 'rgba(43,24,16,0.15)', lineHeight: 1 }}>★</span>
+                    <span key={n} style={{ fontSize: 13, color: n <= dim.stars ? '#F2B84B' : 'rgba(var(--ink-rgb), 0.15)', lineHeight: 1 }}>★</span>
                   ))}
                 </div>
                 {/* 評等 chip */}
@@ -182,14 +182,14 @@ function LowStimCard({ score }: { score: ChannelScore }) {
                 </span>
                 {/* Chevron */}
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
-                  style={{ flexShrink: 0, color: 'rgba(43,24,16,0.30)', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                  style={{ flexShrink: 0, color: 'rgba(var(--ink-rgb), 0.30)', transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
                   <polyline points="6 9 12 15 18 9"/>
                 </svg>
               </button>
               {/* 展開：為什麼這樣評 */}
               {isOpen && (
                 <div style={{ padding: '2px 0 14px', paddingLeft: 2 }}>
-                  <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.72)', letterSpacing: '-0.01em', lineHeight: 1.6 }}>
+                  <p style={{ fontSize: 13, color: 'rgba(var(--ink-rgb), 0.72)', letterSpacing: '-0.01em', lineHeight: 1.6 }}>
                     {dim.reason}
                   </p>
                 </div>
@@ -202,7 +202,7 @@ function LowStimCard({ score }: { score: ChannelScore }) {
         <div style={{
           display: 'flex', gap: 8, flexWrap: 'wrap',
           paddingTop: 12,
-          borderTop: '1px solid rgba(43,24,16,0.08)',
+          borderTop: '1px solid rgba(var(--ink-rgb), 0.08)',
         }}>
           {[
             { label: '刺激等級', value: score.overallStimulation },
@@ -210,12 +210,12 @@ function LowStimCard({ score }: { score: ChannelScore }) {
           ].map(item => (
             <div key={item.label} style={{
               display: 'flex', gap: 6, alignItems: 'center',
-              background: 'rgba(43,24,16,0.04)',
+              background: 'rgba(var(--ink-rgb), 0.04)',
               borderRadius: 9999,
               padding: '5px 12px',
               fontSize: 12,
             }}>
-              <span style={{ color: 'rgba(43,24,16,0.5)', fontWeight: 600 }}>{item.label}</span>
+              <span style={{ color: 'rgba(var(--ink-rgb), 0.5)', fontWeight: 600 }}>{item.label}</span>
               <span style={{ color: 'var(--ink-hex)', fontWeight: 800, letterSpacing: '-0.01em' }}>{item.value}</span>
             </div>
           ))}
@@ -234,17 +234,17 @@ function LowStimCard({ score }: { score: ChannelScore }) {
               {score.guidelines.join(' + ')} 育兒準則
             </div>
             {score.guidelines.includes('AAP') && (
-              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.72)', lineHeight: 1.6, letterSpacing: '-0.005em' }}>
+              <p style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.72)', lineHeight: 1.6, letterSpacing: '-0.005em' }}>
                 <strong>AAP（美國兒科學會）：</strong>1 歲以下不建議螢幕時間；2-5 歲每日不超過 1 小時，且建議家長陪同
               </p>
             )}
             {score.guidelines.includes('WHO') && (
-              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.72)', lineHeight: 1.6, letterSpacing: '-0.005em' }}>
+              <p style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.72)', lineHeight: 1.6, letterSpacing: '-0.005em' }}>
                 <strong>WHO（世界衛生組織）：</strong>2-4 歲每日靜態螢幕時間不超過 1 小時，「愈少愈好」
               </p>
             )}
             {score.ageRange !== '待確認' && (
-              <p style={{ fontSize: 12, color: 'rgba(43,24,16,0.72)', lineHeight: 1.6 }}>
+              <p style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.72)', lineHeight: 1.6 }}>
                 本頻道評估適合年齡：<strong>{score.ageRange}</strong>
               </p>
             )}
@@ -268,21 +268,21 @@ function LowStimCard({ score }: { score: ChannelScore }) {
         {/* ── Credit + 免責聲明 ── */}
         <div style={{
           paddingTop: 12,
-          borderTop: '1px dashed rgba(43,24,16,0.12)',
+          borderTop: '1px dashed rgba(var(--ink-rgb), 0.12)',
           display: 'flex', flexDirection: 'column', gap: 6,
         }}>
-          <p style={{ fontSize: 11, color: 'rgba(43,24,16,0.5)', lineHeight: 1.6, letterSpacing: '-0.005em' }}>
+          <p style={{ fontSize: 11, color: 'rgba(var(--ink-rgb), 0.5)', lineHeight: 1.6, letterSpacing: '-0.005em' }}>
             評分標準 framework 啟發自拿鐵媽媽（@happy.3clatte）整理 + AAP/WHO 育兒標準 ·{' '}
             <a
               href="https://www.threads.net/@happy.3clatte"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: 'rgba(43,24,16,0.6)', textDecoration: 'underline' }}
+              style={{ color: 'rgba(var(--ink-rgb), 0.6)', textDecoration: 'underline' }}
             >
               Threads 查看原文
             </a>
           </p>
-          <p style={{ fontSize: 10, color: 'rgba(43,24,16,0.38)', lineHeight: 1.65, letterSpacing: '-0.005em' }}>
+          <p style={{ fontSize: 10, color: 'rgba(var(--ink-rgb), 0.38)', lineHeight: 1.65, letterSpacing: '-0.005em' }}>
             本評估為 AI 自動化分析，僅供家長參考，非專業醫療或教育診斷建議 · 影片內容可能隨平台更新而變動，建議於孩子觀看前再次確認 · 對於因參考本評估產生的任何行為或影響，本工具及其創作者不承擔法律責任
           </p>
         </div>
@@ -498,7 +498,7 @@ export default function ResultCard({ result, onReset }: Props) {
               {result.channelName}
             </p>
             <div style={{ display: 'flex', gap: 8, marginTop: 3, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '10px', color: 'rgba(43,24,16,0.5)', fontWeight: 600, letterSpacing: '0.02em', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+              <span style={{ fontSize: '10px', color: 'rgba(var(--ink-rgb), 0.5)', fontWeight: 600, letterSpacing: '0.02em', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   {result.commentsDisabled
                     ? <><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/></>
@@ -507,7 +507,7 @@ export default function ResultCard({ result, onReset }: Props) {
                 {result.commentsDisabled ? '留言關閉' : '留言開啟'}
               </span>
               {result.videoCount ? (
-                <span style={{ fontSize: '10px', color: 'rgba(43,24,16,0.5)', fontWeight: 600, letterSpacing: '0.02em' }}>
+                <span style={{ fontSize: '10px', color: 'rgba(var(--ink-rgb), 0.5)', fontWeight: 600, letterSpacing: '0.02em' }}>
                   {result.videoCount} 部影片
                 </span>
               ) : null}
@@ -519,7 +519,7 @@ export default function ResultCard({ result, onReset }: Props) {
         {useFrameworkHeader && (
           <p style={{
             fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
-            color: 'rgba(43,24,16,0.45)', textTransform: 'uppercase',
+            color: 'rgba(var(--ink-rgb), 0.45)', textTransform: 'uppercase',
             marginBottom: 6,
           }}>
             AI 補充說明 · 非結論
@@ -530,10 +530,10 @@ export default function ResultCard({ result, onReset }: Props) {
         </p>
         {useFrameworkHeader && (
           <p style={{
-            fontSize: 11, color: 'rgba(43,24,16,0.50)',
+            fontSize: 11, color: 'rgba(var(--ink-rgb), 0.50)',
             letterSpacing: '-0.005em', lineHeight: 1.55,
             marginTop: 8, paddingTop: 8,
-            borderTop: '1px dashed rgba(43,24,16,0.10)',
+            borderTop: '1px dashed rgba(var(--ink-rgb), 0.10)',
           }}>
             最終結論以上方 framework 評等為準（拿鐵媽媽 5 維度 + AAP/WHO）
           </p>
@@ -551,19 +551,19 @@ export default function ResultCard({ result, onReset }: Props) {
             background: 'rgba(255,255,255,0.58)',
             backdropFilter: 'blur(24px) saturate(180%)',
             WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-            border: '1px solid rgba(43,24,16,0.10)',
+            border: '1px solid rgba(var(--ink-rgb), 0.10)',
             borderRadius: 20,
             color: 'var(--ink-hex)',
             fontSize: 13, fontWeight: 700, letterSpacing: '-0.01em',
             cursor: 'pointer', fontFamily: 'inherit',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            boxShadow: '0 2px 12px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.90)',
+            boxShadow: '0 2px 12px rgba(var(--ink-rgb), 0.06), inset 0 1px 0 rgba(255,255,255,0.90)',
           }}
         >
           <span>
             {showDetails ? '收合' : '看詳細分析'}
             {!showDetails && result.warningComments.length > 0 && (
-              <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(43,24,16,0.6)', marginLeft: 6 }}>
+              <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(var(--ink-rgb), 0.6)', marginLeft: 6 }}>
                 · {result.warningComments.length} 則家長警示留言
               </span>
             )}
@@ -735,12 +735,12 @@ export default function ResultCard({ result, onReset }: Props) {
             background: 'rgba(255,255,255,0.60)',
             backdropFilter: 'blur(24px) saturate(180%)',
             WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-            border: '1.5px solid rgba(43,24,16,0.18)',
+            border: '1.5px solid rgba(var(--ink-rgb), 0.18)',
             borderRadius: 20,
             color: 'var(--ink-hex)',
             cursor: 'pointer',
             fontFamily: 'inherit',
-            boxShadow: '0 2px 8px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.80)',
+            boxShadow: '0 2px 8px rgba(var(--ink-rgb), 0.06), inset 0 1px 0 rgba(255,255,255,0.80)',
             transition: 'background 0.18s',
           }}
         >
@@ -761,12 +761,12 @@ export default function ResultCard({ result, onReset }: Props) {
             background: 'rgba(255,255,255,0.60)',
             backdropFilter: 'blur(24px) saturate(180%)',
             WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-            border: '1.5px solid rgba(43,24,16,0.18)',
+            border: '1.5px solid rgba(var(--ink-rgb), 0.18)',
             borderRadius: 20,
             color: 'var(--ink-hex)',
             cursor: 'pointer',
             fontFamily: 'inherit',
-            boxShadow: '0 2px 8px rgba(43,24,16,0.06), inset 0 1px 0 rgba(255,255,255,0.80)',
+            boxShadow: '0 2px 8px rgba(var(--ink-rgb), 0.06), inset 0 1px 0 rgba(255,255,255,0.80)',
             transition: 'background 0.18s',
           }}
           title="用 QR code 傳給另一台裝置"
@@ -813,10 +813,10 @@ export default function ResultCard({ result, onReset }: Props) {
           background: 'rgba(255,255,255,0.50)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(43,24,16,0.08)',
+          border: '1px solid rgba(var(--ink-rgb), 0.08)',
           borderRadius: 12,
         }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(43,24,16,0.45)', marginRight: 2, flexShrink: 0 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(var(--ink-rgb), 0.45)', marginRight: 2, flexShrink: 0 }}>
             評分說明
           </span>
           {([

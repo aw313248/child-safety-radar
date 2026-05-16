@@ -46,12 +46,12 @@ export default class ErrorBoundary extends React.Component<Props, State> {
           WebkitBackdropFilter: 'blur(20px) saturate(150%)',
           border: '1px solid rgba(255,255,255,0.6)',
           borderRadius: 22,
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7), 0 16px 32px -16px rgba(43,24,16,0.2)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7), 0 16px 32px -16px rgba(var(--ink-rgb), 0.2)',
         }}>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--ink-hex)', letterSpacing: '-0.03em', marginBottom: 10 }}>
             這頁暫時不見了
           </h2>
-          <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.7)', lineHeight: 1.65, marginBottom: 22, fontWeight: 500, letterSpacing: '-0.005em' }}>
+          <p style={{ fontSize: 13, color: 'rgba(var(--ink-rgb), 0.7)', lineHeight: 1.65, marginBottom: 22, fontWeight: 500, letterSpacing: '-0.005em' }}>
             重新整理試試，或回到掃描頁繼續，
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -67,7 +67,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
                 cursor: 'pointer',
                 fontFamily: 'inherit',
                 letterSpacing: '0.5px',
-                boxShadow: '0 6px 18px -6px rgba(43,24,16,0.4)',
+                boxShadow: '0 6px 18px -6px rgba(var(--ink-rgb), 0.4)',
                 minHeight: 44,
               }}
             >
@@ -79,7 +79,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
                 padding: '12px 22px',
                 background: 'rgba(255,255,255,0.70)',
                 color: 'var(--ink-hex)',
-                border: '1.5px solid rgba(43,24,16,0.18)',
+                border: '1.5px solid rgba(var(--ink-rgb), 0.18)',
                 borderRadius: 9999,
                 fontSize: 13, fontWeight: 700,
                 cursor: 'pointer',

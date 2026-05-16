@@ -78,7 +78,7 @@ function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
       background: 'rgba(255,255,255,0.55)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(43,24,16,0.10)',
+      border: '1px solid rgba(var(--ink-rgb), 0.10)',
       borderRadius: 14,
       padding: '14px 18px 16px',
       position: 'relative',
@@ -92,7 +92,7 @@ function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
           position: 'absolute', top: 10, right: 12,
           background: 'none', border: 'none', cursor: 'pointer',
           padding: 4, lineHeight: 1,
-          color: 'rgba(43,24,16,0.35)',
+          color: 'rgba(var(--ink-rgb), 0.35)',
           fontFamily: 'inherit',
         }}
       >
@@ -101,7 +101,7 @@ function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
         </svg>
       </button>
 
-      <p style={{ fontSize: 13, fontWeight: 700, color: 'rgba(43,24,16,0.55)', letterSpacing: '-0.01em', marginBottom: 12 }}>
+      <p style={{ fontSize: 13, fontWeight: 700, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '-0.01em', marginBottom: 12 }}>
         第一次用？怎麼拿頻道連結
       </p>
 
@@ -115,7 +115,7 @@ function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
                 position: 'absolute', left: -16, top: 14,
                 width: 8,
                 height: 1,
-                background: 'rgba(43,24,16,0.20)',
+                background: 'rgba(var(--ink-rgb), 0.20)',
               }} />
             )}
 
@@ -129,7 +129,7 @@ function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
               onClick={() => setActiveIdx(activeIdx === i ? null : i)}
               style={{
                 background: activeIdx === i ? 'rgba(242,184,75,0.15)' : 'rgba(255,255,255,0.60)',
-                border: '1px solid rgba(43,24,16,0.10)',
+                border: '1px solid rgba(var(--ink-rgb), 0.10)',
                 borderRadius: 14,
                 width: 56, height: 56,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -145,7 +145,7 @@ function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
             {/* step number badge */}
             <span style={{
               width: 18, height: 18, borderRadius: '50%',
-              background: 'rgba(43,24,16,0.10)',
+              background: 'rgba(var(--ink-rgb), 0.10)',
               fontSize: 10, fontWeight: 800, color: 'var(--ink-hex)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>{i + 1}</span>
@@ -154,7 +154,7 @@ function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
             {activeIdx === i && (
               <div style={{
                 position: 'absolute', top: 70, left: '50%', transform: 'translateX(-50%)',
-                background: 'rgba(43,24,16,0.88)',
+                background: 'rgba(var(--ink-rgb), 0.88)',
                 color: '#FFF',
                 fontSize: 12, fontWeight: 600, lineHeight: 1.5,
                 padding: '7px 11px',
@@ -173,7 +173,7 @@ function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
                   width: 0, height: 0,
                   borderLeft: '5px solid transparent',
                   borderRight: '5px solid transparent',
-                  borderBottom: '5px solid rgba(43,24,16,0.88)',
+                  borderBottom: '5px solid rgba(var(--ink-rgb), 0.88)',
                 }} />
               </div>
             )}
@@ -440,7 +440,7 @@ export default function Home() {
                   width: 8, height: 8,
                   borderRadius: i % 3 === 0 ? '50%' : 2,
                   background: colors[i % colors.length],
-                  border: '1px solid rgba(43,24,16,0.4)',
+                  border: '1px solid rgba(var(--ink-rgb), 0.4)',
                   animation: `confetti-burst ${dur}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms forwards`,
                   ['--tx' as never]: `${(i % 2 === 0 ? -1 : 1) * (40 + (i * 13) % 120)}px`,
                   ['--ty' as never]: `${-80 - (i * 17) % 140}px`,
@@ -486,7 +486,7 @@ export default function Home() {
                 style={{
                   padding: '10px 16px', minHeight: 44,
                   background: 'transparent', color: 'var(--ink-hex)',
-                  border: '1.5px solid rgba(43,24,16,0.3)', borderRadius: 10,
+                  border: '1.5px solid rgba(var(--ink-rgb), 0.3)', borderRadius: 10,
                   fontSize: 13, fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'inherit',
                 }}
@@ -530,7 +530,7 @@ export default function Home() {
                 </svg>
               </button>
               {!unlocked && remainingFree > 0 && (
-                <span style={{ fontSize: 12, color: 'rgba(43,24,16,0.50)', fontWeight: 500, flexShrink: 0 }}>
+                <span style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.50)', fontWeight: 500, flexShrink: 0 }}>
                   還剩 {remainingFree} 次免費
                 </span>
               )}
@@ -594,11 +594,11 @@ export default function Home() {
             padding: 6,
             marginBottom: 14,
             borderRadius: 30,
-            background: 'linear-gradient(135deg, rgba(242,184,75,0.16), rgba(255,255,255,0.04) 60%, rgba(43,24,16,0.04))',
+            background: 'linear-gradient(135deg, rgba(242,184,75,0.16), rgba(255,255,255,0.04) 60%, rgba(var(--ink-rgb), 0.04))',
             boxShadow:
-              'inset 0 0 0 1px rgba(43,24,16,0.06),' +
+              'inset 0 0 0 1px rgba(var(--ink-rgb), 0.06),' +
               ' 0 1px 0 rgba(255,255,255,0.7),' +
-              ' 0 22px 40px -28px rgba(43,24,16,0.22)',
+              ' 0 22px 40px -28px rgba(var(--ink-rgb), 0.22)',
           }}>
           <div className="glass-card" style={{ padding: '20px 20px 18px', borderRadius: 24 }}>
 
@@ -639,7 +639,7 @@ export default function Home() {
                   <>
                     <span style={{
                       width: 14, height: 14,
-                      border: '2.5px solid rgba(43,24,16,0.25)',
+                      border: '2.5px solid rgba(var(--ink-rgb), 0.25)',
                       borderTopColor: 'var(--ink-hex)', borderRadius: '50%',
                       animation: 'peekkids-spin 0.8s linear infinite',
                     }} />
@@ -723,7 +723,7 @@ export default function Home() {
                   background: 'none', border: 'none', cursor: 'pointer',
                   padding: '2px 4px',
                   fontSize: 12, fontWeight: 500,
-                  color: 'rgba(43,24,16,0.40)',
+                  color: 'rgba(var(--ink-rgb), 0.40)',
                   fontFamily: 'inherit', letterSpacing: '-0.01em',
                   textDecoration: 'underline', textUnderlineOffset: 2,
                 }}
@@ -802,7 +802,7 @@ export default function Home() {
             <p style={{ fontSize: 15, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.025em' }}>
               熊熊模式
             </p>
-            <p style={{ fontSize: 14, color: 'rgba(43,24,16,0.65)', marginTop: 2, fontWeight: 500, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 14, color: 'rgba(var(--ink-rgb), 0.65)', marginTop: 2, fontWeight: 500, lineHeight: 1.5 }}>
               人工精選 放心給小孩觀看
             </p>
           </div>
@@ -831,7 +831,7 @@ export default function Home() {
         <footer className="reveal-up" style={{
           marginTop: 56, textAlign: 'center',
           paddingTop: 24,
-          borderTop: '1px dashed rgba(43,24,16,0.14)',
+          borderTop: '1px dashed rgba(var(--ink-rgb), 0.14)',
         }}>
           <div className="footer-brand" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,

@@ -216,7 +216,7 @@ function SetupScreen({
   return (
     <div className="kids-timer-setup-backdrop" style={{
       position: 'fixed', inset: 0, zIndex: 9500,
-      background: 'rgba(43,24,16,0.45)',
+      background: 'rgba(var(--ink-rgb), 0.45)',
       backdropFilter: 'blur(14px)',
       WebkitBackdropFilter: 'blur(14px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -234,8 +234,8 @@ function SetupScreen({
         borderRadius: 28,
         boxShadow:
           'inset 0 1px 0 rgba(255,255,255,0.7),' +     // 頂部高光
-          ' inset 0 -1px 0 rgba(43,24,16,0.06),' +     // 底部微暗 (depth)
-          ' 0 30px 60px -20px rgba(43,24,16,0.30)',    // 飄浮感
+          ' inset 0 -1px 0 rgba(var(--ink-rgb), 0.06),' +     // 底部微暗 (depth)
+          ' 0 30px 60px -20px rgba(var(--ink-rgb), 0.30)',    // 飄浮感
       }}>
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div style={{ marginBottom: 4, display: 'flex', justifyContent: 'center' }}>
@@ -244,7 +244,7 @@ function SetupScreen({
           <h2 className="font-display" style={{ fontSize: 26, color: 'var(--ink-hex)', marginBottom: 8 }}>
             小朋友今天要看多久？
           </h2>
-          <p style={{ fontSize: 13, color: 'rgba(43,24,16,0.66)', fontWeight: 500, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: 'rgba(var(--ink-rgb), 0.66)', fontWeight: 500, lineHeight: 1.6 }}>
             小析會幫你看時間，時間到就會跳出來提醒
           </p>
         </div>
@@ -359,13 +359,13 @@ function SetupScreen({
             width: '100%', marginTop: hasRunningTimer ? 8 : 0, padding: '10px',
             background: 'transparent',
             border: 'none',
-            color: 'rgba(43,24,16,0.66)',
+            color: 'rgba(var(--ink-rgb), 0.66)',
             cursor: 'pointer',
             fontSize: 12, fontWeight: 600, letterSpacing: '-0.005em',
             fontFamily: 'inherit',
             textDecoration: 'underline',
             textUnderlineOffset: 3,
-            textDecorationColor: 'rgba(43,24,16,0.28)',
+            textDecorationColor: 'rgba(var(--ink-rgb), 0.28)',
           }}
         >
           不計時 · 我自己看時間
@@ -383,7 +383,7 @@ function SetupScreen({
           fontWeight: 600, lineHeight: 1.5,
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
         }}>
-          3–6 歲醫學建議：單次 ≤ <strong style={{ color: '#D99422', fontWeight: 800 }}>20 分鐘</strong>，一天 ≤ <strong style={{ color: '#D99422', fontWeight: 800 }}>1 小時</strong>
+          3–6 歲醫學建議：單次 ≤ <strong style={{ color: 'var(--cc-gold-deep, #D99422)', fontWeight: 800 }}>20 分鐘</strong>，一天 ≤ <strong style={{ color: 'var(--cc-gold-deep, #D99422)', fontWeight: 800 }}>1 小時</strong>
         </p>
       </div>
     </div>
@@ -417,15 +417,15 @@ function TimerBubble({ remainSec, onClick }: { remainSec: number; onClick: () =>
         padding: '8px 14px 8px 11px',
         background: urgent
           ? 'linear-gradient(135deg, rgba(194,65,59,0.92), rgba(142,42,36,0.88))'
-          : 'rgba(43,24,16,0.85)',
+          : 'rgba(var(--ink-rgb), 0.85)',
         color: urgent ? '#FFF6E6' : 'var(--cc-gold)',
         backdropFilter: 'blur(20px) saturate(160%)',
         WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-        border: urgent ? '1px solid rgba(142,42,36,0.5)' : '1px solid rgba(43,24,16,0.55)',
+        border: urgent ? '1px solid rgba(142,42,36,0.5)' : '1px solid rgba(var(--ink-rgb), 0.55)',
         borderRadius: 9999,
         boxShadow: urgent
           ? 'inset 0 1px 0 rgba(255,255,255,0.22), 0 6px 18px -6px rgba(142,42,36,0.5)'
-          : 'inset 0 1px 0 rgba(255,255,255,0.18), 0 4px 14px -4px rgba(43,24,16,0.4)',
+          : 'inset 0 1px 0 rgba(255,255,255,0.18), 0 4px 14px -4px rgba(var(--ink-rgb), 0.4)',
         fontFamily: 'inherit',
         cursor: 'pointer',
         animation: urgent ? 'bubble-pulse 0.9s ease-in-out infinite' : 'none',
@@ -563,7 +563,7 @@ function TimeUpScreen({
           小朋友時間到囉
         </h1>
         <p style={{
-          fontSize: 17, color: 'rgba(43,24,16,0.78)',
+          fontSize: 17, color: 'rgba(var(--ink-rgb), 0.78)',
           fontWeight: 500, letterSpacing: '-0.01em',
           lineHeight: 1.6,
           marginBottom: 28,
@@ -586,12 +586,12 @@ function TimeUpScreen({
           maxWidth: 320,
           margin: '0 auto 14px',
           background: 'rgba(255,255,255,0.38)',
-          border: '1px solid rgba(43,24,16,0.10)',
+          border: '1px solid rgba(var(--ink-rgb), 0.10)',
           borderRadius: 14,
         }}>
           <p style={{
             fontSize: 13,
-            color: 'rgba(43,24,16,0.85)',
+            color: 'rgba(var(--ink-rgb), 0.85)',
             lineHeight: 1.65,
             letterSpacing: '-0.01em',
             marginBottom: 6,
@@ -602,7 +602,7 @@ function TimeUpScreen({
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <span style={{
               fontSize: 11,
-              color: 'rgba(43,24,16,0.55)',
+              color: 'rgba(var(--ink-rgb), 0.55)',
               letterSpacing: '0.01em',
             }}>
               — {educationEntry.source}
@@ -636,8 +636,8 @@ function TimeUpScreen({
           borderRadius: 22,
           boxShadow:
             'inset 0 1px 0 rgba(255,255,255,0.7),' +
-            ' inset 0 -1px 0 rgba(43,24,16,0.06),' +
-            ' 0 18px 36px -16px rgba(43,24,16,0.22)',
+            ' inset 0 -1px 0 rgba(var(--ink-rgb), 0.06),' +
+            ' 0 18px 36px -16px rgba(var(--ink-rgb), 0.22)',
         }}>
           <p style={{
             fontSize: 11, fontWeight: 800, color: 'var(--ink-hex)',
@@ -677,7 +677,7 @@ function TimeUpScreen({
               textAlign: 'center',
               letterSpacing: '0.04em',
               background: error ? 'rgba(194, 65, 59, 0.08)' : 'rgba(255, 255, 255, 0.85)',
-              border: `1.5px solid ${error ? 'var(--terra-hex)' : 'rgba(43, 24, 16, 0.22)'}`,
+              border: `1.5px solid ${error ? 'var(--terra-hex)' : 'rgba(var(--ink-rgb), 0.22)'}`,
               borderRadius: 14,
               fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace',
               color: 'var(--ink-hex)',
@@ -689,7 +689,7 @@ function TimeUpScreen({
           {/* 提示：答對才能解鎖延長 */}
           <p style={{
             fontSize: 11,
-            color: 'rgba(43,24,16,0.55)',
+            color: 'rgba(var(--ink-rgb), 0.55)',
             textAlign: 'center',
             marginBottom: 8,
             letterSpacing: '0.02em',
@@ -716,10 +716,10 @@ function TimeUpScreen({
                   opacity: isAnswerCorrect ? 1 : 0.35,
                   background: isAnswerCorrect
                     ? 'rgba(255, 255, 255, 0.55)'
-                    : 'rgba(43, 24, 16, 0.06)',
+                    : 'rgba(var(--ink-rgb), 0.06)',
                   backdropFilter: isAnswerCorrect ? 'blur(14px)' : 'none',
                   WebkitBackdropFilter: isAnswerCorrect ? 'blur(14px)' : 'none',
-                  border: `1px solid ${isAnswerCorrect ? 'rgba(43,24,16,0.22)' : 'rgba(43,24,16,0.10)'}`,
+                  border: `1px solid ${isAnswerCorrect ? 'rgba(var(--ink-rgb), 0.22)' : 'rgba(var(--ink-rgb), 0.10)'}`,
                   borderRadius: 12,
                   boxShadow: isAnswerCorrect ? 'inset 0 1px 0 rgba(255,255,255,0.55)' : 'none',
                   transition: 'background 0.2s, opacity 0.2s, box-shadow 0.2s, transform 0.12s',
@@ -759,7 +759,7 @@ function TimeUpScreen({
             fontSize: 14, fontWeight: 700,
             letterSpacing: '-0.01em',
             cursor: 'pointer',
-            boxShadow: '0 8px 22px -8px rgba(43, 24, 16, 0.42)',
+            boxShadow: '0 8px 22px -8px rgba(var(--ink-rgb), 0.42)',
           }}
         >
           好，今天先到這裡

@@ -74,7 +74,7 @@ export default function ScanningStages({ progress }: { progress: number }) {
             <div style={{
               lineHeight: 1,
               marginBottom: 4,
-              color: current ? 'var(--ink-hex)' : done ? 'rgba(43,24,16,0.4)' : 'rgba(43,24,16,0.3)',
+              color: current ? 'var(--ink-hex)' : done ? 'rgba(var(--ink-rgb), 0.4)' : 'rgba(var(--ink-rgb), 0.3)',
               display: 'inline-flex',
               animation: current ? 'scan-stage-bob 1.2s ease-in-out infinite' : 'none',
             }}>
