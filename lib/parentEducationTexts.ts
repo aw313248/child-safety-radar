@@ -9,6 +9,32 @@ export interface EducationEntry {
   url: string
 }
 
+/**
+ * 機構徽章短名映射 — source 全名 → 圓形徽章顯示的簡稱
+ * 用在 CircularTestimonials carousel 的圓形 badge
+ * 法律 anchor：零真實照片，用機構徽章 + 引用 quote + 出處
+ */
+export const SOURCE_BADGE_LABEL: Record<string, string> = {
+  '世界衛生組織 WHO 2019 兒童身體活動指南': 'WHO',
+  '美國兒科醫學會 AAP 螢幕時間指引': 'AAP',
+  'Common Sense Media 家長 YouTube 指南': 'CSM',
+  '安兒康小兒專科診所整理': '安兒康',
+  '未來親子整理 JAMA 研究': '未來親子',
+  'Zero To Three 螢幕意義報告': 'ZTT',
+  'Lovevery 兒童發展團隊': 'Lovevery',
+  'HealthyChildren.org AAP 親子網': 'AAP',
+  'CNBC 引述兒童心理師建議': 'CNBC',
+  '親子天下整理職能治療師建議': '親子天下',
+  'Kidsburgh 心理師專欄': 'Kidsburgh',
+}
+
+/**
+ * 取得機構徽章簡稱（找不到就 fallback 截前 4 字）
+ */
+export function getBadgeLabel(source: string): string {
+  return SOURCE_BADGE_LABEL[source] ?? source.slice(0, 4)
+}
+
 export const PARENT_EDUCATION_TEXTS: EducationEntry[] = [
   {
     category: 'screenTime',
