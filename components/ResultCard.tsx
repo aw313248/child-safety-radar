@@ -8,6 +8,7 @@ import ShareQRModal from './ShareQRModal'
 import AddToKidsMode from './AddToKidsMode'
 import Mascot from './Mascot'
 import { ratingToColor } from '@/lib/score-colors'
+import { PARENT_EDUCATION_TEXTS, getBadgeLabel, type EducationEntry } from '@/lib/parentEducationTexts'
 
 interface Props {
   result: AnalysisResult
@@ -355,6 +356,25 @@ export default function ResultCard({ result, onReset }: Props) {
       </>
     )
   }, [result.checkedAt])
+
+  // 教育引用：依 risk category 對應 testimonial 段落（deterministic，同頻道每次掃結果相同）
+  // high / adult_inappropriate → practical（孩子崩潰、過動、替代活動等實戰）
+  // medium                     → screenTime（AAP/WHO 時間建議）
+  // low                        → development（發展心理 reframe）
+  const educationEntry = useMemo<EducationEntry | null>(() => {
+    const targetCategory: EducationEntry['category'] =
+      result.riskLevel === 'high' || result.riskLevel === 'adult_inappropriate'
+        ? 'practical'
+        : result.riskLevel === 'medium'
+          ? 'screenTime'
+          : 'development'
+    const filtered = PARENT_EDUCATION_TEXTS.filter(t => t.category === targetCategory)
+    if (filtered.length === 0) return null
+    const seed = (result.channelUrl ?? result.channelId ?? result.channelName ?? '')
+      .split('')
+      .reduce((a, c) => a + c.charCodeAt(0), 0)
+    return filtered[seed % filtered.length]
+  }, [result.channelUrl, result.channelId, result.channelName, result.riskLevel])
 
   const [showQR, setShowQR] = useState(false)
   // distill：警示留言 + 異常標籤 + 熊爸熊媽建議 默認折疊，預設只看分數 + 摘要 + CTA
@@ -837,6 +857,87 @@ export default function ResultCard({ result, onReset }: Props) {
 
       {/* ── 拿鐵媽媽 v1.0 低刺激評分卡 ── */}
       {result.channelScore && <LowStimCard score={result.channelScore} />}
+
+      {/* ── 教育引用：機構徽章 + quote + source（按 risk category 對應） ── */}
+      {/* 走 inline 簡化版（非 carousel） — 用戶已看 5 維度評分 + AI summary，carousel 多餘 */}
+      {/* CircularTestimonials 留在 components/ui/ 供 about 頁未來用 */}
+      {educationEntry && (
+        <div className="glass-card stagger-4" style={{
+          padding: '16px 18px',
+          borderRadius: 18,
+          border: '1px solid rgba(255,255,255,0.78)',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 14,
+        }}>
+          {/* 圓形機構徽章 */}
+          <div style={{ flexShrink: 0, position: 'relative', width: 56, height: 56 }}>
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute', inset: 0, borderRadius: '50%',
+                filter: 'blur(10px)', opacity: 0.35,
+                background:
+                  educationEntry.category === 'practical' ? 'var(--risk-green)' :
+                  educationEntry.category === 'screenTime' ? 'var(--honey-deep)' :
+                  'var(--terra-hex)',
+              }}
+            />
+            <div style={{
+              position: 'relative', width: 56, height: 56,
+              borderRadius: '50%',
+              background: 'var(--paper-hex)',
+              border: '1.5px solid var(--ink-hex)',
+              boxShadow: '2px 2px 0 var(--ink-hex)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontWeight: 800,
+              color: 'var(--ink-hex)',
+              letterSpacing: '0.01em',
+              fontSize: /[一-鿿]/.test(getBadgeLabel(educationEntry.source)) ? 12 : 14,
+              textAlign: 'center',
+              lineHeight: 1.1,
+              padding: 4,
+            }}>
+              {getBadgeLabel(educationEntry.source)}
+            </div>
+          </div>
+          {/* quote + source */}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <p style={{
+              fontSize: 11, fontWeight: 800,
+              letterSpacing: '0.14em', textTransform: 'uppercase',
+              color:
+                educationEntry.category === 'practical' ? 'var(--risk-green)' :
+                educationEntry.category === 'screenTime' ? 'var(--honey-deep)' :
+                'var(--terra-hex)',
+            }}>
+              {educationEntry.category === 'practical' ? '實戰建議' :
+               educationEntry.category === 'screenTime' ? '螢幕時間' : '發展研究'}
+            </p>
+            <p style={{
+              fontSize: 13, lineHeight: 1.65, letterSpacing: '-0.005em',
+              color: 'var(--ink-hex)', fontWeight: 500,
+            }}>
+              「{educationEntry.text}」
+            </p>
+            <a
+              href={educationEntry.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontSize: 11,
+                color: 'rgba(var(--ink-rgb), 0.55)',
+                textDecoration: 'underline',
+                textUnderlineOffset: 3,
+                letterSpacing: '-0.005em',
+                alignSelf: 'flex-start',
+              }}
+            >
+              出處：{educationEntry.source} →
+            </a>
+          </div>
+        </div>
+      )}
 
       {stalenessBlock}
     </div>
