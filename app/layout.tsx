@@ -68,17 +68,26 @@ export const metadata: Metadata = {
   creator: 'CareCub',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'CareCub — 這個卡通安全嗎？20 秒掃給你看',
-    description: '貼上 YouTube 網址，AI 看完影片跟留言，紅橘綠燈告訴你能不能給小孩看',
+    title: 'CareCub · 小析守護 — 不監控，幫媽媽查證',
+    description: 'YouTube 給孩子？先讓 CareCub 看一遍，免費 2 次、不用註冊，拿鐵媽媽 framework 落地',
     type: 'website',
     locale: 'zh_TW',
     url: SITE_URL,
     siteName: 'CareCub',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'CareCub · 小析守護 — 不監控，幫媽媽查證',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'CareCub — 20 秒看穿卡通藏什麼',
-    description: '貼上 YouTube 網址，AI 看完影片跟留言，告訴你能不能給小孩看',
+    title: 'CareCub · 小析守護 — 不監控，幫媽媽查證',
+    description: 'YouTube 給孩子？先讓 CareCub 看一遍，免費 2 次、不用註冊',
+    images: ['/opengraph-image'],
   },
   robots: {
     index: true,
