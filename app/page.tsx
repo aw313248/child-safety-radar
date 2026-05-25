@@ -70,113 +70,83 @@ const GUIDE_STEPS = [
 ]
 
 function GuideIconRow({ onCollapse }: { onCollapse: () => void }) {
-  const [activeIdx, setActiveIdx] = useState<number | null>(null)
-
   return (
     <div style={{
       marginTop: 12,
-      background: 'rgba(255,255,255,0.55)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(var(--ink-rgb), 0.10)',
+      background: 'rgba(var(--ink-rgb), 0.04)',
+      border: '1px solid rgba(var(--ink-rgb), 0.08)',
       borderRadius: 14,
-      padding: '14px 18px 16px',
+      padding: '12px 14px 14px',
       position: 'relative',
-      textAlign: 'center',
     }}>
-      {/* 收合 × */}
-      <button
-        aria-label="收合引導"
-        onClick={onCollapse}
-        style={{
-          position: 'absolute', top: 10, right: 12,
-          background: 'none', border: 'none', cursor: 'pointer',
-          padding: 4, lineHeight: 1,
-          color: 'rgba(var(--ink-rgb), 0.35)',
-          fontFamily: 'inherit',
-        }}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
+      {/* header row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(var(--ink-rgb), 0.45)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+          怎麼拿頻道連結
+        </p>
+        <button
+          aria-label="收合引導"
+          onClick={onCollapse}
+          style={{
+            background: 'none', border: 'none', cursor: 'pointer',
+            padding: 4, lineHeight: 1,
+            color: 'rgba(var(--ink-rgb), 0.30)',
+            fontFamily: 'inherit',
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
 
-      <p style={{ fontSize: 13, fontWeight: 700, color: 'rgba(var(--ink-rgb), 0.55)', letterSpacing: '-0.01em', marginBottom: 12 }}>
-        第一次用？怎麼拿頻道連結
-      </p>
-
-      {/* 3 icons row */}
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', gap: 24 }}>
+      {/* 3 steps — always-visible labels, no tooltip */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
         {GUIDE_STEPS.map((step, i) => (
-          <div key={i} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            {/* 步驟箭頭連接 */}
+          <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, position: 'relative' }}>
+            {/* arrow connector */}
             {i > 0 && (
-              <div style={{
-                position: 'absolute', left: -16, top: 14,
-                width: 8,
-                height: 1,
-                background: 'rgba(var(--ink-rgb), 0.20)',
+              <div aria-hidden style={{
+                position: 'absolute', left: 0, top: 18,
+                width: '100%', height: 1,
+                background: 'linear-gradient(90deg, rgba(var(--ink-rgb),0.15) 0%, rgba(var(--ink-rgb),0.06) 100%)',
+                transform: 'translateX(-50%)',
+                pointerEvents: 'none',
               }} />
             )}
 
-            {/* icon 按鈕 */}
-            <button
-              aria-label={step.label}
-              onMouseEnter={() => setActiveIdx(i)}
-              onMouseLeave={() => setActiveIdx(null)}
-              onFocus={() => setActiveIdx(i)}
-              onBlur={() => setActiveIdx(null)}
-              onClick={() => setActiveIdx(activeIdx === i ? null : i)}
-              style={{
-                background: activeIdx === i ? 'rgba(242,184,75,0.15)' : 'rgba(255,255,255,0.60)',
-                border: '1px solid rgba(var(--ink-rgb), 0.10)',
-                borderRadius: 14,
-                width: 56, height: 56,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'background 0.15s, transform 0.15s',
-                transform: activeIdx === i ? 'translateY(-2px)' : 'none',
-                fontFamily: 'inherit',
-              }}
-            >
-              {step.icon}
-            </button>
-
-            {/* step number badge */}
-            <span style={{
-              width: 18, height: 18, borderRadius: '50%',
-              background: 'rgba(var(--ink-rgb), 0.10)',
-              fontSize: 10, fontWeight: 800, color: 'var(--ink-hex)',
+            {/* icon pill */}
+            <div style={{
+              width: 44, height: 44, borderRadius: 12,
+              background: i === 0 ? 'rgba(255,0,0,0.08)' : 'rgba(255,255,255,0.70)',
+              border: '1px solid rgba(var(--ink-rgb), 0.10)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>{i + 1}</span>
+              position: 'relative', zIndex: 1,
+              flexShrink: 0,
+            }}>
+              {step.icon}
+              {/* step number — top-right badge */}
+              <span style={{
+                position: 'absolute', top: -5, right: -5,
+                width: 16, height: 16, borderRadius: '50%',
+                background: 'var(--ink-hex)',
+                color: 'var(--honey-hex)',
+                fontSize: 9, fontWeight: 900,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                lineHeight: 1,
+              }}>{i + 1}</span>
+            </div>
 
-            {/* tooltip — shows on hover/tap */}
-            {activeIdx === i && (
-              <div style={{
-                position: 'absolute', top: 70, left: '50%', transform: 'translateX(-50%)',
-                background: 'rgba(var(--ink-rgb), 0.88)',
-                color: '#FFF',
-                fontSize: 12, fontWeight: 600, lineHeight: 1.5,
-                padding: '7px 11px',
-                borderRadius: 8,
-                maxWidth: 140,
-                whiteSpace: 'normal' as React.CSSProperties['whiteSpace'],
-                textAlign: 'center',
-                zIndex: 10,
-                pointerEvents: 'none',
-                letterSpacing: '-0.01em',
-              }}>
-                {step.label}
-                {/* arrow */}
-                <div style={{
-                  position: 'absolute', top: -5, left: '50%', transform: 'translateX(-50%)',
-                  width: 0, height: 0,
-                  borderLeft: '5px solid transparent',
-                  borderRight: '5px solid transparent',
-                  borderBottom: '5px solid rgba(var(--ink-rgb), 0.88)',
-                }} />
-              </div>
-            )}
+            {/* label — always visible */}
+            <p style={{
+              fontSize: 11, fontWeight: 600, lineHeight: 1.4,
+              color: 'var(--ink-hex)', opacity: 0.72,
+              textAlign: 'center',
+              letterSpacing: '-0.01em',
+              maxWidth: 72,
+            }}>
+              {step.label}
+            </p>
           </div>
         ))}
       </div>
