@@ -3,26 +3,30 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
 // ══════════════════════════════════════════════════
-// OG 分享圖 — 方向 B Muji 紙質包裝風（極簡 + 紙質陰影 + 大留白）
+// OG 分享圖 V3 — 直接複製首頁視覺，極簡到只剩 logo + 副 line
 // 1200×630
 //
-// 設計三柱：Apple 乾淨 / Muji 留白 / Lululemon 文案
-// 上版（PR #23）feedback：黃 chip + 紅 CTA + 三色燈號 + multi-color 大字 → 過度設計
-// 本版拒做：chip / CTA button / 燈號 / multi-color / mascot 大版 / Visual noise
+// 設計鐵則：
+// - 配色 100% 等同 app/page.tsx + globals.css 首頁
+// - 字型 100% 等同首頁（Huninn 大標 + Noto Sans TC 副 line）
+// - 只有兩行東西：「CareCub」 + 「不監控，幫媽媽查證」
+// - 留白 70%+
 //
-// Runtime: Node（讓 fs 讀本地 Huninn.ttf）
+// 拒做 list：卡片 / shadow / border / 圖示 / chip / pill / button
+// 燈號 / multi-color 字 / emoji / mini logo / CTA / authority line
+//
 // Satori 注意：display 僅允許 flex | block | none | -webkit-box
+// Satori 對 radial-gradient 支援有限 → fallback 用兩層絕對定位 div 模擬 honey glow
 // ══════════════════════════════════════════════════
 
 export const runtime = 'nodejs'
-export const alt = 'CareCub · 小析守護 — 不監控，幫媽媽查證'
+export const alt = 'CareCub — 不監控，幫媽媽查證'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-// ── 色票 ──────────────────────────────────────────
-const INK = '#2B1810'          // 主墨色（單色 hero 字 + icon stroke）
-const PAPER = '#F3EEDD'        // 外層暖米白
-const CARD = '#FFFFFF'         // 卡片底（純白，跟外層輕微對比 + 紙感）
+// ── 色票（100% 對應 globals.css :root） ─────────────
+const INK = '#2B1810'          // 主墨色（暖咖啡，--ink-hex）
+const PAPER = '#F3EEDD'        // 紙面奶油米（--paper-hex）
 
 async function loadHuninn(): Promise<ArrayBuffer | null> {
   try {
@@ -47,16 +51,14 @@ async function loadNotoSansTC(weight: 400 | 500 | 700): Promise<ArrayBuffer | nu
 }
 
 export default async function Image() {
-  const [huninn, noto500, noto400] = await Promise.all([
+  const [huninn, noto700] = await Promise.all([
     loadHuninn(),
-    loadNotoSansTC(500),
-    loadNotoSansTC(400),
+    loadNotoSansTC(700),
   ])
 
-  const fonts: Array<{ name: string; data: ArrayBuffer; weight: 400 | 500 | 900; style: 'normal' }> = []
+  const fonts: Array<{ name: string; data: ArrayBuffer; weight: 700 | 900; style: 'normal' }> = []
   if (huninn) fonts.push({ name: 'Huninn', data: huninn, weight: 900, style: 'normal' })
-  if (noto500) fonts.push({ name: 'NotoSansTC', data: noto500, weight: 500, style: 'normal' })
-  if (noto400) fonts.push({ name: 'NotoSansTC', data: noto400, weight: 400, style: 'normal' })
+  if (noto700) fonts.push({ name: 'NotoSansTC', data: noto700, weight: 700, style: 'normal' })
 
   return new ImageResponse(
     (
@@ -67,160 +69,111 @@ export default async function Image() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          // 外層：暖米白 + 極弱 honey radial（左上 alpha 0.15 不能搶）
+          flexDirection: 'column',
           backgroundColor: PAPER,
-          backgroundImage:
-            'radial-gradient(ellipse 55% 50% at 12% 6%, rgba(255, 199, 95, 0.15) 0%, transparent 60%)',
-          fontFamily: 'NotoSansTC, Huninn, sans-serif',
+          // 首頁 body 用 radial-gradient — Satori 對 radial 支援有限，
+          // 改用兩層絕對定位 div 模擬 honey glow（左上 + 右下）
           position: 'relative',
+          fontFamily: 'NotoSansTC, Huninn, sans-serif',
         }}
       >
-        {/* ─── 中央卡片 ~860×460 紙質陰影 ─── */}
+        {/* ─── 模擬首頁 radial gradient：左上 honey glow ─── */}
         <div
           style={{
-            width: 860,
-            // 卡片高度交給內容撐，但設 minHeight 確保 460
-            minHeight: 460,
+            position: 'absolute',
+            top: -200,
+            left: -200,
+            width: 900,
+            height: 700,
+            display: 'flex',
+            background:
+              'radial-gradient(ellipse at center, rgba(255, 183, 3, 0.42) 0%, rgba(255, 183, 3, 0.18) 35%, transparent 65%)',
+          }}
+        />
+
+        {/* ─── 模擬首頁 radial gradient：右下 stone（豆沙綠）glow ─── */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: -200,
+            right: -200,
+            width: 850,
+            height: 650,
+            display: 'flex',
+            background:
+              'radial-gradient(ellipse at center, rgba(210, 221, 194, 0.55) 0%, rgba(210, 221, 194, 0.25) 35%, transparent 65%)',
+          }}
+        />
+
+        {/* ─── 模擬首頁 radial gradient：右上 terra 微紅 ─── */}
+        <div
+          style={{
+            position: 'absolute',
+            top: -120,
+            right: -150,
+            width: 700,
+            height: 550,
+            display: 'flex',
+            background:
+              'radial-gradient(ellipse at center, rgba(194, 65, 59, 0.14) 0%, rgba(194, 65, 59, 0.06) 35%, transparent 65%)',
+          }}
+        />
+
+        {/* ─── 模擬首頁 radial gradient：左下次 honey 補光 ─── */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: -150,
+            left: -120,
+            width: 650,
+            height: 520,
+            display: 'flex',
+            background:
+              'radial-gradient(ellipse at center, rgba(255, 183, 3, 0.22) 0%, rgba(255, 183, 3, 0.10) 35%, transparent 65%)',
+          }}
+        />
+
+        {/* ─── 主視覺：兩行字，垂直置中 ─── */}
+        <div
+          style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            background: CARD,
-            borderRadius: 24,
-            border: '1.5px solid rgba(43, 24, 16, 0.15)',
-            // 紙質 multi-layer shadow（高光 inset + 雙層 drop）
-            boxShadow:
-              '0 1px 0 rgba(255, 255, 255, 0.7) inset,' +
-              ' 0 14px 36px -16px rgba(43, 24, 16, 0.18),' +
-              ' 0 22px 40px -28px rgba(43, 24, 16, 0.22)',
-            padding: '56px 72px',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
-          {/* 1. 上方 mini logo 一行 */}
+          {/* 1. CareCub 大字 — Huninn 900 / ink */}
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 10,
-              marginBottom: 36,
+              fontFamily: 'Huninn, sans-serif',
+              fontWeight: 900,
+              fontSize: 200,
+              color: INK,
+              letterSpacing: '-0.05em',
+              lineHeight: 1,
+              textAlign: 'center',
             }}
           >
-            {/* CC mascot mini icon — 32px circle + CC */}
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 9999,
-                background: INK,
-                color: '#FFF6E6',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 14,
-                fontWeight: 900,
-                letterSpacing: '-0.02em',
-                fontFamily: 'Huninn, sans-serif',
-              }}
-            >
-              CC
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                fontSize: 18,
-                fontWeight: 900,
-                color: INK,
-                letterSpacing: '0.01em',
-                fontFamily: 'Huninn, NotoSansTC, sans-serif',
-              }}
-            >
-              CareCub · 小析守護
-            </div>
+            CareCub
           </div>
 
-          {/* 2. 大字 hero 主標題 — 單色 ink，絕不 multi-color，單行 */}
+          {/* 2. 副 line — Noto Sans TC 700 / ink alpha 0.72 */}
           <div
             style={{
               display: 'flex',
-              fontSize: 68,
-              fontWeight: 900,
-              color: INK,
-              letterSpacing: '-0.045em',
-              lineHeight: 1.02,
-              fontFamily: 'Huninn, sans-serif',
+              fontFamily: 'NotoSansTC, sans-serif',
+              fontWeight: 700,
+              fontSize: 42,
+              color: 'rgba(43, 24, 16, 0.72)',
+              letterSpacing: '-0.01em',
+              marginTop: 48,
               textAlign: 'center',
-              whiteSpace: 'nowrap',
             }}
           >
             不監控，幫媽媽查證
-          </div>
-
-          {/* 3. 副 line 小字（主標下 24px） */}
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 22,
-              fontWeight: 400,
-              color: 'rgba(43, 24, 16, 0.55)',
-              letterSpacing: '0.005em',
-              marginTop: 24,
-              fontFamily: 'NotoSansTC, sans-serif',
-              textAlign: 'center',
-            }}
-          >
-            YouTube 給孩子？先讓 CareCub 看一遍
-          </div>
-
-          {/* 4. minimal 盾牌 + 勾勾 SVG（副 line 下 32px） */}
-          <div
-            style={{
-              display: 'flex',
-              marginTop: 32,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <svg
-              width={60}
-              height={60}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke={INK}
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {/* Lucide shield-check — 盾牌 + 勾勾 */}
-              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
-              <path d="m9 12 2 2 4-4" />
-            </svg>
-          </div>
-        </div>
-
-        {/* 5. 底部 minimal authority line（卡片下方，畫面底 padding） */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 36,
-            left: 0,
-            right: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              fontSize: 14,
-              fontWeight: 400,
-              color: 'rgba(43, 24, 16, 0.45)',
-              letterSpacing: '0.04em',
-              fontFamily: 'NotoSansTC, sans-serif',
-            }}
-          >
-            by WHO · AAP · Common Sense · 拿鐵媽媽 framework
           </div>
         </div>
       </div>
