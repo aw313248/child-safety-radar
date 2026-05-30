@@ -12,6 +12,7 @@ import LoadingFacts from '@/components/LoadingFacts'
 import { AnalysisResult } from '@/types/analysis'
 
 const UnlockModal = dynamic(() => import('@/components/UnlockModal'), { ssr: false })
+const PaywallModal = dynamic(() => import('@/components/PaywallModal'), { ssr: false })
 const CaseLibrary = dynamic(() => import('@/components/CaseLibrary'), {
   ssr: false,
   loading: () => (
@@ -165,6 +166,12 @@ export default function Home() {
   const [scanCount, setScanCount] = useState(0)
   const [showUnlock, setShowUnlock] = useState(false)
   const [unlockPending, setUnlockPending] = useState(false)
+  // Lemonsqueezy 訂閱 paywall（取代 UnlockModal 為主要付費入口）
+  const [showPaywall, setShowPaywall] = useState(false)
+  const [paywallPending, setPaywallPending] = useState(false)
+  // 訂閱狀態（server side）：webhook 寫進 Redis 後，前端 fetch /api/subscription/status
+  const [subscriptionActive, setSubscriptionActive] = useState(false)
+  const [serverRemainingFree, setServerRemainingFree] = useState<number | null>(null)
   // 動態 placeholder：每 3.5s 換一個範例頻道，告訴使用者可以丟什麼進來
   const [phIdx, setPhIdx] = useState(0)
   // confetti：result 出現的瞬間放一次 0.6s 蜂蜜金小點
@@ -257,8 +264,31 @@ export default function Home() {
         setUnlockPending(true)
         window.history.replaceState({}, '', '/')
       }
+      // Lemonsqueezy 訂閱付款 redirect 帶 ?subscription_pending=1 → 開 paywall pending 狀態
+      if (params.get('subscription_pending') === '1') {
+        setShowPaywall(true)
+        setPaywallPending(true)
+        window.history.replaceState({}, '', '/')
+      }
     } catch {}
   }, [])
+
+  // 訂閱狀態 + server 剩餘次數（webhook 寫進 Redis 後讀回 chip 顯示）
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      try {
+        const res = await fetch('/api/subscription/status', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json()
+        if (cancelled) return
+        if (typeof data.active === 'boolean') setSubscriptionActive(data.active)
+        if (typeof data.remainingFree === 'number') setServerRemainingFree(data.remainingFree)
+      } catch {}
+    }
+    load()
+    return () => { cancelled = true }
+  }, [scanCount]) // 每次 scan 完跑一次（reflect 新的 server-side 剩餘次數）
 
   const USER_BLACKLIST_KEY = 'cc_user_blacklist'
 
@@ -332,8 +362,8 @@ export default function Home() {
       clearInterval(timer); setProgress(100)
       const data = await res.json().catch(() => ({ error: '回傳格式怪怪的，再試一次' }))
       if (!res.ok) {
-        // 402 = server-side 免費次數用完（真正的守門），彈 modal
-        if (res.status === 402) { setShowUnlock(true) }
+        // 402 = server-side 免費次數用完（真正的守門），彈訂閱 paywall
+        if (res.status === 402) { setShowPaywall(true) }
         else if (res.status === 429) setError('太多人在用，等 30 秒再試')
         else if (res.status === 404) setError('找不到這個頻道，確認網址對不對')
         else if (res.status >= 500) setError('伺服器暫時罷工，等等再試')
@@ -369,7 +399,12 @@ export default function Home() {
     setUnlocked(true); localStorage.setItem(STORAGE_KEY, 'true'); setShowUnlock(false)
   }
 
-  const remainingFree = Math.max(FREE_SCANS - scanCount, 0)
+  // 同時兼容：legacy unlock cookie/localStorage 或新 subscription active
+  const effectiveUnlocked = unlocked || subscriptionActive
+  // server 回的剩餘次數優先（更準確），fallback 用 client side scanCount
+  const remainingFree = serverRemainingFree != null
+    ? serverRemainingFree
+    : Math.max(FREE_SCANS - scanCount, 0)
   const canSubmit = url.trim().length > 0 && !loading
 
   return (
@@ -499,20 +534,20 @@ export default function Home() {
                   <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                 </svg>
               </button>
-              {!unlocked && remainingFree > 0 && (
+              {!effectiveUnlocked && remainingFree > 0 && (
                 <span style={{ fontSize: 12, color: 'rgba(var(--ink-rgb), 0.50)', fontWeight: 500, flexShrink: 0 }}>
                   還剩 {remainingFree} 次免費
                 </span>
               )}
-              {!unlocked && remainingFree === 0 && (
+              {!effectiveUnlocked && remainingFree === 0 && (
                 <button
-                  onClick={() => setShowUnlock(true)}
+                  onClick={() => setShowPaywall(true)}
                   style={{
                     fontSize: 12, fontWeight: 700, color: 'var(--terra-hex)',
                     background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', padding: 0,
                   }}
                 >
-                  免費已用完 · 解鎖 →
+                  免費已用完 · 升級無限掃 →
                 </button>
               )}
             </div>
@@ -523,10 +558,44 @@ export default function Home() {
         {/* ── Hero 標題（無卡片，浮在背景上） ── */}
         {!result && (
           <div className="stagger-1" style={{ marginBottom: 24, paddingLeft: 2 }}>
-            <p className="glass-badge">
-              <span className="glass-badge__dot" />
-              小析守護中
-            </p>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <p className="glass-badge" style={{ margin: 0 }}>
+                <span className="glass-badge__dot" />
+                小析守護中
+              </p>
+              {/* 訂閱狀態 chip — 對齊 brand 暖色（無限掃 / 剩 X 次） */}
+              {effectiveUnlocked ? (
+                <span
+                  className="glass-badge"
+                  style={{
+                    margin: 0,
+                    background: 'var(--honey-hex)',
+                    border: '1.5px solid var(--ink-hex)',
+                    color: 'var(--ink-hex)',
+                    fontWeight: 700,
+                  }}
+                  title="訂閱中 · 無限掃描"
+                >
+                  ✓ 無限掃
+                </span>
+              ) : (
+                <button
+                  onClick={() => setShowPaywall(true)}
+                  className="glass-badge"
+                  style={{
+                    margin: 0,
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    background: remainingFree === 0 ? 'var(--terra-hex)' : 'transparent',
+                    color: remainingFree === 0 ? '#FFF6E6' : 'var(--ink-hex)',
+                    border: '1.5px solid var(--ink-hex)',
+                  }}
+                  title={remainingFree > 0 ? '點開看升級方案' : '升級無限掃'}
+                >
+                  {remainingFree > 0 ? `免費剩 ${remainingFree} 次` : '免費已用完 · 升級'}
+                </button>
+              )}
+            </div>
             {/* 品牌名大標題 */}
             <h1 style={{
               fontSize: 'clamp(56px, 12vw, 96px)',
@@ -643,13 +712,13 @@ export default function Home() {
                 <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-tertiary)' }}>
                   {progressText || '分析中…'}
                 </span>
-              ) : unlocked ? (
+              ) : effectiveUnlocked ? (
                 <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-hex)' }}>
-                  ✓ 已解鎖無限
+                  ✓ 無限掃描中
                 </span>
               ) : (
                 <button
-                  onClick={() => setShowUnlock(true)}
+                  onClick={() => setShowPaywall(true)}
                   className={`tap-target ${remainingFree === 0 ? 'chip-blocked' : remainingFree === 1 ? 'chip-urgent' : ''}`}
                   style={{
                     background: remainingFree === 0 ? 'var(--terra-hex)' : remainingFree === 1 ? 'var(--honey-hex)' : 'transparent',
@@ -662,11 +731,11 @@ export default function Home() {
                     color: remainingFree === 0 ? '#FFF6E6' : remainingFree === 1 ? 'var(--ink-hex)' : 'var(--text-tertiary)',
                     display: 'inline-flex', alignItems: 'center', gap: 4,
                   }}
-                  title={remainingFree > 0 ? '點開看看升級方案' : '解鎖無限掃描'}
+                  title={remainingFree > 0 ? '點開看看升級方案' : '升級無限掃'}
                 >
                   {remainingFree > 1 && `免費剩 ${remainingFree} 次`}
                   {remainingFree === 1 && (<><span className="bolt-bob" aria-hidden>⚡</span>最後 1 次免費 · 看升級</>)}
-                  {remainingFree === 0 && '免費已用完 · 解鎖 →'}
+                  {remainingFree === 0 && '免費已用完 · 升級無限掃 →'}
                 </button>
               )}
               <span style={{ fontSize: 14, color: 'var(--text-tertiary)', fontWeight: 500 }}>
@@ -878,6 +947,12 @@ export default function Home() {
           onUnlocked={handleUnlocked}
           onClose={() => { setShowUnlock(false); setUnlockPending(false) }}
           pendingFromCheckout={unlockPending}
+        />
+      )}
+      {showPaywall && (
+        <PaywallModal
+          onClose={() => { setShowPaywall(false); setPaywallPending(false) }}
+          pendingFromCheckout={paywallPending}
         />
       )}
     </main>
