@@ -5,6 +5,7 @@ import { AnalysisResult, RiskLevel, ScoreBreakdownItem, ChannelScore, ScoreDimen
 import { authenticate, corsHeaders } from '@/lib/api-auth'
 import { rateLimit, getClientIp, getDeviceFingerprint } from '@/lib/rate-limit'
 import { getScanCount, incrementScanCount, decrementScanCount } from '@/lib/redis'
+import { getSubscriptionStatus } from '@/lib/lemonsqueezy'
 
 const FREE_SCANS = 2
 const UNLOCK_COOKIE = 'cc_unlocked'
@@ -606,13 +607,19 @@ export async function POST(req: NextRequest) {
       cookies[trimmed.slice(0, idx)] = trimmed.slice(idx + 1)
     }
   }
-  const unlocked = cookies[UNLOCK_COOKIE] === '1'
+  const cookieUnlocked = cookies[UNLOCK_COOKIE] === '1'
 
   // ── 2c. 掃描次數從 Upstash Redis 讀寫（按裝置 fingerprint）──
   // 優勢：清 cookie、換瀏覽器、清 localStorage 全部無效；只有換 IP + UA 才能繞
   // 防 race condition：先 INCR 拿到原子化的新計數，超過就拒絕並回滾
   // 若直接「讀 → 判斷 → 寫」，並行請求會同時讀到 0 全部放行
   const fingerprint = getDeviceFingerprint(req)
+
+  // Lemonsqueezy 訂閱狀態（webhook 寫進 Redis 的 subscription:{fingerprint}）
+  // cookie unlocked（既有 license key 路徑）或訂閱 active 任一就免扣次
+  const subStatus = await getSubscriptionStatus(fingerprint)
+  const unlocked = cookieUnlocked || subStatus === 'active'
+
   let scanCounted = false
   if (!unlocked) {
     const newCount = await incrementScanCount(fingerprint)
