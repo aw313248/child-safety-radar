@@ -9,6 +9,7 @@ import ScanningStages from '@/components/ScanningStages'
 import RecentHighRisk from '@/components/RecentHighRisk'
 import SocialProof from '@/components/SocialProof'
 import LoadingFacts from '@/components/LoadingFacts'
+import HeroVideo from '@/components/HeroVideo'
 import { AnalysisResult } from '@/types/analysis'
 
 const UnlockModal = dynamic(() => import('@/components/UnlockModal'), { ssr: false })
@@ -420,6 +421,9 @@ export default function Home() {
       <div aria-hidden className="bg-mascot-decoration" style={{ position: 'fixed', left: -50, bottom: 80, pointerEvents: 'none', zIndex: 0, transform: 'rotate(-12deg)' }}>
         <Mascot pose="hi" size={220} />
       </div>
+
+      {/* ── Hero Video — 全版電影感首頁視覺 ── */}
+      <HeroVideo />
 
       <div className="page-wrapper">
 

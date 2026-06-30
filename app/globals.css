@@ -2369,3 +2369,55 @@ button.bee-card:active {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0 var(--ink-hex);
 }
+
+/* ── Hero Video section ────────────────────────────────────── */
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 11px 22px;
+  border-radius: 4px;
+  font-size: clamp(12px, 1.1vw, 14px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: background 0.18s, border-color 0.18s, opacity 0.18s;
+  font-family: inherit;
+}
+.hero-cta--primary {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+.hero-cta--primary:hover {
+  background: rgba(255, 255, 255, 0.26);
+  border-color: rgba(255, 255, 255, 0.65);
+}
+.hero-cta--ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  color: rgba(255, 255, 255, 0.82);
+}
+.hero-cta--ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #fff;
+}
+
+@keyframes hero-scroll-pulse {
+  0%, 100% { opacity: 0.30; transform: scaleY(1); }
+  50%       { opacity: 0.65; transform: scaleY(1.18); }
+}
+.hero-scroll-line {
+  animation: hero-scroll-pulse 2.2s ease-in-out infinite;
+  transform-origin: top;
+}
+
+/* Mobile: adjust hero breakout for 16px side padding */
+@media (max-width: 480px) {
+  section[aria-label="Hero video"] {
+    margin-left: -16px;
+    width: calc(100% + 32px);
+    margin-top: -20px;
+  }
+}
